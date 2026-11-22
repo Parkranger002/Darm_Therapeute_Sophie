@@ -1,0 +1,277 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Bron: winkeletiket Darmmanagement PRO (400 g) en nieuwe receptuur (nov. 2026).
+// Let op: geen werkings- of gezondheidsclaims toevoegen zonder toetsing (Keuringsraad/NVWA).
+const kruiden = [
+  { naam: 'Brandnetelblad', latijn: 'Urtica dioica', pct: '6%', let: '' },
+  { naam: 'Paardenbloemwortel', latijn: 'Taraxacum officinale', pct: '5%', let: '' },
+  { naam: 'Alfalfablad', latijn: 'Medicago sativa', pct: '4,5%', let: 'Bevat van nature vitamine K. Gebruik je bloedverdunners? Overleg eerst met je arts.' },
+  { naam: 'Rozenbottel', latijn: 'Rosa canina', pct: '4%', let: '' },
+  { naam: 'Chlorella', latijn: 'Chlorella vulgaris', pct: '3,5%', let: 'Bevat van nature vitamine K. Gebruik je bloedverdunners? Overleg eerst met je arts.' },
+  { naam: 'Gerstgras', latijn: 'Hordeum vulgare', pct: '3%', let: '' },
+  { naam: 'Fenegriekzaad', latijn: 'Trigonella foenum-graecum', pct: '2%', let: 'Ben je allergisch voor pinda of peulvruchten? Dan kun je ook op fenegriek reageren.' },
+  { naam: 'Gemberwortel', latijn: 'Zingiber officinale', pct: '1,5%', let: '' },
+  { naam: 'Hysopkruid', latijn: 'Hyssopus officinalis', pct: '1,5%', let: '' },
+];
+
+const stammen = [
+  ['Bifidobacterium lactis', 'W51'],
+  ['Bifidobacterium lactis', 'W52'],
+  ['Lactobacillus acidophilus', 'W22'],
+  ['Lactobacillus paracasei', 'W20'],
+  ['Lactobacillus plantarum', 'W21'],
+  ['Lactobacillus salivarius', 'W24'],
+  ['Lactococcus lactis', 'W19'],
+  ['Lactococcus lactis', 'W58'],
+];
+---
+<Base title="Darmmanagement PRO – Darmmanagement" description="Darmmanagement PRO: 70% psylliumvezel, negen kruiden en acht stammen levende bacteriën in één dagelijks poeder. Lees wat erin zit en hoe je het gebruikt.">
+  <section class="p-hero">
+    <div class="wrap p-hero-grid">
+      <div>
+        <p class="kicker">Darmmanagement PRO</p>
+        <h1>Vezels, kruiden en levende bacteriën in één dagelijks poeder</h1>
+        <p class="lead">
+          Darmmanagement PRO bestaat voor 70% uit psylliumvezel, aangevuld met negen kruiden en acht stammen
+          levende bacteriën. Hieronder lees je precies wat erin zit, hoe je het gebruikt en wanneer je beter
+          eerst met je arts overlegt.
+        </p>
+        <ul class="facts">
+          <li>Vezelrijk</li><li>400 gram = 80 porties</li><li>Met maatschepje van 5 gram</li>
+        </ul>
+        <div class="cta">
+          <a class="btn" href="https://darmmanagement.nl/" rel="noopener">Bekijk prijzen en bestel</a>
+          <a class="more" href="/">Eerst een vraag stellen</a>
+        </div>
+      </div>
+      <figure class="hero-img">
+        <img src="/images/sophie-met-zakje-breed.webp" width="1400" height="788" alt="Sophie, therapeute bij Powerdetox, houdt een zakje Darmmanagement omhoog" fetchpriority="high" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap block">
+    <h2>Wat zit erin?</h2>
+    <div class="cards3">
+      <div class="card">
+        <span class="num">70%</span>
+        <h3>Psylliumvezel</h3>
+        <p>Gemalen zaadhuid van <em>Plantago ovata</em>. Psyllium neemt water op en vormt een zachte gel.</p>
+      </div>
+      <div class="card">
+        <span class="num">9</span>
+        <h3>Kruiden</h3>
+        <p>Van brandnetelblad tot hysop. Je vindt ze allemaal in de tabel hieronder.</p>
+      </div>
+      <div class="card">
+        <span class="num">8</span>
+        <h3>Bacteriestammen</h3>
+        <p>Levende bacteriën van de geslachten <em>Bifidobacterium</em>, <em>Lactobacillus</em> en <em>Lactococcus</em>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap block">
+    <h2>De negen kruiden</h2>
+    <p class="sub">Met de Latijnse naam, het aandeel in het product en, waar van toepassing, iets wat goed is om te weten voordat je begint.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Kruid</th><th>Latijnse naam</th><th>Aandeel</th><th>Goed om te weten</th></tr></thead>
+        <tbody>
+          {kruiden.map((k) => (
+            <tr>
+              <td><strong>{k.naam}</strong></td>
+              <td><em>{k.latijn}</em></td>
+              <td>{k.pct}</td>
+              <td>{k.let || '–'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap block two">
+    <div>
+      <h2>De acht bacteriestammen</h2>
+      <p class="sub">De letter W met een nummer is de code van de specifieke stam. Eén portie van 5 gram bevat 2,5 miljard levende bacteriën (2,5 × 10<sup>9</sup> kve).</p>
+      <ul class="strains">
+        {stammen.map(([n, w]) => <li><em>{n}</em> <span class="code">{w}</span></li>)}
+      </ul>
+    </div>
+    <div>
+      <h2>Per portie</h2>
+      <div class="table-wrap">
+        <table class="small">
+          <thead><tr><th>Bestanddeel</th><th>5 g</th><th>15 g</th></tr></thead>
+          <tbody>
+            <tr><td>Psyllium</td><td>3.450 mg</td><td>10.350 mg</td></tr>
+            <tr><td>Kruiden (9 soorten)</td><td>1.475 mg</td><td>4.425 mg</td></tr>
+            <tr><td>Levende bacteriën</td><td>2,5 × 10<sup>9</sup> kve</td><td>7,5 × 10<sup>9</sup> kve</td></tr>
+            <tr><td>Voedingsvezel</td><td>3,6 g</td><td>10,8 g</td></tr>
+            <tr><td>Energie</td><td>12 kcal</td><td>35 kcal</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note-small">Voedingswaarden zijn indicatief. Per 100 gram: 230 kcal, 72 g voedingsvezel, 16,5 g koolhydraten (waarvan 2,8 g suikers), 5,8 g eiwit, 1,4 g vet en 0,18 g zout.</p>
+    </div>
+  </section>
+
+  <section class="wrap block">
+    <h2>Volledige ingrediëntenlijst</h2>
+    <p class="ingredients">
+      Psylliumschilpoeder (<em>Plantago ovata</em>) 70%, brandnetelbladpoeder (<em>Urtica dioica</em>) 6%,
+      paardenbloemwortelpoeder (<em>Taraxacum officinale</em>) 5%, alfalfabladpoeder (<em>Medicago sativa</em>) 4,5%,
+      rozenbottelpoeder (<em>Rosa canina</em>) 4%, chlorellapoeder (<em>Chlorella vulgaris</em>) 3,5%,
+      gerstgraspoeder (<em>Hordeum vulgare</em>) 3%, fenegriekzaadpoeder (<em>Trigonella foenum-graecum</em>) 2%,
+      gemberwortelpoeder (<em>Zingiber officinale</em>) 1,5%, hysopkruidpoeder (<em>Hyssopus officinalis</em>) 1,5%,
+      bacteriestammen (<em>Bifidobacterium lactis</em> W51, <em>B. lactis</em> W52, <em>Lactobacillus acidophilus</em> W22,
+      <em>L. paracasei</em> W20, <em>L. plantarum</em> W21, <em>L. salivarius</em> W24, <em>Lactococcus lactis</em> W19,
+      <em>L. lactis</em> W58), drager (maïszetmeel, maltodextrine).
+    </p>
+  </section>
+
+  <section class="use">
+    <div class="wrap">
+      <h2>Zo gebruik je het</h2>
+      <div class="two">
+        <ol class="steps">
+          <li><strong>Begin met één portie per dag.</strong> Dat is één afgestreken maatschepje van 5 gram.</li>
+          <li><strong>Bouw rustig op.</strong> Als je wilt, ga je geleidelijk naar maximaal 3 porties (15 gram) per dag, verdeeld over de dag.</li>
+          <li><strong>Roer het door een groot glas.</strong> Minstens 200 ml water, sap of smoothie. Goed roeren en meteen opdrinken.</li>
+          <li><strong>Drink daarna nog een glas water</strong> (200 ml). Psyllium heeft vocht nodig.</li>
+          <li><strong>Houd minstens 1 uur afstand</strong> tussen je medicijnen en Darmmanagement.</li>
+          <li><strong>Niet vlak voor het slapengaan</strong> innemen.</li>
+        </ol>
+        <div>
+          <p class="sub">In de eerste dagen kun je wat meer last hebben van winderigheid of een opgeblazen gevoel. Dat is een bekende reactie op vezels. Houdt het aan, ga dan terug naar een lagere hoeveelheid.</p>
+          <p class="sub">Bewaren: koel (maximaal 25 °C), droog en donker. Sluit het deksel direct na gebruik.</p>
+        </div>
+      </div>
+      <div class="drinks">
+        <figure>
+          <img src="/images/met-water.webp" width="480" height="601" loading="lazy" alt="Glas water met Darmmanagement erdoor geroerd, met een houten maatschepje ernaast" />
+          <figcaption>Met water</figcaption>
+        </figure>
+        <figure>
+          <img src="/images/in-smoothie.webp" width="480" height="601" loading="lazy" alt="Glas smoothie met Darmmanagement, met een houten maatschepje ernaast" />
+          <figcaption>In een smoothie</figcaption>
+        </figure>
+        <figure>
+          <img src="/images/in-sinaasappelsap.webp" width="480" height="601" loading="lazy" alt="Glas sinaasappelsap met Darmmanagement, met een houten maatschepje ernaast" />
+          <figcaption>In sinaasappelsap</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap block">
+    <div class="warn">
+      <h2>Belangrijk om te weten</h2>
+      <ul>
+        <li><strong>Altijd met ruim vocht innemen.</strong> Zo voorkom je dat het opzwelt in je keel of slokdarm, en dat je verstopt raakt. Heb je moeite met slikken? Overleg dan eerst met je arts.</li>
+        <li><strong>Overleg met je arts of apotheker</strong> als je medicijnen gebruikt (vooral bloedverdunners), zwanger bent, borstvoeding geeft, klachten hebt of het aan een kind wilt geven.</li>
+        <li>Ben je allergisch voor pinda of peulvruchten? Let dan op: fenegriek kan een kruisreactie geven.</li>
+        <li>Neem niet meer dan 15 gram per dag.</li>
+      </ul>
+      <p><strong>Ga altijd naar je huisarts</strong> bij bloed bij de ontlasting, bij een verandering in je stoelgang die langer dan twee weken duurt, of als je ernstig ziek bent.</p>
+    </div>
+  </section>
+
+  <section class="wrap block">
+    <h2>Darmmanagement of Darmmanagement PRO?</h2>
+    <div class="compare">
+      <div class="card">
+        <h3>Darmmanagement</h3>
+        <p>Psylliumvezel en negen kruiden.</p>
+      </div>
+      <div class="card pro">
+        <h3>Darmmanagement PRO</h3>
+        <p>Psylliumvezel, negen kruiden én acht stammen levende bacteriën.</p>
+      </div>
+    </div>
+    <p class="sub">Actuele verpakkingen en prijzen vind je op <a href="https://darmmanagement.nl/" rel="noopener">darmmanagement.nl</a>.</p>
+  </section>
+
+  <section class="ask">
+    <div class="wrap ask-inner">
+      <div>
+        <h2>Twijfel je of het bij je past?</h2>
+        <p>Stel je vraag aan de AI-begeleider. Hij denkt rustig met je mee en zegt het eerlijk als je beter eerst naar je huisarts kunt gaan.</p>
+        <a class="btn" href="/">Start een gesprek <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <p class="wrap disclaimer">Een voedingssupplement is geen vervanging van een gevarieerde voeding en een gezonde leefstijl. Overschrijd de aanbevolen dagdosis niet. Buiten bereik van jonge kinderen bewaren.</p>
+</Base>
+
+<style>
+  .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
+  .p-hero { padding: 56px 0 40px; }
+  .p-hero-grid { display: grid; gap: 36px; align-items: center; }
+  @media (min-width: 900px) { .p-hero-grid { grid-template-columns: 1fr 1.05fr; } }
+  .p-hero h1 { font-size: clamp(2rem, 4.4vw, 3rem); color: var(--green); }
+  .lead { font-size: 1.15rem; margin: 0 0 18px; }
+  .facts { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .facts li { background: var(--sage-soft); border: 1px solid var(--line); border-radius: 999px; padding: .3em .85em; font-size: .9rem; }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; }
+  .more { font-weight: 600; }
+  figure { margin: 0; }
+  .hero-img img { width: 100%; height: auto; display: block; border-radius: 22px; box-shadow: 0 18px 40px rgba(20,35,28,.14); }
+  .block { padding: 36px 22px; }
+  .block h2, .use h2, .ask h2 { font-size: 1.7rem; }
+  .sub { color: var(--muted); }
+  .cards3 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .card h3 { font-size: 1.2rem; margin: .4em 0 .3em; }
+  .card p { margin: 0; color: var(--muted); }
+  .num { font-family: var(--serif); font-size: 2.2rem; font-weight: 700; color: var(--green); line-height: 1; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--sage-soft); font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--green); }
+  tbody tr:last-child td { border-bottom: 0; }
+  td:first-child { white-space: nowrap; }
+  @media (max-width: 700px) {
+    table:not(.small) thead { display: none; }
+    table:not(.small), table:not(.small) tbody, table:not(.small) tr, table:not(.small) td { display: block; width: 100%; }
+    table:not(.small) tr { padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    table:not(.small) tbody tr:last-child { border-bottom: 0; }
+    table:not(.small) td { border: 0; padding: 1px 0; }
+    table:not(.small) td:first-child { white-space: normal; font-size: 1.02rem; }
+    table:not(.small) td:nth-child(2), table:not(.small) td:nth-child(3) { color: var(--muted); font-size: .9rem; display: inline; }
+    table:not(.small) td:nth-child(3)::before { content: ' · '; }
+    table:not(.small) td:nth-child(4) { margin-top: 4px; }
+  }
+  .small td, .small th { padding: 9px 12px; }
+  .note-small { font-size: .88rem; color: var(--muted); margin-top: 10px; }
+  .two { display: grid; gap: 32px; }
+  @media (min-width: 900px) { .two { grid-template-columns: 1.2fr 1fr; align-items: start; } }
+  .strains { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .strains li { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px; display: flex; justify-content: space-between; gap: 12px; }
+  .code { font-weight: 700; color: var(--green); font-size: .9rem; }
+  .ingredients { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; font-size: .95rem; margin: 0; }
+  .use { background: var(--sage-soft); border-block: 1px solid var(--line); padding: 44px 0; margin: 20px 0; }
+  .steps { padding-left: 1.2em; margin: 0; }
+  .steps li { margin-bottom: .6em; }
+  .drinks { display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); margin-top: 28px; }
+  .drinks img { width: 100%; height: auto; display: block; border-radius: 16px; }
+  .drinks figcaption { text-align: center; font-size: .9rem; color: var(--muted); margin-top: 6px; }
+  @media (max-width: 600px) { .drinks { gap: 8px; } .drinks figcaption { font-size: .8rem; } }
+  .warn { background: var(--warn-bg); border: 1px solid #efc9b4; border-radius: var(--radius); padding: 22px 26px; color: var(--warn-ink); }
+  .warn h2 { font-size: 1.3rem; color: var(--warn-ink); }
+  .warn ul { padding-left: 1.2em; margin: 0 0 14px; }
+  .warn li { margin-bottom: .45em; }
+  .warn p { margin: 0; }
+  .compare { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 10px; }
+  .compare .pro { border: 2px solid var(--green); }
+  .ask { padding: 20px 0 10px; }
+  .ask-inner { background: var(--green); color: #fff; border-radius: 22px; padding: 34px 32px; }
+  .ask-inner h2 { color: #fff; }
+  .ask-inner p { max-width: 52ch; }
+  .ask-inner .btn { background: #fff; color: var(--green); border-color: #fff; }
+  .ask-inner .btn:hover { background: var(--sage); }
+  .disclaimer { font-size: .85rem; color: var(--muted); padding-top: 26px; padding-bottom: 40px; }
+</style>

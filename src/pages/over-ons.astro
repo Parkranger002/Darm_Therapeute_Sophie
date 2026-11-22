@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Over ons – Darmmanagement" description="Darmmanagement is een product van Powerdetox. Lees hoe wij naar darmgezondheid kijken en waarom we een AI-begeleider hebben gemaakt.">
+  <div class="wrap prose about">
+    <p class="kicker">Over ons</p>
+    <h1>Darmgezondheid begint bij het geheel</h1>
+    <p class="intro">
+      Darmmanagement is een product van <a href="https://www.powerdetox.nl/" rel="noopener">Powerdetox</a>.
+      Wij geloven dat je je darmen het best ondersteunt door niet alleen naar een klacht te kijken,
+      maar naar je hele leefstijl.
+    </p>
+
+    <figure class="wide">
+      <img src="/images/sophie-in-gesprek.webp" width="488" height="490" loading="lazy" alt="Sophie, therapeute bij Powerdetox, in gesprek met een klant" />
+      <figcaption>Sophie, therapeute bij Powerdetox</figcaption>
+    </figure>
+
+    <h2>Onze kijk</h2>
+    <p>
+      Buikklachten staan zelden op zichzelf. Wat je eet, hoe je slaapt, hoeveel je beweegt en hoeveel
+      spanning je ervaart, spelen allemaal mee. Daarom zoeken we liever naar wat eronder ligt dan dat we
+      alleen een symptoom proberen weg te nemen.
+    </p>
+    <p>
+      Wij vinden ook dat je zelf de regie hoort te houden. Goede informatie helpt je om keuzes te maken die
+      bij jou passen, of dat nu een aanpassing in je voeding is, een product, of een afspraak met je huisarts.
+    </p>
+
+    <div class="split">
+      <div>
+        <h2>Wat is Darmmanagement?</h2>
+        <p>
+          Darmmanagement is een poeder voor dagelijks gebruik, met psylliumvezel en negen kruiden.
+          Darmmanagement PRO bevat daarnaast acht stammen levende bacteriën. Het is een van de drie pijlers
+          van Powerdetox, naast darmreiniging en detoxkuren.
+        </p>
+        <p><a href="/product">Bekijk de productinformatie →</a></p>
+      </div>
+      <img src="/images/sophie-met-zakje.webp" width="480" height="501" loading="lazy" alt="Sophie, therapeute bij Powerdetox, houdt een zakje Darmmanagement vast" />
+    </div>
+
+    <h2>Waarom een AI-begeleider?</h2>
+    <p>
+      Over je stoelgang praten is niet voor iedereen makkelijk. Met de Darmmanagement-begeleider kun je
+      op je eigen moment en in je eigen woorden een vraag stellen. De begeleider luistert, vraagt rustig door
+      en helpt je bepalen wat een passende volgende stap is.
+    </p>
+
+    <div class="note">
+      <h2>Wat wij niet doen</h2>
+      <ul>
+        <li>De begeleider is een AI, geen arts of therapeut. Hij stelt geen diagnose.</li>
+        <li>Darmmanagement vervangt geen medisch advies of behandeling.</li>
+        <li>Heb je een darmaandoening, gebruik je medicijnen of heb je langdurige klachten? Overleg dan eerst met je arts.</li>
+      </ul>
+    </div>
+
+    <div class="cta">
+      <a class="btn" href="/">Start een gesprek <span aria-hidden="true">→</span></a>
+      <a class="more" href="https://www.powerdetox.nl/" rel="noopener">Meer over Powerdetox</a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .about { padding-top: 56px; }
+  .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
+  .about h1 { font-size: clamp(2rem, 4.5vw, 2.9rem); color: var(--green); }
+  .about h2 { font-size: 1.45rem; margin-top: 1.6em; }
+  .intro { font-size: 1.2rem; }
+  .note { margin-top: 2.2em; background: var(--sage-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px; }
+  .note h2 { margin-top: 0; font-size: 1.2rem; }
+  .note ul { margin: 0; padding-left: 1.2em; }
+  .note li + li { margin-top: .4em; }
+  .cta { margin-top: 2.4em; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
+  .more { font-weight: 600; }
+  figure { margin: 2em 0 0; }
+  figcaption { font-size: .88rem; color: var(--muted); margin-top: 8px; }
+  figure img, .split img { width: 100%; height: auto; display: block; border-radius: 20px; box-shadow: 0 16px 36px rgba(20,35,28,.13); }
+  .wide img { max-height: 380px; object-fit: cover; object-position: center 30%; }
+  .split { display: grid; gap: 24px; align-items: center; }
+  @media (min-width: 700px) { .split { grid-template-columns: 1.3fr 1fr; } }
+  .split img { max-width: 300px; justify-self: center; }
+</style>
