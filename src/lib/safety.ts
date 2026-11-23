@@ -8,11 +8,11 @@
 export type AlarmKind = 'bloed' | 'pijn' | 'algemeen';
 
 const ALARM_PATTERNS: Array<[AlarmKind, RegExp]> = [
-  ['bloed', /bloed(?!druk|verdun|suiker|groep|onderzoek|prik|waarde|test|vat|arm)|zwarte ontlasting|zwarte poep|teerachtig/],
+  ['bloed', /bloed(?!druk|verdun|suiker|groep|onderzoek|prik|waarde|test|vat|arm)|zwarte ontlasting|zwarte poep|teerachtig|zwart(e)?\s+(en\s+)?(plakkerig|kleverig)|(poep|ontlasting|stoelgang)\s+(is|was|wordt|lijkt)\s+(\w+\s+)?zwart/],
   ['pijn', /(hevig|plotsel|ondraaglijk|heel erge?|ontzettende?|vreselijke?)\s*\w*\s*(buik)?pijn|pijn\s+(wordt|steeds)\s+erger/],
   [
     'algemeen',
-    /koorts|overgeven|braken|kotsen|onbedoeld\s+(afgevallen|afvallen|gewichtsverlies)|afgevallen zonder|flauwvallen|flauw gevallen|kan niet plassen|niet meer poepen en (geen )?winden|ernstig ziek/,
+    /koorts|overgeven|braken|kotsen|onbedoeld\s+(\d+\s*(kilo|kg)\s+)?(afgevallen|afvallen|gewichtsverlies)|afgevallen zonder|zonder\s+(reden|het te willen)\s+(\d+\s*(kilo|kg)\s+)?afgevallen|flauwvallen|flauw gevallen|kan niet plassen|niet meer poepen en (geen )?winden|ernstig ziek/,
   ],
 ];
 
@@ -50,7 +50,7 @@ const FORBIDDEN: RegExp[] = [
 ];
 
 export const SAFE_FALLBACK =
-  'Daar kan ik je geen betrouwbaar antwoord op geven. Ik stel geen diagnoses en ik zeg niet dat een product een aandoening behandelt. Twijfel je over je klachten? Bespreek ze dan met je huisarts.';
+  'Hier kan ik je geen antwoord op geven. Ik stel geen diagnoses, en Darmmanagement is een voedingssupplement dat ik nooit aan een ziekte koppel. Heb je vragen over klachten of een ziekte? Bespreek ze dan met je huisarts. Over je stoelgang, buikklachten of wat er in Darmmanagement zit, denk ik graag met je mee.';
 
 /** Past de uitvoer van het model aan aan de reclame- en veiligheidsregels. */
 export function filterOutput(text: string): { text: string; replaced: boolean } {

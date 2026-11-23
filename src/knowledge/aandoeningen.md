@@ -62,7 +62,7 @@ Bij buikpijn samen met:
 - **Wat kan helpen (algemeen):** gezond eten met genoeg vezels, 1,5 tot 2 liter drinken per dag, bewegen en ontspannen. Een diëtist kan uitzoeken welk eten klachten geeft (bijvoorbeeld met een FODMAP-aanpak). Verder zijn er medicijnen, begeleiding door een psycholoog en probiotica. Bespreek met de huisarts wat past.
 - **Let op, dit past níet bij PDS:** bloed of slijm bij de ontlasting, een plotseling veranderd poeppatroon, onbedoeld afvallen. Dan verwijzen naar de huisarts.
 - **De begeleider:** mag uitleg geven over PDS in het algemeen, maar stelt de diagnose niet. Koppelt het product niet aan PDS.
-- **Bronnen:** [GPnotebook](https://gpnotebook.com/nl/pages/gastro-enterologie/prikkelbare-darm-syndroom) · [Thuisarts: PDS](https://www.thuisarts.nl/pds) · [Thuisarts: wanneer contact opnemen](https://www.thuisarts.nl/prikkelbare-darm/wanneer-contact-opnemen-bij-prikkelbare-darm)
+- **Bronnen:** [GPnotebook](https://gpnotebook.com/nl/pages/gastro-enterologie/prikkelbare-darm-syndroom) · [Thuisarts: PDS](https://www.thuisarts.nl/pds)
 
 ### 2.2 Divertikels (diverticulose en divertikelziekte)
 - **Wat is het:** kleine uitstulpingen (zakjes) in de wand van de dikke darm, meestal in het laatste deel. Hebben ze geen klachten, dan heet dat diverticulose. Met klachten heet het divertikelziekte.
