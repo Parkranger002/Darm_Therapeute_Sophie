@@ -1,0 +1,358 @@
+---
+// Chatvenster: beeldvullend op telefoon, paneel rechts op groter scherm.
+---
+<div class="chat-backdrop" data-chat-backdrop hidden></div>
+<section class="chat" id="chat" role="dialog" aria-modal="true" aria-labelledby="chat-title" hidden>
+  <header class="chat-head">
+    <div>
+      <h2 id="chat-title"><span aria-hidden="true">🌿</span> Darmmanagement-begeleider</h2>
+      <span class="badge">AI-begeleider · testversie</span>
+    </div>
+    <button class="close" type="button" data-close-chat aria-label="Chat sluiten">×</button>
+  </header>
+
+  <div class="log" data-log aria-live="polite"></div>
+
+  <form class="composer" data-form autocomplete="off">
+    <label class="sr-only" for="chat-input">Typ hier je vraag</label>
+    <input id="chat-input" data-input type="text" placeholder="Typ hier je vraag…" maxlength="500" />
+    <button class="btn send" type="submit">Verstuur</button>
+  </form>
+  <p class="privacy">
+    Deel liever geen naam, adres of andere gegevens die voor je vraag niet nodig zijn.{' '}
+    <a href="/privacy">Hoe gaan we met gegevens om?</a>
+  </p>
+</section>
+
+<script>
+  import { nodes, interpret, classify, type State, type Option } from '../lib/flow';
+  import { checkAlarm, ALARM_REPLIES } from '../lib/safety';
+
+  type Msg = { role: 'user' | 'assistant'; content: string };
+  type Source = { title: string; url: string };
+
+  const chat = document.getElementById('chat')!;
+  const backdrop = document.querySelector<HTMLElement>('[data-chat-backdrop]')!;
+  const log = chat.querySelector<HTMLElement>('[data-log]')!;
+  const form = chat.querySelector<HTMLFormElement>('[data-form]')!;
+  const input = chat.querySelector<HTMLInputElement>('[data-input]')!;
+
+  // Modus: 'ai' (echte begeleider via /api/chat) of 'vast' (vaste antwoorden als terugval).
+  let mode: 'ai' | 'vast' = 'ai';
+  let history: Msg[] = [];
+  let state: State = {};
+  let current = 'welkom';
+  let started = false;
+  let busy = false;
+  let lastFocus: HTMLElement | null = null;
+
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const TOPICS: Record<string, string> = {
+    stoelgang: 'Ik heb een vraag over mijn stoelgang.',
+    buik: 'Ik heb buikklachten.',
+    product: 'Ik heb een vraag over Darmmanagement.',
+  };
+  const TOPIC_LABELS: Record<string, string> = {
+    stoelgang: 'Mijn stoelgang',
+    buik: 'Ik heb buikklachten',
+    product: 'Vraag over Darmmanagement',
+  };
+
+  function scroll() {
+    log.scrollTo({ top: log.scrollHeight, behavior: reduceMotion ? 'auto' : 'smooth' });
+  }
+
+  function bubble(text: string, who: 'bot' | 'user', safety = false, sources: Source[] = []) {
+    const el = document.createElement('div');
+    el.className = `msg ${who}${safety ? ' safety' : ''}`;
+    el.textContent = text; // altijd als tekst, nooit als HTML
+    if (sources.length) {
+      const list = document.createElement('div');
+      list.className = 'sources';
+      list.append('Bron: ');
+      sources.forEach((s, i) => {
+        if (!/^https:\/\//.test(s.url)) return;
+        const a = document.createElement('a');
+        a.href = s.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = s.title || new URL(s.url).hostname;
+        if (i) list.append(' · ');
+        list.append(a);
+      });
+      el.appendChild(list);
+    }
+    log.appendChild(el);
+    scroll();
+  }
+
+  function typing() {
+    const t = document.createElement('div');
+    t.className = 'msg bot typing';
+    t.setAttribute('aria-label', 'De begeleider typt');
+    t.innerHTML = '<i></i><i></i><i></i>';
+    log.appendChild(t);
+    scroll();
+    return t;
+  }
+
+  function clearOptions() {
+    log.querySelectorAll('.options').forEach((o) => o.remove());
+  }
+
+  function renderOptions(opts: Option[], layout: 'chips' | 'cards' = 'chips') {
+    if (!opts.length) return;
+    const wrap = document.createElement('div');
+    wrap.className = `options ${layout}`;
+    for (const o of opts) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = layout === 'cards' ? 'card' : 'chip';
+      if (layout === 'cards') {
+        const strong = document.createElement('strong');
+        strong.textContent = o.label;
+        const span = document.createElement('span');
+        span.textContent = o.hint ?? '';
+        b.append(strong, span);
+      } else {
+        b.textContent = o.label;
+      }
+      b.addEventListener('click', () => choose(o));
+      wrap.appendChild(b);
+    }
+    log.appendChild(wrap);
+    scroll();
+  }
+
+  // ── Vaste antwoorden (terugval) ───────────────────────────
+  async function go(id: string, prefix: string[] = []) {
+    if (id === '__reset') return reset();
+    const node = nodes[id] ?? nodes.onbekend;
+    current = id;
+    if (node.safety) state.safety = true;
+    busy = true;
+    clearOptions();
+    for (const line of [...prefix, ...node.say(state)]) {
+      const t = typing();
+      await wait(reduceMotion ? 0 : Math.min(350 + line.length * 6, 1100));
+      t.remove();
+      bubble(line, 'bot', node.safety);
+    }
+    renderOptions(node.options?.(state) ?? [], node.layout);
+    busy = false;
+  }
+
+  function choose(o: Option) {
+    if (busy) return;
+    if (mode === 'ai' && current === 'welkom') {
+      // Startknoppen sturen een gewone vraag naar de begeleider.
+      const key = Object.keys(TOPIC_LABELS).find((k) => TOPIC_LABELS[k] === o.label);
+      if (o.next === 'anders') {
+        clearOptions();
+        bubble(o.label, 'user');
+        bubble('Vertel gerust in je eigen woorden waar je mee zit.', 'bot');
+        current = 'vrij';
+        return;
+      }
+      return sendText(key ? TOPICS[key] : o.label, o.label);
+    }
+    bubble(o.hint ? `${o.label}: ${o.hint}` : o.label, 'user');
+    if (o.save) state[o.save[0]] = o.save[1] as never;
+    go(o.next);
+  }
+
+  // ── Echte begeleider ──────────────────────────────────────
+  async function askAI(): Promise<void> {
+    busy = true;
+    clearOptions();
+    const t = typing();
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ messages: history.slice(-14) }),
+      });
+      t.remove();
+      if (res.status === 429) {
+        bubble('Je stuurt veel berichten achter elkaar. Wacht even een minuut en probeer het dan opnieuw.', 'bot');
+        history.pop();
+        return;
+      }
+      if (!res.ok) throw new Error(String(res.status));
+      const data = (await res.json()) as { reply: string; sources?: Source[]; safety?: boolean };
+      if (data.safety) state.safety = true;
+      bubble(data.reply, 'bot', !!data.safety && /huisarts|112|medische hulp/.test(data.reply), data.sources ?? []);
+      history.push({ role: 'assistant', content: data.reply });
+    } catch {
+      t.remove();
+      // Terugval: vaste antwoorden.
+      mode = 'vast';
+      const lastUser = history[history.length - 1]?.content ?? '';
+      bubble('De AI-begeleider is even niet bereikbaar. Ik help je nu met vaste antwoorden.', 'bot');
+      busy = false;
+      const r = interpret(lastUser);
+      if (r.save) state[r.save[0]] = r.save[1] as never;
+      await go(r.next);
+      return;
+    } finally {
+      busy = false;
+    }
+  }
+
+  async function sendText(text: string, shown = text) {
+    bubble(shown, 'user');
+    clearOptions();
+    // Alarmsignalen: direct een vast antwoord, ook zonder server.
+    const alarm = checkAlarm(text);
+    if (alarm) {
+      state.safety = true;
+      const lines = ALARM_REPLIES[alarm];
+      history.push({ role: 'user', content: text }, { role: 'assistant', content: lines.join('\n\n') });
+      busy = true;
+      for (const line of lines) {
+        const t = typing();
+        await wait(reduceMotion ? 0 : 500);
+        t.remove();
+        bubble(line, 'bot', true);
+      }
+      busy = false;
+      if (mode === 'vast') renderOptions(nodes.veilig_algemeen.options?.(state) ?? []);
+      return;
+    }
+    if (mode === 'ai') {
+      current = 'vrij';
+      history.push({ role: 'user', content: text });
+      return askAI();
+    }
+    handleVast(text);
+  }
+
+  function handleVast(text: string) {
+    const node = nodes[current];
+    const alarm = classify(text);
+    if (alarm) return go(alarm.next);
+    if (node?.expectsText) {
+      state[node.expectsText.key] = text as never;
+      return go(node.expectsText.next);
+    }
+    const r = interpret(text);
+    if (r.save) {
+      state[r.save[0]] = r.save[1] as never;
+      return go(r.next, ['Dat kan vervelend zijn.']);
+    }
+    go(r.next);
+  }
+
+  function reset() {
+    state = {};
+    history = [];
+    log.innerHTML = '';
+    go('welkom');
+  }
+
+  function open(topic?: string) {
+    lastFocus = document.activeElement as HTMLElement;
+    chat.hidden = false;
+    backdrop.hidden = false;
+    document.body.classList.add('chat-open');
+    if (!started) {
+      started = true;
+      if (topic && TOPICS[topic]) {
+        go('welkom').then(() => sendText(TOPICS[topic], TOPIC_LABELS[topic]));
+      } else {
+        go('welkom');
+      }
+    } else if (topic && TOPICS[topic] && !busy) {
+      sendText(TOPICS[topic], TOPIC_LABELS[topic]);
+    }
+    setTimeout(() => input.focus(), 50);
+  }
+
+  function close() {
+    chat.hidden = true;
+    backdrop.hidden = true;
+    document.body.classList.remove('chat-open');
+    lastFocus?.focus();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-open-chat]').forEach((el) =>
+    el.addEventListener('click', () => open(el.dataset.openChat || undefined)),
+  );
+  chat.querySelector('[data-close-chat]')!.addEventListener('click', close);
+  backdrop.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !chat.hidden) close();
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || busy) return;
+    input.value = '';
+    sendText(text);
+  });
+</script>
+
+<style is:global>
+  body.chat-open { overflow: hidden; }
+  @media (min-width: 900px) { body.chat-open { overflow: auto; } }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .chat-backdrop { position: fixed; inset: 0; background: rgba(20, 35, 28, .25); z-index: 40; }
+  .chat-backdrop[hidden], .chat[hidden] { display: none; }
+
+  .chat {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; flex-direction: column;
+    background: var(--bg);
+  }
+  @media (min-width: 900px) {
+    .chat-backdrop { display: none; }
+    .chat {
+      inset: 16px 16px 16px auto; width: 440px;
+      border: 1px solid var(--line); border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(20, 35, 28, .18);
+      overflow: hidden;
+    }
+  }
+
+  .chat-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 16px 18px; background: var(--green); color: #fff; }
+  .chat-head h2 { font-size: 1.1rem; margin: 0 0 4px; }
+  .badge { font-size: .78rem; background: rgba(255,255,255,.16); padding: .2em .65em; border-radius: 999px; }
+  .close { background: none; border: 0; color: #fff; font-size: 1.8rem; line-height: 1; cursor: pointer; padding: 0 4px; }
+
+  .log { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+
+  .msg { max-width: 85%; padding: .7em 1em; border-radius: 16px; white-space: pre-line; font-size: .98rem; }
+  .msg.bot { background: var(--surface); border: 1px solid var(--line); border-bottom-left-radius: 4px; align-self: flex-start; }
+  .msg.user { background: var(--green); color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+  .msg.safety { background: var(--warn-bg); border-color: #efc9b4; color: var(--warn-ink); }
+
+  .typing { display: inline-flex; gap: 4px; padding: .9em 1em; }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: #a9b8af; animation: blink 1s infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; }
+  .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .3 } 40% { opacity: 1 } }
+
+  .options { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 6px; }
+  .options.cards { display: grid; grid-template-columns: 1fr 1fr; }
+  .options .card {
+    font: inherit; text-align: left; cursor: pointer;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px;
+    padding: .6em .8em; display: flex; flex-direction: column; gap: 2px;
+  }
+  .options .card:hover { border-color: var(--green); background: var(--sage-soft); }
+  .options .card strong { color: var(--green); font-size: .9rem; }
+  .options .card span { font-size: .85rem; color: var(--muted); }
+
+  .composer { display: flex; gap: 8px; padding: 12px 14px 6px; border-top: 1px solid var(--line); background: var(--surface); }
+  .composer input { flex: 1; font: inherit; padding: .7em 1em; border: 1.5px solid var(--line); border-radius: 999px; background: var(--bg); min-width: 0; }
+  .composer input:focus { outline: none; border-color: var(--green); }
+  .send { padding: .7em 1.1em; }
+  .msg .sources { margin-top: .5em; font-size: .82rem; color: var(--muted); }
+  .msg.user .sources { color: #fff; }
+  .msg .sources a { color: var(--green); }
+  .privacy { margin: 0; padding: 4px 16px 14px; font-size: .8rem; color: var(--muted); background: var(--surface); }
+</style>
