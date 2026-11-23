@@ -125,6 +125,7 @@ export const PRODUCT_CARD = {
     'Vezelrijk: 3,6 gram vezels per portie van 5 gram',
     '70% psylliumvezel, negen kruiden en acht bacteriestammen (levende bacteriën)',
     'Door water, sap of een smoothie; begin met 1 schepje per dag',
+    'Ook in sachets van 5 gram (per 7 of 21 stuks): handig voor op je werk of op vakantie',
   ],
   note: 'Een voedingssupplement vervangt geen gevarieerde voeding. Gebruik je medicijnen, ben je zwanger of geef je borstvoeding? Overleg dan eerst met je arts of apotheker.',
 };
