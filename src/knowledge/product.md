@@ -6,6 +6,12 @@ Bron: winkeletiket Darmmanagement PRO (400 g) en de receptuur van november 2026.
 Een voedingssupplement in poedervorm voor dagelijks gebruik. Pot van 400 gram, goed voor 80 porties van 5 gram. Met maatschepje van 5 gram.
 Darmmanagement (zonder PRO) bevat dezelfde vezel en kruiden, maar geen levende bacteriën.
 
+## Verpakkingen en hoe lang je ermee doet
+- Pot van 250 gram: 50 porties van 5 gram. Genoeg voor 50 dagen bij 1 portie per dag.
+- Pot van 400 gram: 80 porties van 5 gram. Genoeg voor 40 dagen bij 2 porties per dag (of 80 dagen bij 1 portie per dag).
+- Gratis probeerverpakking: 50 gram, 10 porties.
+- Prijzen staan niet in deze informatie; verwijs daarvoor naar darmmanagement.nl.
+
 ## Samenstelling
 - Psylliumvezel (gemalen zaadhuid van Plantago ovata): 70%
 - Negen kruiden: brandnetelblad (Urtica dioica) 6%, paardenbloemwortel (Taraxacum officinale) 5%, alfalfablad (Medicago sativa) 4,5%, rozenbottel (Rosa canina) 4%, chlorella (Chlorella vulgaris) 3,5%, gerstgras (Hordeum vulgare) 3%, fenegriekzaad (Trigonella foenum-graecum) 2%, gemberwortel (Zingiber officinale) 1,5%, hysopkruid (Hyssopus officinalis) 1,5%
