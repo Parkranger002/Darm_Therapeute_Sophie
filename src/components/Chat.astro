@@ -6,7 +6,7 @@
   <header class="chat-head">
     <div>
       <h2 id="chat-title"><span aria-hidden="true">🌿</span> Darmmanagement-begeleider</h2>
-      <span class="badge">AI-begeleider · prototype</span>
+      <span class="badge">AI-begeleider · testversie</span>
     </div>
     <button class="close" type="button" data-close-chat aria-label="Chat sluiten">×</button>
   </header>
@@ -26,6 +26,10 @@
 
 <script>
   import { nodes, interpret, classify, type State, type Option } from '../lib/flow';
+  import { checkAlarm, ALARM_REPLIES } from '../lib/safety';
+
+  type Msg = { role: 'user' | 'assistant'; content: string };
+  type Source = { title: string; url: string };
 
   const chat = document.getElementById('chat')!;
   const backdrop = document.querySelector<HTMLElement>('[data-chat-backdrop]')!;
@@ -33,6 +37,9 @@
   const form = chat.querySelector<HTMLFormElement>('[data-form]')!;
   const input = chat.querySelector<HTMLInputElement>('[data-input]')!;
 
+  // Modus: 'ai' (echte begeleider via /api/chat) of 'vast' (vaste antwoorden als terugval).
+  let mode: 'ai' | 'vast' = 'ai';
+  let history: Msg[] = [];
   let state: State = {};
   let current = 'welkom';
   let started = false;
@@ -41,17 +48,53 @@
 
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const TOPICS: Record<string, string> = {
+    stoelgang: 'Ik heb een vraag over mijn stoelgang.',
+    buik: 'Ik heb buikklachten.',
+    product: 'Ik heb een vraag over Darmmanagement.',
+  };
+  const TOPIC_LABELS: Record<string, string> = {
+    stoelgang: 'Mijn stoelgang',
+    buik: 'Ik heb buikklachten',
+    product: 'Vraag over Darmmanagement',
+  };
 
   function scroll() {
     log.scrollTo({ top: log.scrollHeight, behavior: reduceMotion ? 'auto' : 'smooth' });
   }
 
-  function bubble(text: string, who: 'bot' | 'user', safety = false) {
+  function bubble(text: string, who: 'bot' | 'user', safety = false, sources: Source[] = []) {
     const el = document.createElement('div');
     el.className = `msg ${who}${safety ? ' safety' : ''}`;
     el.textContent = text; // altijd als tekst, nooit als HTML
+    if (sources.length) {
+      const list = document.createElement('div');
+      list.className = 'sources';
+      list.append('Bron: ');
+      sources.forEach((s, i) => {
+        if (!/^https:\/\//.test(s.url)) return;
+        const a = document.createElement('a');
+        a.href = s.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = s.title || new URL(s.url).hostname;
+        if (i) list.append(' · ');
+        list.append(a);
+      });
+      el.appendChild(list);
+    }
     log.appendChild(el);
     scroll();
+  }
+
+  function typing() {
+    const t = document.createElement('div');
+    t.className = 'msg bot typing';
+    t.setAttribute('aria-label', 'De begeleider typt');
+    t.innerHTML = '<i></i><i></i><i></i>';
+    log.appendChild(t);
+    scroll();
+    return t;
   }
 
   function clearOptions() {
@@ -82,6 +125,7 @@
     scroll();
   }
 
+  // ── Vaste antwoorden (terugval) ───────────────────────────
   async function go(id: string, prefix: string[] = []) {
     if (id === '__reset') return reset();
     const node = nodes[id] ?? nodes.onbekend;
@@ -89,16 +133,10 @@
     if (node.safety) state.safety = true;
     busy = true;
     clearOptions();
-    const lines = [...prefix, ...node.say(state)];
-    for (const line of lines) {
-      const typing = document.createElement('div');
-      typing.className = 'msg bot typing';
-      typing.setAttribute('aria-label', 'De begeleider typt');
-      typing.innerHTML = '<i></i><i></i><i></i>';
-      log.appendChild(typing);
-      scroll();
+    for (const line of [...prefix, ...node.say(state)]) {
+      const t = typing();
       await wait(reduceMotion ? 0 : Math.min(350 + line.length * 6, 1100));
-      typing.remove();
+      t.remove();
       bubble(line, 'bot', node.safety);
     }
     renderOptions(node.options?.(state) ?? [], node.layout);
@@ -107,15 +145,91 @@
 
   function choose(o: Option) {
     if (busy) return;
+    if (mode === 'ai' && current === 'welkom') {
+      // Startknoppen sturen een gewone vraag naar de begeleider.
+      const key = Object.keys(TOPIC_LABELS).find((k) => TOPIC_LABELS[k] === o.label);
+      if (o.next === 'anders') {
+        clearOptions();
+        bubble(o.label, 'user');
+        bubble('Vertel gerust in je eigen woorden waar je mee zit.', 'bot');
+        current = 'vrij';
+        return;
+      }
+      return sendText(key ? TOPICS[key] : o.label, o.label);
+    }
     bubble(o.hint ? `${o.label}: ${o.hint}` : o.label, 'user');
     if (o.save) state[o.save[0]] = o.save[1] as never;
     go(o.next);
   }
 
-  function handleText(text: string) {
-    bubble(text, 'user');
+  // ── Echte begeleider ──────────────────────────────────────
+  async function askAI(): Promise<void> {
+    busy = true;
+    clearOptions();
+    const t = typing();
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ messages: history.slice(-14) }),
+      });
+      t.remove();
+      if (res.status === 429) {
+        bubble('Je stuurt veel berichten achter elkaar. Wacht even een minuut en probeer het dan opnieuw.', 'bot');
+        history.pop();
+        return;
+      }
+      if (!res.ok) throw new Error(String(res.status));
+      const data = (await res.json()) as { reply: string; sources?: Source[]; safety?: boolean };
+      if (data.safety) state.safety = true;
+      bubble(data.reply, 'bot', !!data.safety && /huisarts|112|medische hulp/.test(data.reply), data.sources ?? []);
+      history.push({ role: 'assistant', content: data.reply });
+    } catch {
+      t.remove();
+      // Terugval: vaste antwoorden.
+      mode = 'vast';
+      const lastUser = history[history.length - 1]?.content ?? '';
+      bubble('De AI-begeleider is even niet bereikbaar. Ik help je nu met vaste antwoorden.', 'bot');
+      busy = false;
+      const r = interpret(lastUser);
+      if (r.save) state[r.save[0]] = r.save[1] as never;
+      await go(r.next);
+      return;
+    } finally {
+      busy = false;
+    }
+  }
+
+  async function sendText(text: string, shown = text) {
+    bubble(shown, 'user');
+    clearOptions();
+    // Alarmsignalen: direct een vast antwoord, ook zonder server.
+    const alarm = checkAlarm(text);
+    if (alarm) {
+      state.safety = true;
+      const lines = ALARM_REPLIES[alarm];
+      history.push({ role: 'user', content: text }, { role: 'assistant', content: lines.join('\n\n') });
+      busy = true;
+      for (const line of lines) {
+        const t = typing();
+        await wait(reduceMotion ? 0 : 500);
+        t.remove();
+        bubble(line, 'bot', true);
+      }
+      busy = false;
+      if (mode === 'vast') renderOptions(nodes.veilig_algemeen.options?.(state) ?? []);
+      return;
+    }
+    if (mode === 'ai') {
+      current = 'vrij';
+      history.push({ role: 'user', content: text });
+      return askAI();
+    }
+    handleVast(text);
+  }
+
+  function handleVast(text: string) {
     const node = nodes[current];
-    // Alarmsignalen gaan altijd voor, ook als we op een antwoord wachten.
     const alarm = classify(text);
     if (alarm) return go(alarm.next);
     if (node?.expectsText) {
@@ -132,6 +246,7 @@
 
   function reset() {
     state = {};
+    history = [];
     log.innerHTML = '';
     go('welkom');
   }
@@ -143,15 +258,13 @@
     document.body.classList.add('chat-open');
     if (!started) {
       started = true;
-      if (topic) {
-        const label = { stoelgang: 'Mijn stoelgang', buik: 'Ik heb buikklachten', product: 'Vraag over Darmmanagement' }[topic];
-        if (label) bubble(label, 'user');
-        go(topic);
+      if (topic && TOPICS[topic]) {
+        go('welkom').then(() => sendText(TOPICS[topic], TOPIC_LABELS[topic]));
       } else {
         go('welkom');
       }
-    } else if (topic && !busy) {
-      choose({ label: { stoelgang: 'Mijn stoelgang', buik: 'Ik heb buikklachten', product: 'Vraag over Darmmanagement' }[topic] ?? topic, next: topic });
+    } else if (topic && TOPICS[topic] && !busy) {
+      sendText(TOPICS[topic], TOPIC_LABELS[topic]);
     }
     setTimeout(() => input.focus(), 50);
   }
@@ -177,7 +290,7 @@
     const text = input.value.trim();
     if (!text || busy) return;
     input.value = '';
-    handleText(text);
+    sendText(text);
   });
 </script>
 
@@ -238,5 +351,8 @@
   .composer input { flex: 1; font: inherit; padding: .7em 1em; border: 1.5px solid var(--line); border-radius: 999px; background: var(--bg); min-width: 0; }
   .composer input:focus { outline: none; border-color: var(--green); }
   .send { padding: .7em 1.1em; }
+  .msg .sources { margin-top: .5em; font-size: .82rem; color: var(--muted); }
+  .msg.user .sources { color: #fff; }
+  .msg .sources a { color: var(--green); }
   .privacy { margin: 0; padding: 4px 16px 14px; font-size: .8rem; color: var(--muted); background: var(--surface); }
 </style>

@@ -59,15 +59,31 @@ Teksten aanpassen doe je vrijwel altijd in `src/lib/flow.ts`.
 - Is duidelijk dat ze met AI praten?
 - Voelt de toon prettig en niet te commercieel?
 
-## Volgende stap B: een echte AI-chat
+## De AI-chat (stap B)
 
-1. `npx astro add cloudflare` (voegt de `@astrojs/cloudflare`-adapter toe).
-2. Maak `src/pages/api/chat.ts` met `export const prerender = false;`. Die route ontvangt berichten
-   en roept het AI-model aan.
-3. Zet de API-sleutel als geheim op de server: `npx wrangler secret put AI_API_KEY`. Nooit in de browser.
-4. Draai de alarmsignaal-check **op de server, vóór** de AI-aanroep, zodat de veiligheidsroute niet van het model afhangt.
-5. Geef het model alleen productinformatie uit een gecontroleerde bron (bijv. een vast JSON-bestand of Cloudflare D1).
-6. Bescherm de route tegen misbruik: Cloudflare Turnstile en een rate limit.
-7. Vervang in `Chat.astro` de aanroep van `interpret()` door een `fetch('/api/chat')`.
-8. Werk de privacypagina bij: gezondheidsgegevens zijn bijzondere persoonsgegevens onder de AVG,
-   en ook de AI-leverancier verwerkt de berichten.
+De chat praat met Claude via een Cloudflare Worker (`worker/index.ts`). Er wordt niets opgeslagen.
+
+**Hoe een bericht loopt:**
+1. In de browser en op de server wordt eerst gecontroleerd op alarmsignalen (`src/lib/safety.ts`). Zo ja: een vast doorverwijsantwoord, zonder AI.
+2. Anders gaat het gesprek naar Claude, met de instructies, de productinformatie en de kennisbank (`src/knowledge/*.md`). Claude mag zoeken op een vaste lijst sites (thuisarts.nl, voedingscentrum.nl, rivm.nl, mlds.nl, crohn-colitis.nl, darmmanagement.nl, powerdetox.nl).
+3. Het antwoord gaat door een filter: geen ziekteclaims, geen diagnoses, geen woord "probiotica".
+4. Is de AI niet bereikbaar, dan valt de chat terug op de vaste antwoorden (`src/lib/flow.ts`).
+
+**Inhoud aanpassen:** bewerk de bestanden in `src/knowledge/`:
+- `instructies.md`: toon en regels van de begeleider
+- `product.md`: etiketinformatie (de enige productinformatie die de AI gebruikt)
+- `aandoeningen.md`: kennisbank over aandoeningen en wanneer naar de huisarts
+
+Elke wijziging op `main` wordt automatisch gebouwd en gepubliceerd door Cloudflare.
+
+**Instellingen in Cloudflare** (Workers & Pages → darmmanagement-begeleider → Settings → Variables and Secrets):
+- `ANTHROPIC_API_KEY` (Secret): de API-sleutel van Anthropic. Zonder sleutel gebruikt de chat de vaste antwoorden.
+- `MODEL` (in `wrangler.jsonc`): standaard `claude-sonnet-5-5`.
+
+**Misbruik beperken:** maximaal 12 berichten per IP-adres per minuut, berichten max. 1000 tekens, alleen verzoeken vanaf de eigen site.
+
+**Lokaal testen:** maak een bestand `.dev.vars` met `ANTHROPIC_API_KEY=...` (staat in `.gitignore`), dan `npm run build && npx wrangler dev`.
+
+**Testen vóór livegang:** zie `docs/testset.md`.
+
+> De alarmsignalen, instructies en kennisbank zijn een eerste versie en worden getoetst door Sophie.

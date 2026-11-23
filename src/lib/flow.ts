@@ -11,6 +11,8 @@
  * eerlijk dat de informatie ontbreekt.
  */
 
+import { checkAlarm } from "./safety";
+
 export type State = {
   klacht?: string;
   duur?: string;
@@ -237,7 +239,7 @@ export const nodes: Record<string, Node> = {
   },
   proef: {
     say: () => [
-      'Leuk dat je interesse hebt. Het aanvragen van een proefverpakking is in dit prototype nog niet actief. Je hoeft hiervoor nu niets te doen of te delen.',
+      'Leuk dat je interesse hebt. Een proefverpakking kun je aanvragen via de Detox helpdesk: detoxhelpdesk@gmail.com.',
     ],
     options: () => productTerug,
   },
@@ -251,7 +253,7 @@ export const nodes: Record<string, Node> = {
   },
   onbekend: {
     say: () => [
-      'Daar heb ik in dit prototype nog geen antwoord op. In de echte versie zoek ik het op in gecontroleerde bronnen, en als ik het niet weet, zeg ik dat eerlijk.',
+      'Daar heb ik nu geen vast antwoord op. Probeer het over een paar minuten opnieuw, of mail je vraag naar de Detox helpdesk: detoxhelpdesk@gmail.com.',
       'Kan ik je ergens anders mee helpen?',
     ],
     options: () => startOpties,
@@ -313,11 +315,8 @@ const productTerug: Option[] = [
  * VOORBEELDREGELS – te vervangen door getoetste veiligheidsregels.
  */
 export function classify(text: string): { next: string; save?: [keyof State, string] } | null {
-  const t = text.toLowerCase();
-  if (/bloed/.test(t)) return { next: 'veilig_bloed' };
-  if (/(hevig|plotsel|ondraaglijk|heel erge?|ontzettende?)\s*\w*\s*(buik)?pijn/.test(t)) return { next: 'veilig_pijn' };
-  if (/koorts|overgeven|braken|gewichtsverlies|afgevallen|zwarte ontlasting/.test(t)) return { next: 'veilig_algemeen' };
-  return null;
+  const kind = checkAlarm(text);
+  return kind ? { next: `veilig_${kind}` } : null;
 }
 
 export function interpret(text: string): { next: string; save?: [keyof State, string] } {
