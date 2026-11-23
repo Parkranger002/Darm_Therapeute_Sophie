@@ -7,8 +7,10 @@ Een voedingssupplement in poedervorm voor dagelijks gebruik. Pot van 400 gram, g
 Darmmanagement (zonder PRO) bevat dezelfde vezel en kruiden, maar geen levende bacteriën.
 
 ## Verpakkingen en hoe lang je ermee doet
+Darmmanagement en Darmmanagement PRO zijn allebei verkrijgbaar in beide potmaten:
 - Pot van 250 gram: 50 porties van 5 gram. Genoeg voor 50 dagen bij 1 portie per dag.
 - Pot van 400 gram: 80 porties van 5 gram. Genoeg voor 40 dagen bij 2 porties per dag (of 80 dagen bij 1 portie per dag).
+- Sachets: te bestellen per 7 of per 21 stuks. Weet je niet zeker hoeveel er in één sachet zit of voor welk product ze zijn? Verwijs dan naar darmmanagement.nl en verzin niets.
 - Gratis probeerverpakking: 50 gram, 10 porties.
 - Prijzen staan niet in deze informatie; verwijs daarvoor naar darmmanagement.nl.
 
