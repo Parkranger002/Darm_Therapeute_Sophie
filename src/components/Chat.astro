@@ -27,6 +27,10 @@
 <script>
   import { nodes, interpret, classify, type State, type Option } from '../lib/flow';
   import { checkAlarm, ALARM_REPLIES } from '../lib/safety';
+  import {
+    CHECK, estimateFibre, fibreResult, PRODUCT_CARD, SHOP_URL, mailto,
+    isSensitive, asksAboutProduct, alreadyUses,
+  } from '../lib/nudges';
 
   type Msg = { role: 'user' | 'assistant'; content: string };
   type Source = { title: string; url: string };
@@ -45,6 +49,12 @@
   let started = false;
   let busy = false;
   let lastFocus: HTMLElement | null = null;
+
+  // Tips in de chat (vezelcheck, productkaart). Nooit na een alarmsignaal
+  // of bij gevoelige onderwerpen; elk soort tip hooguit één keer per gesprek.
+  let aiAnswers = 0;
+  let sensitive = false;
+  const shown = { check: false, product: false, ervaring: false };
 
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -184,6 +194,7 @@
       if (data.safety) state.safety = true;
       bubble(data.reply, 'bot', !!data.safety && /huisarts|112|medische hulp/.test(data.reply), data.sources ?? []);
       history.push({ role: 'assistant', content: data.reply });
+      afterReply(history[history.length - 2]?.content ?? '', !!data.safety);
     } catch {
       t.remove();
       // Terugval: vaste antwoorden.
@@ -200,8 +211,9 @@
     }
   }
 
-  async function sendText(text: string, shown = text) {
-    bubble(shown, 'user');
+  async function sendText(text: string, label = text) {
+    bubble(label, 'user');
+    if (isSensitive(text)) sensitive = true;
     clearOptions();
     // Alarmsignalen: direct een vast antwoord, ook zonder server.
     const alarm = checkAlarm(text);
@@ -244,9 +256,165 @@
     go(r.next);
   }
 
+
+  // ── Tips: vezelcheck en productkaart ──────────────────────
+  function tipsAllowed() {
+    return mode === 'ai' && !state.safety && !sensitive;
+  }
+
+  type TipButton = { label: string; href?: string; external?: boolean; primary?: boolean; onClick?: () => void };
+
+  function tip(title: string, text: string | string[], buttons: TipButton[], note?: string) {
+    const el = document.createElement('div');
+    el.className = 'nudge';
+    el.setAttribute('role', 'status');
+    const head = document.createElement('div');
+    head.className = 'nudge-head';
+    const label = document.createElement('span');
+    label.className = 'nudge-label';
+    label.textContent = 'Tip';
+    const h = document.createElement('strong');
+    h.textContent = title;
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'nudge-close';
+    x.setAttribute('aria-label', 'Tip sluiten');
+    x.textContent = '×';
+    x.addEventListener('click', () => el.remove());
+    head.append(label, h, x);
+    el.appendChild(head);
+    const lines = Array.isArray(text) ? text : [text];
+    if (lines.length > 1) {
+      const ul = document.createElement('ul');
+      for (const l of lines) {
+        const li = document.createElement('li');
+        li.textContent = l;
+        ul.appendChild(li);
+      }
+      el.appendChild(ul);
+    } else {
+      const p = document.createElement('p');
+      p.textContent = lines[0];
+      el.appendChild(p);
+    }
+    if (note) {
+      const n = document.createElement('p');
+      n.className = 'nudge-note';
+      n.textContent = note;
+      el.appendChild(n);
+    }
+    const row = document.createElement('div');
+    row.className = 'nudge-actions';
+    for (const b of buttons) {
+      const btn = document.createElement(b.href ? 'a' : 'button') as HTMLAnchorElement & HTMLButtonElement;
+      btn.className = b.primary ? 'nudge-btn primary' : 'nudge-btn';
+      btn.textContent = b.label;
+      if (b.href) {
+        btn.href = b.href;
+        if (b.external) { btn.target = '_blank'; btn.rel = 'noopener'; }
+      } else {
+        btn.type = 'button';
+        btn.addEventListener('click', () => { el.remove(); b.onClick?.(); });
+      }
+      row.appendChild(btn);
+    }
+    el.appendChild(row);
+    log.appendChild(el);
+    scroll();
+  }
+
+  function afterReply(lastUser: string, safety: boolean) {
+    if (safety || !tipsAllowed()) return;
+    aiAnswers++;
+    if (alreadyUses(lastUser) && !shown.ervaring) {
+      shown.ervaring = true;
+      return later(() => tip('Deel je ervaring', 'Gebruik je Darmmanagement al? We horen graag hoe het je bevalt. We plaatsen een ervaring alleen met jouw toestemming.', [
+        { label: 'Mail je ervaring', href: mailto('Mijn ervaring met Darmmanagement'), primary: true },
+        { label: 'Nee, dank je', onClick: () => {} },
+      ]));
+    }
+    if (asksAboutProduct(lastUser) && !shown.product) {
+      return later(productCard);
+    }
+    if (aiAnswers >= 2 && !shown.check) {
+      shown.check = true;
+      later(() => tip('Eet jij genoeg vezels?', 'De meeste Nederlanders eten minder vezels dan het Voedingscentrum aanraadt. Doe de vezelcheck: vijf korte vragen, binnen een minuut klaar.', [
+        { label: 'Doe de vezelcheck', primary: true, onClick: () => runCheck() },
+        { label: 'Nee, dank je', onClick: () => {} },
+      ]));
+    }
+  }
+
+  function later(fn: () => void) {
+    setTimeout(() => { if (tipsAllowed() && !busy) fn(); }, reduceMotion ? 0 : 1200);
+  }
+
+  function productCard() {
+    shown.product = true;
+    tip(PRODUCT_CARD.title, PRODUCT_CARD.lines, [
+      { label: 'Bestel op darmmanagement.nl', href: SHOP_URL, external: true, primary: true },
+      { label: 'Meer over het product', href: '/product' },
+      { label: 'Proefverpakking aanvragen', href: mailto('Aanvraag proefverpakking Darmmanagement', 'Naam:\nAdres:\n') },
+      { label: 'Deel je ervaring', href: mailto('Mijn ervaring met Darmmanagement') },
+    ], PRODUCT_CARD.note);
+  }
+
+  async function runCheck() {
+    shown.check = true;
+    const answers: Record<string, number> = {};
+    bubble('Doe de vezelcheck', 'user');
+    bubble('Leuk! Vijf korte vragen. Je antwoorden blijven op je eigen apparaat en worden niet opgeslagen.', 'bot');
+    for (const q of CHECK) {
+      if (q.skipIf?.(answers)) continue;
+      const value = await askCheck(q.text, q.options);
+      if (value === null) return; // bezoeker typte iets anders: check stopt
+      answers[q.id] = value;
+    }
+    const result = fibreResult(estimateFibre(answers));
+    for (const line of result.lines) bubble(line, 'bot');
+    if (!result.offer || !tipsAllowed()) return;
+    const yes = await askCheck('Wil je ook weten hoe je met Darmmanagement makkelijk vezels kunt aanvullen?', [
+      { label: 'Ja, graag', value: 1 },
+      { label: 'Nee, dank je', value: 0 },
+    ]);
+    if (yes) productCard();
+    else if (yes === 0) bubble('Prima! Heb je nog een andere vraag? Typ hem hieronder.', 'bot');
+  }
+
+  function askCheck(text: string, options: { label: string; value: number }[]): Promise<number | null> {
+    bubble(text, 'bot');
+    return new Promise((resolve) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'options chips';
+      for (const o of options) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'chip';
+        b.textContent = o.label;
+        b.addEventListener('click', () => {
+          observer.disconnect();
+          wrap.remove();
+          bubble(o.label, 'user');
+          resolve(o.value);
+        });
+        wrap.appendChild(b);
+      }
+      // Wordt de keuzelijst weggehaald (de bezoeker typt zelf), dan stopt de check.
+      const observer = new MutationObserver(() => {
+        if (!wrap.isConnected) { observer.disconnect(); resolve(null); }
+      });
+      observer.observe(log, { childList: true });
+      log.appendChild(wrap);
+      scroll();
+    });
+  }
+
   function reset() {
     state = {};
     history = [];
+    aiAnswers = 0;
+    sensitive = false;
+    shown.check = shown.product = shown.ervaring = false;
     log.innerHTML = '';
     go('welkom');
   }
@@ -354,5 +522,24 @@
   .msg .sources { margin-top: .5em; font-size: .82rem; color: var(--muted); }
   .msg.user .sources { color: #fff; }
   .msg .sources a { color: var(--green); }
+
+  .nudge {
+    align-self: stretch; background: var(--sage-soft, #eef4ef); border: 1px solid var(--line);
+    border-left: 4px solid var(--green); border-radius: 14px; padding: .8em 1em;
+    box-shadow: 0 6px 18px rgba(20, 35, 28, .10); animation: nudge-in .35s ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) { .nudge { animation: none; } }
+  @keyframes nudge-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .nudge-head { display: flex; align-items: center; gap: 8px; }
+  .nudge-head strong { flex: 1; color: var(--green); }
+  .nudge-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; background: var(--green); color: #fff; padding: .15em .55em; border-radius: 999px; }
+  .nudge-close { background: none; border: 0; font-size: 1.3rem; line-height: 1; cursor: pointer; color: var(--muted); padding: 0 2px; }
+  .nudge p, .nudge ul { margin: .45em 0 0; font-size: .93rem; }
+  .nudge ul { padding-left: 1.1em; }
+  .nudge .nudge-note { font-size: .8rem; color: var(--muted); }
+  .nudge-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: .7em; }
+  .nudge-btn { font: inherit; font-size: .85rem; cursor: pointer; text-decoration: none; padding: .45em .85em; border-radius: 999px; border: 1.5px solid var(--green); background: var(--surface); color: var(--green); }
+  .nudge-btn.primary { background: var(--green); color: #fff; }
+  .nudge-btn:hover { filter: brightness(.95); }
   .privacy { margin: 0; padding: 4px 16px 14px; font-size: .8rem; color: var(--muted); background: var(--surface); }
 </style>
