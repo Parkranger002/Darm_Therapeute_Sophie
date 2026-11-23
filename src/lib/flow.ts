@@ -239,7 +239,7 @@ export const nodes: Record<string, Node> = {
   },
   proef: {
     say: () => [
-      'Leuk dat je interesse hebt. Een proefverpakking kun je aanvragen via de Detox helpdesk: detoxhelpdesk@gmail.com.',
+      'Leuk dat je interesse hebt. Een gratis probeerverpakking van Darmmanagement PRO (50 gram, 10 porties) vraag je aan op powerdetox.nl: https://www.powerdetox.nl/shop/gratis-probeerverpakking-darmmanagement/',
     ],
     options: () => productTerug,
   },

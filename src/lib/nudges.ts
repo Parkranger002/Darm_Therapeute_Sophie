@@ -13,6 +13,7 @@
 
 export const HELPDESK = 'detoxhelpdesk@gmail.com';
 export const SHOP_URL = 'https://darmmanagement.nl/';
+export const PROEF_URL = 'https://www.powerdetox.nl/shop/gratis-probeerverpakking-darmmanagement/';
 
 /** Onderwerpen waarbij de chat geen product aanbiedt. */
 const SENSITIVE =
@@ -127,6 +128,15 @@ export const PRODUCT_CARD = {
   ],
   note: 'Een voedingssupplement vervangt geen gevarieerde voeding. Gebruik je medicijnen, ben je zwanger of geef je borstvoeding? Overleg dan eerst met je arts of apotheker.',
 };
+
+/** Gmail-venster om direct een bericht te schrijven (werkt ook zonder e-mailprogramma). */
+export function gmailCompose(subject: string, body = ''): string {
+  const q = new URLSearchParams({ view: 'cm', fs: '1', to: HELPDESK, su: subject, body });
+  return `https://mail.google.com/mail/?${q.toString()}`;
+}
+
+export const ERVARING_SUBJECT = 'Mijn ervaring met Darmmanagement';
+export const ERVARING_BODY = 'Mijn ervaring:\n\n\nMag mijn ervaring (met alleen mijn voornaam) op de website worden geplaatst? Ja / Nee\nVoornaam:\n';
 
 export function mailto(subject: string, body = ''): string {
   return `mailto:${HELPDESK}?subject=${encodeURIComponent(subject)}${body ? `&body=${encodeURIComponent(body)}` : ''}`;

@@ -28,7 +28,8 @@
   import { nodes, interpret, classify, type State, type Option } from '../lib/flow';
   import { checkAlarm, ALARM_REPLIES } from '../lib/safety';
   import {
-    CHECK, estimateFibre, fibreResult, PRODUCT_CARD, SHOP_URL, mailto,
+    CHECK, estimateFibre, fibreResult, PRODUCT_CARD, SHOP_URL, PROEF_URL, HELPDESK,
+    ERVARING_SUBJECT, ERVARING_BODY, mailto, gmailCompose,
     isSensitive, asksAboutProduct, alreadyUses,
   } from '../lib/nudges';
 
@@ -262,7 +263,7 @@
     return mode === 'ai' && !state.safety && !sensitive;
   }
 
-  type TipButton = { label: string; href?: string; external?: boolean; primary?: boolean; onClick?: () => void };
+  type TipButton = { label: string; href?: string; external?: boolean; primary?: boolean; keep?: boolean; onClick?: () => void };
 
   function tip(title: string, text: string | string[], buttons: TipButton[], note?: string) {
     const el = document.createElement('div');
@@ -314,7 +315,7 @@
         if (b.external) { btn.target = '_blank'; btn.rel = 'noopener'; }
       } else {
         btn.type = 'button';
-        btn.addEventListener('click', () => { el.remove(); b.onClick?.(); });
+        btn.addEventListener('click', () => { if (!b.keep) el.remove(); b.onClick?.(); });
       }
       row.appendChild(btn);
     }
@@ -329,7 +330,7 @@
     if (alreadyUses(lastUser) && !shown.ervaring) {
       shown.ervaring = true;
       return later(() => tip('Deel je ervaring', 'Gebruik je Darmmanagement al? We horen graag hoe het je bevalt. We plaatsen een ervaring alleen met jouw toestemming.', [
-        { label: 'Mail je ervaring', href: mailto('Mijn ervaring met Darmmanagement'), primary: true },
+        { label: 'Deel je ervaring', primary: true, onClick: () => shareExperience() },
         { label: 'Nee, dank je', onClick: () => {} },
       ]));
     }
@@ -354,9 +355,36 @@
     tip(PRODUCT_CARD.title, PRODUCT_CARD.lines, [
       { label: 'Bestel op darmmanagement.nl', href: SHOP_URL, external: true, primary: true },
       { label: 'Meer over het product', href: '/product' },
-      { label: 'Proefverpakking aanvragen', href: mailto('Aanvraag proefverpakking Darmmanagement', 'Naam:\nAdres:\n') },
-      { label: 'Deel je ervaring', href: mailto('Mijn ervaring met Darmmanagement') },
+      { label: 'Gratis probeerverpakking', href: PROEF_URL, external: true },
+      { label: 'Deel je ervaring', keep: true, onClick: () => shareExperience() },
     ], PRODUCT_CARD.note);
+  }
+
+
+  function shareExperience() {
+    shown.ervaring = true;
+    bubble('Deel je ervaring', 'user');
+    bubble(`Leuk dat je je ervaring wilt delen! Stuur een e-mail naar de Detox helpdesk: ${HELPDESK}. Vertel hoe je Darmmanagement gebruikt en hoe het je bevalt. We plaatsen een ervaring alleen als je daar toestemming voor geeft.`, 'bot');
+    const row = document.createElement('div');
+    row.className = 'nudge-actions share';
+    const make = (label: string, href?: string) => {
+      const a = document.createElement(href ? 'a' : 'button') as HTMLAnchorElement & HTMLButtonElement;
+      a.className = 'nudge-btn';
+      a.textContent = label;
+      if (href) { a.href = href; if (href.startsWith('http')) { a.target = '_blank'; a.rel = 'noopener'; } }
+      else a.type = 'button';
+      row.appendChild(a);
+      return a;
+    };
+    make('Mail met je e-mailprogramma', mailto(ERVARING_SUBJECT, ERVARING_BODY)).classList.add('primary');
+    make('Mail via Gmail', gmailCompose(ERVARING_SUBJECT, ERVARING_BODY));
+    const copy = make('Kopieer e-mailadres');
+    copy.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(HELPDESK); copy.textContent = 'Gekopieerd!'; }
+      catch { copy.textContent = HELPDESK; }
+    });
+    log.appendChild(row);
+    scroll();
   }
 
   async function runCheck() {
@@ -539,6 +567,7 @@
   .nudge .nudge-note { font-size: .8rem; color: var(--muted); }
   .nudge-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: .7em; }
   .nudge-btn { font: inherit; font-size: .85rem; cursor: pointer; text-decoration: none; padding: .45em .85em; border-radius: 999px; border: 1.5px solid var(--green); background: var(--surface); color: var(--green); }
+  .nudge-actions.share { margin: 0 0 6px; }
   .nudge-btn.primary { background: var(--green); color: #fff; }
   .nudge-btn:hover { filter: brightness(.95); }
   .privacy { margin: 0; padding: 4px 16px 14px; font-size: .8rem; color: var(--muted); background: var(--surface); }
