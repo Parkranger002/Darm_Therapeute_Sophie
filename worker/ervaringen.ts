@@ -130,6 +130,12 @@ button.danger{border-color:#b04a2f;color:#b04a2f}.top{display:flex;justify-conte
 export async function handleBeheer(request: Request, env: ErvaringEnv, url: URL): Promise<Response> {
   if (!env.ADMIN_PASSWORD) return page('<p>De beheerpagina is nog niet ingesteld (geen wachtwoord).</p>', 503);
   if (!authorized(request, env)) {
+    // Afremmen van wachtwoord-raden: hooguit 12 mislukte pogingen per minuut per IP-adres.
+    if (env.CHAT_LIMITER) {
+      const ip = request.headers.get('cf-connecting-ip') ?? 'onbekend';
+      const { success } = await env.CHAT_LIMITER.limit({ key: `beheer:${ip}` });
+      if (!success) return new Response('Te veel pogingen. Probeer het over een minuut opnieuw.', { status: 429 });
+    }
     return new Response('Inloggen vereist', {
       status: 401,
       headers: { 'www-authenticate': 'Basic realm="Darmmanagement beheer", charset="UTF-8"', 'cache-control': 'no-store' },
