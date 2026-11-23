@@ -29,9 +29,10 @@
   import { checkAlarm, ALARM_REPLIES } from '../lib/safety';
   import {
     CHECK, estimateFibre, fibreResult, PRODUCT_CARD, SHOP_URL, PROEF_URL, HELPDESK,
-    ERVARING_SUBJECT, ERVARING_BODY, mailto, gmailCompose,
+
     isSensitive, asksAboutProduct, alreadyUses,
   } from '../lib/nudges';
+  import { CHOICES, TEVREDENHEID, VERHAAL, PLAATSEN, MAX_NAAM, MAX_EMAIL, validate as validateErvaring } from '../lib/ervaring';
 
   type Msg = { role: 'user' | 'assistant'; content: string };
   type Source = { title: string; url: string };
@@ -363,27 +364,139 @@
 
   function shareExperience() {
     shown.ervaring = true;
+    if (log.querySelector('.ervaring-form')) return;
     bubble('Deel je ervaring', 'user');
-    bubble(`Leuk dat je je ervaring wilt delen! Stuur een e-mail naar de Detox helpdesk: ${HELPDESK}. Vertel hoe je Darmmanagement gebruikt en hoe het je bevalt. We plaatsen een ervaring alleen als je daar toestemming voor geeft.`, 'bot');
-    const row = document.createElement('div');
-    row.className = 'nudge-actions share';
-    const make = (label: string, href?: string) => {
-      const a = document.createElement(href ? 'a' : 'button') as HTMLAnchorElement & HTMLButtonElement;
-      a.className = 'nudge-btn';
-      a.textContent = label;
-      if (href) { a.href = href; if (href.startsWith('http')) { a.target = '_blank'; a.rel = 'noopener'; } }
-      else a.type = 'button';
-      row.appendChild(a);
-      return a;
+    bubble('Leuk dat je je ervaring wilt delen! Het invullen duurt ongeveer twee minuten. Alleen de vragen met een * zijn verplicht.', 'bot');
+
+    const form = document.createElement('form');
+    form.className = 'nudge ervaring-form';
+    form.noValidate = true;
+    const answers: Record<string, string | number> = {};
+
+    const group = (label: string, required = false) => {
+      const fs = document.createElement('fieldset');
+      const lg = document.createElement('legend');
+      lg.textContent = label + (required ? ' *' : '');
+      fs.appendChild(lg);
+      form.appendChild(fs);
+      return fs;
     };
-    make('Mail met je e-mailprogramma', mailto(ERVARING_SUBJECT, ERVARING_BODY)).classList.add('primary');
-    make('Mail via Gmail', gmailCompose(ERVARING_SUBJECT, ERVARING_BODY));
-    const copy = make('Kopieer e-mailadres');
-    copy.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(HELPDESK); copy.textContent = 'Gekopieerd!'; }
-      catch { copy.textContent = HELPDESK; }
+    const choiceRow = (fs: HTMLElement, id: string, options: (string | number)[], onPick?: (v: string | number) => void) => {
+      const row = document.createElement('div');
+      row.className = 'choice-row';
+      row.setAttribute('role', 'radiogroup');
+      for (const o of options) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'choice';
+        b.textContent = String(o);
+        b.setAttribute('role', 'radio');
+        b.setAttribute('aria-checked', 'false');
+        b.addEventListener('click', () => {
+          row.querySelectorAll('.choice').forEach((c) => c.setAttribute('aria-checked', 'false'));
+          b.setAttribute('aria-checked', 'true');
+          answers[id] = o;
+          onPick?.(o);
+        });
+        row.appendChild(b);
+      }
+      fs.appendChild(row);
+    };
+
+    for (const q of CHOICES) choiceRow(group(q.label, q.required), q.id, q.options);
+    choiceRow(group(TEVREDENHEID.label), TEVREDENHEID.id, [1, 2, 3, 4, 5]);
+
+    const vs = group(VERHAAL.label);
+    const hint = document.createElement('p');
+    hint.className = 'nudge-note';
+    hint.textContent = VERHAAL.hint;
+    const ta = document.createElement('textarea');
+    ta.maxLength = VERHAAL.max;
+    ta.rows = 4;
+    ta.setAttribute('aria-label', VERHAAL.label);
+    vs.append(hint, ta);
+
+    const nameWrap = document.createElement('label');
+    nameWrap.className = 'field';
+    nameWrap.textContent = 'Je voornaam *';
+    const name = document.createElement('input');
+    name.type = 'text';
+    name.maxLength = MAX_NAAM;
+    name.autocomplete = 'given-name';
+    nameWrap.appendChild(name);
+    nameWrap.hidden = true;
+    const ps = group(PLAATSEN.label, true);
+    choiceRow(ps, PLAATSEN.id, PLAATSEN.options, (v) => { nameWrap.hidden = v !== PLAATSEN.options[0]; });
+    ps.appendChild(nameWrap);
+
+    const es = group('Mogen we je mailen over je ervaring? (niet verplicht)');
+    const email = document.createElement('input');
+    email.type = 'email';
+    email.maxLength = MAX_EMAIL;
+    email.autocomplete = 'email';
+    email.placeholder = 'je@email.nl';
+    email.setAttribute('aria-label', 'E-mailadres (niet verplicht)');
+    es.appendChild(email);
+
+    // Verborgen veld tegen spambots.
+    const trap = document.createElement('input');
+    trap.name = 'website';
+    trap.tabIndex = -1;
+    trap.autocomplete = 'off';
+    trap.className = 'trap';
+    trap.setAttribute('aria-hidden', 'true');
+    form.appendChild(trap);
+
+    const privacy = document.createElement('p');
+    privacy.className = 'nudge-note';
+    privacy.textContent = 'Je antwoorden worden veilig bewaard en alleen door Darmmanagement gelezen. We plaatsen een ervaring alleen als je daar hierboven toestemming voor geeft. Wil je je ervaring later laten verwijderen? Mail dan naar ' + HELPDESK + '.';
+    const status = document.createElement('p');
+    status.className = 'form-status';
+    status.setAttribute('role', 'alert');
+    const actions = document.createElement('div');
+    actions.className = 'nudge-actions';
+    const send = document.createElement('button');
+    send.type = 'submit';
+    send.className = 'nudge-btn primary';
+    send.textContent = 'Versturen';
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'nudge-btn';
+    cancel.textContent = 'Annuleren';
+    cancel.addEventListener('click', () => { form.remove(); bubble('Geen probleem. Heb je nog een vraag? Typ hem hieronder.', 'bot'); });
+    actions.append(send, cancel);
+    form.append(privacy, status, actions);
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const data = {
+        ...answers,
+        verhaal: ta.value.trim() || undefined,
+        voornaam: nameWrap.hidden ? undefined : name.value.trim() || undefined,
+        email: email.value.trim() || undefined,
+        website: trap.value || undefined,
+      };
+      const err = validateErvaring(data as never);
+      if (err) { status.textContent = err; return; }
+      status.textContent = 'Bezig met versturen…';
+      send.disabled = true;
+      try {
+        const res = await fetch('/api/ervaring', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const out = (await res.json().catch(() => ({}))) as { ok?: boolean; message?: string };
+        if (!res.ok || !out.ok) throw new Error(out.message || (res.status === 429 ? 'Je hebt veel verstuurd. Probeer het over een minuut opnieuw.' : 'Versturen is niet gelukt.'));
+        form.remove();
+        bubble('Bedankt voor het delen van je ervaring! We lezen alles zelf. Als je toestemming hebt gegeven, kan je ervaring later op de website verschijnen.', 'bot');
+      } catch (e) {
+        send.disabled = false;
+        status.textContent = (e as Error).message + ` Lukt het niet? Mail je ervaring naar ${HELPDESK}.`;
+      }
     });
-    log.appendChild(row);
+
+    log.appendChild(form);
     scroll();
   }
 
@@ -567,7 +680,21 @@
   .nudge .nudge-note { font-size: .8rem; color: var(--muted); }
   .nudge-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: .7em; }
   .nudge-btn { font: inherit; font-size: .85rem; cursor: pointer; text-decoration: none; padding: .45em .85em; border-radius: 999px; border: 1.5px solid var(--green); background: var(--surface); color: var(--green); }
-  .nudge-actions.share { margin: 0 0 6px; }
+
+  .ervaring-form fieldset { border: 0; padding: 0; margin: .7em 0 0; }
+  .ervaring-form legend { font-weight: 600; font-size: .92rem; padding: 0; margin-bottom: .3em; }
+  .choice-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .choice { font: inherit; font-size: .85rem; cursor: pointer; padding: .35em .8em; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink, #1f2a24); }
+  .choice[aria-checked="true"] { background: var(--green); border-color: var(--green); color: #fff; }
+  .ervaring-form textarea, .ervaring-form input[type="text"], .ervaring-form input[type="email"] {
+    width: 100%; box-sizing: border-box; font: inherit; font-size: .92rem; padding: .5em .7em; margin-top: .3em;
+    border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface);
+  }
+  .ervaring-form .field { display: block; font-size: .9rem; margin-top: .6em; }
+  .ervaring-form .field[hidden] { display: none; }
+  .ervaring-form .trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .form-status { margin: .5em 0 0; font-size: .88rem; color: var(--warn-ink, #8a3b1f); min-height: 0; }
+  .form-status:empty { display: none; }
   .nudge-btn.primary { background: var(--green); color: #fff; }
   .nudge-btn:hover { filter: brightness(.95); }
   .privacy { margin: 0; padding: 4px 16px 14px; font-size: .8rem; color: var(--muted); background: var(--surface); }

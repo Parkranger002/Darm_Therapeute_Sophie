@@ -2,19 +2,23 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "darmmanagement-begeleider",
   "compatibility_date": "2026-11-01",
-  // De Worker beantwoordt /api/*; al het andere komt uit de statische Astro-site.
+  // De Worker beantwoordt /api/* en /beheer; al het andere komt uit de statische Astro-site.
   "main": "worker/index.ts",
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*", "/beheer", "/beheer/*"]
   },
   // Kennisbank-bestanden (.md) worden als tekst meegebundeld.
   "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
   // Misbruik beperken: max. 12 chatberichten per IP-adres per minuut.
   "ratelimits": [
     { "name": "CHAT_LIMITER", "namespace_id": "2501", "simple": { "limit": 12, "period": 60 } }
+  ],
+  // Ingevulde ervaringen van gebruikers (bekijken via /beheer).
+  "d1_databases": [
+    { "binding": "DB", "database_name": "darmmanagement-ervaringen", "database_id": "7e8452ec-82bb-4c0d-be94-72b4a3160c6b" }
   ],
   "vars": {
     "MODEL": "claude-sonnet-5-5"

@@ -2,20 +2,23 @@
  * Cloudflare Worker voor de Darmmanagement-begeleider.
  *
  * - /api/chat  → beantwoordt chatberichten met Claude (Anthropic API)
+ * - /api/ervaring → slaat een ingevulde ervaring op (D1-database)
+ * - /beheer    → beveiligde pagina om ervaringen te lezen (wachtwoord)
  * - al het andere → de statische Astro-site uit ./dist (ASSETS)
  *
- * Er wordt niets opgeslagen: geen gesprekken, geen logs met inhoud.
+ * Chatgesprekken worden niet opgeslagen. Alleen ingevulde ervaringen worden bewaard.
  */
 import instructies from '../src/knowledge/instructies.md';
 import product from '../src/knowledge/product.md';
 import aandoeningen from '../src/knowledge/aandoeningen.md';
 import { checkAlarm, filterOutput, ALARM_REPLIES } from '../src/lib/safety';
+import { handleErvaring, handleBeheer, type ErvaringEnv } from './ervaringen';
 
 interface RateLimiter {
   limit(opts: { key: string }): Promise<{ success: boolean }>;
 }
 
-interface Env {
+interface Env extends ErvaringEnv {
   ASSETS: { fetch(req: Request): Promise<Response> };
   ANTHROPIC_API_KEY?: string;
   MODEL?: string;
@@ -65,6 +68,8 @@ export default {
       if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
       return handleChat(request, env, url);
     }
+    if (url.pathname === '/api/ervaring') return handleErvaring(request, env, url);
+    if (url.pathname === '/beheer' || url.pathname.startsWith('/beheer/')) return handleBeheer(request, env, url);
     if (url.pathname.startsWith('/api/')) return json({ error: 'not_found' }, 404);
     return env.ASSETS.fetch(request);
   },
