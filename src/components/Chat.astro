@@ -340,7 +340,7 @@
     }
     if (aiAnswers >= 2 && !shown.check) {
       shown.check = true;
-      later(() => tip('Eet jij genoeg vezels?', 'De meeste Nederlanders eten minder vezels dan het Voedingscentrum aanraadt. Doe de vezelcheck: vijf korte vragen, binnen een minuut klaar.', [
+      later(() => tip('Eet jij genoeg vezels?', 'De meeste Nederlanders eten minder vezels dan het Voedingscentrum aanraadt. Doe de vezelcheck: zes korte vragen, binnen een minuut klaar.', [
         { label: 'Doe de vezelcheck', primary: true, onClick: () => runCheck() },
         { label: 'Nee, dank je', onClick: () => {} },
       ]));
@@ -504,14 +504,14 @@
     shown.check = true;
     const answers: Record<string, number> = {};
     bubble('Doe de vezelcheck', 'user');
-    bubble('Leuk! Vijf korte vragen. Je antwoorden blijven op je eigen apparaat en worden niet opgeslagen.', 'bot');
+    bubble('Leuk! Zes korte vragen. Je antwoorden blijven op je eigen apparaat en worden niet opgeslagen.', 'bot');
     for (const q of CHECK) {
       if (q.skipIf?.(answers)) continue;
       const value = await askCheck(q.text, q.options);
       if (value === null) return; // bezoeker typte iets anders: check stopt
       answers[q.id] = value;
     }
-    const result = fibreResult(estimateFibre(answers));
+    const result = fibreResult(estimateFibre(answers), answers.doel);
     for (const line of result.lines) bubble(line, 'bot');
     if (!result.offer || !tipsAllowed()) return;
     const yes = await askCheck('Wil je ook weten hoe je met Darmmanagement makkelijk vezels kunt aanvullen?', [

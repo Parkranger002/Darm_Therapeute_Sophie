@@ -1,0 +1,245 @@
+---
+import Base from '../layouts/Base.astro';
+import { SHOP_URL, PROEF_URL } from '../lib/nudges';
+
+// Adviezen en tips: Voedingscentrum, encyclopedie "Vezels" (geraadpleegd november 2026).
+// Let op: geen gezondheidsclaims over het product toevoegen zonder toetsing (Keuringsraad/NVWA).
+const VC = 'https://www.voedingscentrum.nl/encyclopedie/vezels.aspx';
+
+const tips = [
+  { titel: 'Kies volkoren', tekst: 'Neem volkorenbrood, volkorenpasta en zilvervliesrijst in plaats van de witte varianten.' },
+  { titel: '250 gram groente', tekst: 'Eet elke dag minstens 250 gram groente. Ook bij de lunch of als snack telt het mee.' },
+  { titel: '200 gram fruit', tekst: 'Eet elke dag twee stuks fruit, het liefst heel en niet als sap.' },
+  { titel: 'Peulvruchten', tekst: 'Eet regelmatig bonen, linzen of kikkererwten, bijvoorbeeld in soep, salade of curry.' },
+  { titel: 'Een handje noten', tekst: 'Eet elke dag een handje ongezouten noten, of strooi zaden over je ontbijt.' },
+  { titel: 'Rustig opbouwen', tekst: 'Eet je nu weinig vezels? Bouw het langzaam op en drink genoeg, zodat je darmen kunnen wennen.' },
+];
+---
+<Base title="Vezelcheck: eet jij genoeg vezels? – Darmmanagement" description="Doe de gratis vezelcheck: zes korte vragen en je ziet ongeveer hoeveel vezels je per dag eet. Met tips van het Voedingscentrum om meer vezels te eten.">
+  <section class="v-hero">
+    <div class="wrap">
+      <p class="kicker">Vezelcheck</p>
+      <h1>Eet jij genoeg vezels?</h1>
+      <p class="lead">
+        Veel Nederlanders krijgen te weinig vezels binnen. Volwassen vrouwen hebben minstens 24 gram vezels per dag
+        nodig, mannen minstens 30 gram. Beantwoord zes korte vragen en zie ongeveer hoeveel jij eet.
+      </p>
+      <p class="src">Bron: <a href={VC} rel="noopener">Voedingscentrum, Vezels</a></p>
+    </div>
+  </section>
+
+  <section class="wrap check-wrap">
+    <form id="vezelcheck" class="check" novalidate>
+      <div id="questions"></div>
+      <p id="check-error" class="check-error" role="alert"></p>
+      <div class="check-actions">
+        <button type="submit" class="btn">Bekijk mijn uitslag</button>
+        <button type="reset" class="chip">Opnieuw</button>
+      </div>
+      <p class="privacy-note">Je antwoorden blijven op je eigen apparaat. We versturen en bewaren niets.</p>
+    </form>
+
+    <div id="result" class="result" hidden aria-live="polite">
+      <h2>Jouw uitslag</h2>
+      <div class="meter" aria-hidden="true">
+        <div class="meter-bar"><span id="meter-fill"></span><i id="meter-target"></i></div>
+        <div class="meter-labels"><span>0 g</span><span id="meter-target-label"></span><span>45 g</span></div>
+      </div>
+      <div id="result-text"></div>
+      <p class="note-small">Dit is een grove schatting op basis van gemiddelde vezelwaarden. Hoeveel jij precies nodig hebt, hangt ook af van hoe actief je bent.</p>
+      <a id="to-product" class="btn" href="#product" hidden>Makkelijk vezels aanvullen</a>
+    </div>
+  </section>
+
+  <section class="tips-section">
+    <div class="wrap">
+      <h2>Zo eet je meer vezels</h2>
+      <p class="sub">Tips van het <a href={VC} rel="noopener">Voedingscentrum</a>. Begin met gewone voeding; dat is altijd de basis.</p>
+      <div class="tips">
+        {tips.map((t, i) => (
+          <div class="tip-card">
+            <span class="num">{i + 1}</span>
+            <h3>{t.titel}</h3>
+            <p>{t.tekst}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="product" class="wrap product">
+    <figure>
+      <img src="/images/darmmanagement-potten.webp" width="633" height="680" loading="lazy" alt="Twee potten Darmmanagement, van 250 en 400 gram" />
+    </figure>
+    <div>
+      <p class="kicker">Darmmanagement</p>
+      <h2>Een makkelijke manier om vezels aan te vullen</h2>
+      <p>
+        Lukt het niet altijd om genoeg vezels te eten? Darmmanagement is een vezelrijk poeder dat je door water, sap of
+        een smoothie roert. Het bestaat voor 70% uit psylliumvezel, aangevuld met negen kruiden. Darmmanagement PRO
+        bevat daarnaast acht stammen levende bacteriën.
+      </p>
+      <ul class="facts">
+        <li>Vezelrijk: 3,6 g vezels per portie van 5 g (PRO)</li>
+        <li>Potten van 250 g en 400 g</li>
+        <li>Sachets per 7 of 21 stuks</li>
+      </ul>
+      <p class="note-small">
+        Een voedingssupplement vervangt geen gevarieerde voeding. Gebruik je medicijnen, ben je zwanger of geef je
+        borstvoeding? Overleg dan eerst met je arts of apotheker.
+      </p>
+      <div class="cta">
+        <a class="btn" href={SHOP_URL} rel="noopener">Bekijk prijzen en bestel</a>
+        <a class="chip" href={PROEF_URL} rel="noopener">Gratis probeerverpakking</a>
+        <a class="more" href="/product">Wat zit erin?</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { CHECK, estimateFibre, fibreResult } from '../lib/nudges';
+
+  const form = document.getElementById('vezelcheck') as HTMLFormElement;
+  const box = document.getElementById('questions')!;
+  const error = document.getElementById('check-error')!;
+  const result = document.getElementById('result')!;
+  const text = document.getElementById('result-text')!;
+  const toProduct = document.getElementById('to-product')!;
+
+  // Vragen opbouwen als groepen met keuzerondjes.
+  CHECK.forEach((q, i) => {
+    const fs = document.createElement('fieldset');
+    fs.className = 'q';
+    fs.dataset.id = q.id;
+    const lg = document.createElement('legend');
+    lg.textContent = `${i + 1}. ${q.text}`;
+    fs.appendChild(lg);
+    const row = document.createElement('div');
+    row.className = 'opts';
+    q.options.forEach((o, j) => {
+      const id = `${q.id}-${j}`;
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = q.id;
+      input.id = id;
+      input.value = String(o.value);
+      const label = document.createElement('label');
+      label.htmlFor = id;
+      label.textContent = o.label;
+      row.append(input, label);
+    });
+    fs.appendChild(row);
+    box.appendChild(fs);
+  });
+
+  const answers = () => {
+    const a: Record<string, number> = {};
+    for (const [k, v] of new FormData(form)) a[k] = Number(v);
+    return a;
+  };
+
+  // De vraag over volkoren verbergen als iemand geen brood eet.
+  form.addEventListener('change', () => {
+    const a = answers();
+    for (const q of CHECK) {
+      const fs = box.querySelector<HTMLElement>(`[data-id="${q.id}"]`)!;
+      fs.hidden = !!q.skipIf?.(a);
+    }
+  });
+
+  form.addEventListener('reset', () => {
+    setTimeout(() => {
+      result.hidden = true;
+      error.textContent = '';
+      box.querySelectorAll<HTMLElement>('fieldset').forEach((f) => (f.hidden = false));
+    });
+  });
+
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const a = answers();
+    const missing = CHECK.find((q) => !q.skipIf?.(a) && a[q.id] === undefined);
+    if (missing) {
+      error.textContent = `Beantwoord nog de vraag: ${missing.text}`;
+      box.querySelector<HTMLElement>(`[data-id="${missing.id}"] input`)?.focus();
+      return;
+    }
+    error.textContent = '';
+    const grams = estimateFibre(a);
+    const target = a.doel ?? 30;
+    const r = fibreResult(grams, target);
+
+    const max = 45;
+    (document.getElementById('meter-fill') as HTMLElement).style.width = `${Math.min(grams, max) / max * 100}%`;
+    (document.getElementById('meter-target') as HTMLElement).style.left = `${target / max * 100}%`;
+    document.getElementById('meter-target-label')!.textContent = `advies: ${target} g`;
+    result.classList.toggle('ok', !r.offer);
+
+    text.replaceChildren();
+    const big = document.createElement('p');
+    big.className = 'big';
+    big.textContent = `± ${grams} gram vezels per dag`;
+    text.appendChild(big);
+    // De tips staan al op de pagina; toon hier alleen de uitleg.
+    for (const line of r.lines.filter((l) => !l.startsWith('Tips'))) {
+      const p = document.createElement('p');
+      p.textContent = line;
+      text.appendChild(p);
+    }
+    toProduct.hidden = !r.offer;
+    result.hidden = false;
+    result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  });
+</script>
+
+<style is:global>
+  .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
+  .v-hero { padding: 56px 0 24px; }
+  .v-hero h1 { font-size: clamp(2rem, 4.4vw, 3rem); color: var(--green); }
+  .lead { font-size: 1.15rem; max-width: 720px; margin: 0 0 8px; }
+  .src { font-size: .88rem; color: var(--muted); margin: 0; }
+  .check-wrap { display: grid; gap: 24px; padding-bottom: 40px; }
+  @media (min-width: 900px) { .check-wrap { grid-template-columns: 1.1fr .9fr; align-items: start; } }
+  .check, .result { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .q { border: 0; padding: 0; margin: 0 0 18px; }
+  .q[hidden] { display: none; }
+  .q legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opts input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .opts label { cursor: pointer; padding: .45em .95em; border-radius: 999px; border: 1.5px solid var(--line); background: var(--bg); font-size: .95rem; }
+  .opts input:checked + label { background: var(--green); border-color: var(--green); color: #fff; }
+  .opts input:focus-visible + label { outline: 3px solid #8fb39d; outline-offset: 2px; }
+  .check-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .check-error { color: var(--warn-ink); margin: 0 0 10px; }
+  .check-error:empty { display: none; }
+  .privacy-note, .note-small { font-size: .88rem; color: var(--muted); margin: 12px 0 0; }
+  .result { border-left: 5px solid #c9a227; }
+  .result.ok { border-left-color: #2f7d55; }
+  .result h2 { font-size: 1.5rem; }
+  .big { font-family: var(--serif); font-size: 1.9rem; font-weight: 700; color: var(--green); margin: .2em 0 .4em; }
+  .meter { margin: 6px 0 10px; }
+  .meter-bar { position: relative; height: 14px; border-radius: 999px; background: var(--sage-soft); border: 1px solid var(--line); }
+  .meter-bar span { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--green); transition: width .6s ease; }
+  .meter-bar i { position: absolute; top: -5px; bottom: -5px; width: 3px; background: #c9a227; border-radius: 2px; }
+  .meter-labels { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); margin-top: 4px; }
+  #to-product { margin-top: 14px; }
+  .tips-section { background: var(--sage-soft); padding: 44px 0; }
+  .tips-section h2 { font-size: 1.7rem; }
+  .sub { color: var(--muted); }
+  .tips { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 18px; }
+  .tip-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+  .tip-card h3 { font-size: 1.15rem; margin: .35em 0 .25em; }
+  .tip-card p { margin: 0; color: var(--muted); }
+  .num { font-family: var(--serif); font-size: 1.8rem; font-weight: 700; color: var(--green); line-height: 1; }
+  .product { display: grid; gap: 28px; align-items: center; padding: 52px 22px 64px; }
+  @media (min-width: 900px) { .product { grid-template-columns: .8fr 1.2fr; } }
+  .product figure { margin: 0; text-align: center; }
+  .product img { max-width: 100%; height: auto; max-height: 420px; width: auto; }
+  .product h2 { font-size: 1.8rem; color: var(--green); }
+  .facts { list-style: none; padding: 0; margin: 14px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .facts li { background: var(--sage-soft); border: 1px solid var(--line); border-radius: 999px; padding: .3em .85em; font-size: .9rem; }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 16px; }
+  .cta .chip { text-decoration: none; }
+  .more { font-weight: 600; }
+</style>

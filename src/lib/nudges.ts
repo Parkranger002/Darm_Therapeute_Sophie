@@ -43,6 +43,15 @@ export type CheckQuestion = { id: string; text: string; options: CheckOption[]; 
  */
 export const CHECK: CheckQuestion[] = [
   {
+    id: 'doel',
+    text: 'Ben je een vrouw of een man? Het advies verschilt een beetje.',
+    options: [
+      { label: 'Vrouw', value: 24 },
+      { label: 'Man', value: 30 },
+      { label: 'Zeg ik liever niet', value: 30 },
+    ],
+  },
+  {
     id: 'brood',
     text: 'Hoeveel sneetjes brood eet je op een gewone dag?',
     options: [
@@ -100,19 +109,23 @@ export function estimateFibre(a: Record<string, number>): number {
   return Math.round(total);
 }
 
-export function fibreResult(grams: number): { lines: string[]; offer: boolean } {
-  const head = `Volgens deze grove schatting eet je ongeveer ${grams} gram vezels per dag. Het Voedingscentrum adviseert volwassenen 30 tot 40 gram per dag.`;
-  if (grams >= 30) {
+/** Minimale hoeveelheid per dag volgens het Voedingscentrum: vrouwen 24 g, mannen 30 g. */
+export function fibreResult(grams: number, target = 30): { lines: string[]; offer: boolean } {
+  const advies = target === 24
+    ? 'Volgens het Voedingscentrum hebben volwassen vrouwen minstens 24 gram vezels per dag nodig.'
+    : 'Volgens het Voedingscentrum hebben volwassen mannen minstens 30 gram vezels per dag nodig, vrouwen minstens 24 gram.';
+  const head = `Volgens deze grove schatting eet je ongeveer ${grams} gram vezels per dag. ${advies} Hoeveel jij precies nodig hebt, hangt ook af van hoe actief je bent.`;
+  if (grams >= target) {
     return {
-      lines: [head, 'Goed bezig: je zit waarschijnlijk al op of rond het advies. Blijf vooral gevarieerd eten en genoeg drinken.'],
+      lines: [head, 'Goed bezig: je zit waarschijnlijk al op of boven het advies. Blijf vooral gevarieerd eten en genoeg drinken.'],
       offer: false,
     };
   }
   return {
     lines: [
       head,
-      'Je eet dus waarschijnlijk minder vezels dan aangeraden. Daarin ben je niet de enige: veel Nederlanders halen het advies niet.',
-      'Tips om meer vezels te eten:\n• kies volkorenbrood in plaats van wit\n• eet elke dag 250 gram groente en 2 stuks fruit\n• eet vaker peulvruchten, noten of havermout\n• bouw het rustig op en drink 1,5 tot 2 liter per dag',
+      `Je eet dus waarschijnlijk ongeveer ${target - grams} gram minder vezels dan aangeraden. Daarin ben je niet de enige: veel Nederlanders krijgen te weinig vezels binnen.`,
+      'Tips om meer vezels te eten:\n• kies volkoren in plaats van wit\n• eet elke dag minstens 250 gram groente en 200 gram fruit\n• eet regelmatig peulvruchten en elke dag een handje ongezouten noten\n• bouw het rustig op en drink genoeg',
     ],
     offer: true,
   };
