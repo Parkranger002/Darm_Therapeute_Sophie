@@ -27,6 +27,8 @@ const {
           <a href="/over-ons">Over ons</a>
           <a href="/vezelcheck">Vezelcheck</a>
           <a href="/product">Product</a>
+          <a href="/ervaringen">Ervaringen</a>
+          <a href="/veelgestelde-vragen">Vragen</a>
         </nav>
       </div>
     </header>
@@ -35,6 +37,8 @@ const {
     </main>
     <footer class="site-footer">
       <div class="wrap foot">
+        <a href="/veelgestelde-vragen">Veelgestelde vragen</a>
+        <a href="/ervaringen">Ervaringen</a>
         <a href="/privacy">Privacy en gegevens</a>
         <a href="/medische-informatie">Medische informatie</a>
         <a href="/contact">Contact</a>
@@ -52,7 +56,7 @@ const {
   .logo { white-space: nowrap; }
   @media (max-width: 480px) {
     .bar { flex-wrap: wrap; height: auto; padding-top: 12px; padding-bottom: 10px; row-gap: 6px; }
-    nav { gap: 18px; }
+    nav { gap: 6px 16px; flex-wrap: wrap; }
   }
   nav a:hover { color: var(--green); text-decoration: underline; }
   .site-footer { border-top: 1px solid var(--line); padding: 28px 0 40px; }

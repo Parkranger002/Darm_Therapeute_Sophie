@@ -1,0 +1,163 @@
+---
+import Base from '../layouts/Base.astro';
+import { SHOP_URL, PROEF_URL } from '../lib/nudges';
+
+// Antwoorden uitsluitend op basis van het etiket en de productinformatie (src/knowledge/product.md).
+// Geen gezondheidsclaims toevoegen zonder toetsing (Keuringsraad/NVWA). Inhoud laten controleren door Sophie.
+type QA = { q: string; a: string[] };
+type Group = { titel: string; items: QA[] };
+
+const groups: Group[] = [
+  {
+    titel: 'Over het product',
+    items: [
+      { q: 'Wat is Darmmanagement?', a: [
+        'Darmmanagement is een voedingssupplement in poedervorm voor dagelijks gebruik. Het bestaat voor 70% uit psylliumvezel (de gemalen zaadhuid van Plantago ovata), aangevuld met negen kruiden.',
+        'Een portie van 5 gram bevat 3,6 gram voedingsvezel. Daarmee is het een makkelijke manier om vezels aan te vullen, naast gevarieerd eten.',
+      ] },
+      { q: 'Wat is het verschil tussen Darmmanagement en Darmmanagement PRO?', a: [
+        'Beide bevatten dezelfde psylliumvezel en negen kruiden. Darmmanagement PRO bevat daarnaast acht stammen levende bacteriën: samen 2,5 miljard per portie van 5 gram.',
+      ] },
+      { q: 'Welke kruiden zitten erin?', a: [
+        'Brandnetelblad, paardenbloemwortel, alfalfablad, rozenbottel, chlorella, gerstgras, fenegriekzaad, gemberwortel en hysopkruid. Op de productpagina staan de percentages.',
+      ] },
+      { q: 'Zit er rhamnus of zoethout in?', a: [
+        'Nee. Rhamnus (vuilboombast) en zoethout zitten niet in de huidige samenstelling.',
+      ] },
+      { q: 'Hoeveel calorieën zitten erin?', a: [
+        'Een portie van 5 gram bevat 12 kcal. Drie porties (15 gram, het maximum per dag) bevatten 35 kcal.',
+      ] },
+    ],
+  },
+  {
+    titel: 'Gebruik',
+    items: [
+      { q: 'Hoe gebruik ik het?', a: [
+        'Begin met één afgestreken maatschepje van 5 gram per dag. Roer het door een groot glas water, sap of smoothie (minstens 200 ml) en drink het meteen op. Drink daarna nog een glas water.',
+        'Je kunt rustig opbouwen tot maximaal drie porties (15 gram) per dag, verdeeld over de dag. Neem het niet vlak voor het slapengaan.',
+      ] },
+      { q: 'Waarom moet ik er zoveel bij drinken?', a: [
+        'Psylliumvezel neemt veel vocht op. Neem het daarom altijd met ruim vocht in. Heb je moeite met slikken? Overleg dan eerst met een arts.',
+      ] },
+      { q: 'Ik heb in het begin meer last van winden. Is dat normaal?', a: [
+        'In de eerste dagen kun je wat meer winden of een opgeblazen gevoel hebben. Dat is een bekende reactie op meer vezels. Houdt het aan, ga dan terug naar een lagere hoeveelheid. Heb je aanhoudende klachten, bespreek ze dan met je huisarts.',
+      ] },
+      { q: 'Hoe lang doe ik met een verpakking?', a: [
+        'Een pot van 250 gram bevat 50 porties: genoeg voor 50 dagen bij één portie per dag. Een pot van 400 gram bevat 80 porties: genoeg voor 80 dagen bij één portie, of 40 dagen bij twee porties per dag.',
+        'Er zijn ook sachets van 5 gram (één portie), per 7 of per 21 stuks. Die zijn handig om mee te nemen naar je werk of op vakantie.',
+      ] },
+      { q: 'Hoe bewaar ik het?', a: [
+        'Koel (maximaal 25 °C), droog en donker. Sluit de pot direct na gebruik en bewaar hem buiten bereik van jonge kinderen.',
+      ] },
+    ],
+  },
+  {
+    titel: 'Veiligheid',
+    items: [
+      { q: 'Mag ik het gebruiken als ik medicijnen gebruik?', a: [
+        'Overleg eerst met je arts of apotheker, zeker als je bloedverdunners gebruikt. Alfalfa en chlorella bevatten van nature vitamine K. Houd altijd minstens één uur afstand tussen je medicijnen en Darmmanagement.',
+      ] },
+      { q: 'Mag ik het gebruiken als ik zwanger ben of borstvoeding geef?', a: [
+        'Overleg dan eerst met je arts, verloskundige of apotheker.',
+      ] },
+      { q: 'Ik ben allergisch voor pinda. Kan ik het gebruiken?', a: [
+        'Darmmanagement bevat fenegriekzaad. Dat kan een kruisreactie geven bij een allergie voor pinda of peulvruchten. Overleg eerst met je arts of apotheker.',
+      ] },
+      { q: 'Mogen kinderen het gebruiken?', a: [
+        'Overleg bij kinderen altijd eerst met de huisarts. Heeft je kind buikklachten? Bel dan de huisarts.',
+      ] },
+      { q: 'Helpt Darmmanagement tegen darmklachten?', a: [
+        'Darmmanagement is een voedingssupplement, geen medicijn. We beloven niet dat het klachten of een aandoening verhelpt. Heb je klachten, bespreek ze dan met je huisarts. Bij bloed bij de ontlasting, hevige buikpijn, koorts of onbedoeld afvallen bel je altijd de huisarts.',
+      ] },
+    ],
+  },
+  {
+    titel: 'Bestellen',
+    items: [
+      { q: 'Waar kan ik het bestellen?', a: [
+        'Op darmmanagement.nl vind je de actuele prijzen en kun je bestellen.',
+      ] },
+      { q: 'Kan ik het eerst proberen?', a: [
+        'Ja. Op powerdetox.nl vraag je een gratis probeerverpakking van Darmmanagement PRO aan: 50 gram, goed voor 10 porties. Er gelden voorwaarden.',
+      ] },
+      { q: 'Ik heb een andere vraag. Waar kan ik terecht?', a: [
+        'Stel je vraag aan onze AI-begeleider, of mail naar de Detox helpdesk: detoxhelpdesk@gmail.com.',
+      ] },
+    ],
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: groups.flatMap((g) => g.items).map((i) => ({
+    '@type': 'Question',
+    name: i.q,
+    acceptedAnswer: { '@type': 'Answer', text: i.a.join(' ') },
+  })),
+};
+---
+<Base title="Veelgestelde vragen – Darmmanagement" description="Antwoorden op veelgestelde vragen over Darmmanagement en Darmmanagement PRO: wat erin zit, hoe je het gebruikt, veiligheid en bestellen.">
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <section class="f-hero">
+    <div class="wrap">
+      <p class="kicker">Veelgestelde vragen</p>
+      <h1>Vragen over Darmmanagement</h1>
+      <p class="lead">Hier vind je de antwoorden op de vragen die we het vaakst krijgen. Staat je vraag er niet bij? Stel hem aan onze AI-begeleider.</p>
+      <nav class="jump" aria-label="Onderwerpen">
+        {groups.map((g) => <a href={`#${g.titel.toLowerCase().replace(/\s+/g, '-')}`}>{g.titel}</a>)}
+      </nav>
+    </div>
+  </section>
+
+  <div class="wrap faq">
+    {groups.map((g) => (
+      <section id={g.titel.toLowerCase().replace(/\s+/g, '-')}>
+        <h2>{g.titel}</h2>
+        {g.items.map((i) => (
+          <details>
+            <summary>{i.q}</summary>
+            <div class="answer">{i.a.map((p) => <p>{p}</p>)}</div>
+          </details>
+        ))}
+      </section>
+    ))}
+
+    <aside class="more-box">
+      <h2>Nog een vraag?</h2>
+      <p>Onze AI-begeleider beantwoordt je vraag direct. Je kunt ook mailen naar <a href="mailto:detoxhelpdesk@gmail.com">detoxhelpdesk@gmail.com</a>.</p>
+      <div class="cta">
+        <a class="btn" href="/?chat">Stel je vraag</a>
+        <a class="chip" href={PROEF_URL} rel="noopener">Gratis probeerverpakking</a>
+        <a class="more" href={SHOP_URL} rel="noopener">Bestel op darmmanagement.nl</a>
+      </div>
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
+  .f-hero { padding: 56px 0 18px; }
+  .f-hero h1 { font-size: clamp(2rem, 4.4vw, 3rem); color: var(--green); }
+  .lead { font-size: 1.15rem; max-width: 720px; }
+  .jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .jump a { text-decoration: none; padding: .35em .9em; border-radius: 999px; border: 1.5px solid var(--green); font-size: .92rem; }
+  .jump a:hover { background: var(--sage-soft); }
+  .faq { padding-bottom: 72px; }
+  .faq > * { max-width: 820px; }
+  .faq section { padding-top: 28px; scroll-margin-top: 16px; }
+  .faq h2 { font-size: 1.6rem; }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); margin: 10px 0; }
+  summary { cursor: pointer; padding: 16px 48px 16px 20px; font-weight: 600; list-style: none; position: relative; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; color: var(--green); }
+  details[open] summary::after { content: '–'; }
+  summary:focus-visible { outline: 3px solid #8fb39d; outline-offset: 2px; border-radius: var(--radius); }
+  .answer { padding: 0 20px 6px; }
+  .answer p { margin: 0 0 12px; color: var(--ink); }
+  .more-box { margin-top: 36px; background: var(--sage-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+  .more-box h2 { margin-top: 0; }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+  .cta .chip { text-decoration: none; }
+  .more { font-weight: 600; }
+</style>

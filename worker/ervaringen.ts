@@ -77,6 +77,32 @@ export async function handleErvaring(request: Request, env: ErvaringEnv, url: UR
   return json({ ok: true });
 }
 
+/**
+ * Openbare lijst: alleen goedgekeurde ervaringen met toestemming om te plaatsen.
+ * Nooit het e-mailadres; de voornaam alleen als de schrijver daarvoor koos.
+ */
+export async function handleErvaringenLijst(request: Request, env: ErvaringEnv): Promise<Response> {
+  if (request.method !== 'GET') return json({ error: 'method_not_allowed' }, 405);
+  if (!env.DB) return json({ ervaringen: [] });
+  const { results } = await env.DB.prepare(
+    `SELECT product, vorm, duur, aanbevolen, tevredenheid, verhaal, plaatsen, voornaam, created_at
+     FROM ervaringen WHERE status = 'goedgekeurd' AND plaatsen LIKE 'Ja%' ORDER BY id DESC LIMIT 200`,
+  ).all<Row>();
+  const ervaringen = results.map((r) => ({
+    naam: r.plaatsen === 'Ja, met mijn voornaam' && r.voornaam ? r.voornaam : null,
+    product: r.product,
+    vorm: r.vorm ?? null,
+    duur: r.duur,
+    aanbevolen: r.aanbevolen === 'Ja',
+    tevredenheid: r.tevredenheid ?? null,
+    verhaal: r.verhaal ?? null,
+    maand: String(r.created_at).slice(0, 7),
+  }));
+  return new Response(JSON.stringify({ ervaringen }), {
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' },
+  });
+}
+
 // ── Beheerpagina ─────────────────────────────────────────────
 
 function timingSafeEqual(a: string, b: string): boolean {

@@ -53,4 +53,5 @@ Bewaren: koel (maximaal 25 °C), droog en donker; deksel direct sluiten.
 - Prijzen, verpakkingen en bestellen: darmmanagement.nl
 - Vragen: Detox helpdesk, detoxhelpdesk@gmail.com
 - Een gratis probeerverpakking van Darmmanagement PRO (50 gram, 10 porties; er gelden voorwaarden) vraag je aan op powerdetox.nl: https://www.powerdetox.nl/shop/gratis-probeerverpakking-darmmanagement/
-- Wil iemand een ervaring met Darmmanagement delen? Dat kan per e-mail naar de Detox helpdesk: detoxhelpdesk@gmail.com. Een ervaring wordt alleen met toestemming geplaatst.
+- Wil iemand een ervaring met Darmmanagement delen? Dat kan met het vragenlijstje "Deel je ervaring" in deze chat, of via /ervaringen. Een ervaring wordt alleen met toestemming geplaatst. Ervaringen van anderen staan op /ervaringen.
+- Veelgestelde vragen over het product staan op /veelgestelde-vragen.

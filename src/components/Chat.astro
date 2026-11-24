@@ -77,7 +77,7 @@
 
   // Maakt https-links en links naar eigen pagina's klikbaar, zonder HTML te gebruiken.
   function appendLinked(el: HTMLElement, text: string) {
-    const re = /(https:\/\/[^\s<>"')]+[^\s<>"').,;:!?])|((?<![\w/])\/(?:vezelcheck|product|over-ons|contact|privacy|medische-informatie)\b)/g;
+    const re = /(https:\/\/[^\s<>"')]+[^\s<>"').,;:!?])|((?<![\w/])\/(?:vezelcheck|product|over-ons|contact|privacy|medische-informatie|veelgestelde-vragen|ervaringen)\b)/g;
     let last = 0;
     for (const m of text.matchAll(re)) {
       const url = m[0];
@@ -611,6 +611,24 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !chat.hidden) close();
   });
+
+  // Openen vanaf een andere pagina: /?chat opent de chat, /?ervaring opent meteen de vragenlijst.
+  {
+    const params = new URLSearchParams(location.search);
+    if (params.has('ervaring') || params.has('chat')) {
+      window.history.replaceState(null, '', location.pathname);
+      if (params.has('ervaring')) {
+        started = true;
+        lastFocus = document.activeElement as HTMLElement;
+        chat.hidden = false;
+        backdrop.hidden = false;
+        document.body.classList.add('chat-open');
+        go('welkom').then(() => shareExperience());
+      } else {
+        open();
+      }
+    }
+  }
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();

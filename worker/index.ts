@@ -3,6 +3,7 @@
  *
  * - /api/chat  → beantwoordt chatberichten met Claude (Anthropic API)
  * - /api/ervaring → slaat een ingevulde ervaring op (D1-database)
+ * - /api/ervaringen → goedgekeurde ervaringen voor de pagina /ervaringen
  * - /beheer    → beveiligde pagina om ervaringen te lezen (wachtwoord)
  * - al het andere → de statische Astro-site uit ./dist (ASSETS)
  *
@@ -12,7 +13,7 @@ import instructies from '../src/knowledge/instructies.md';
 import product from '../src/knowledge/product.md';
 import aandoeningen from '../src/knowledge/aandoeningen.md';
 import { checkAlarm, filterOutput, ALARM_REPLIES } from '../src/lib/safety';
-import { handleErvaring, handleBeheer, type ErvaringEnv } from './ervaringen';
+import { handleErvaring, handleErvaringenLijst, handleBeheer, type ErvaringEnv } from './ervaringen';
 
 interface RateLimiter {
   limit(opts: { key: string }): Promise<{ success: boolean }>;
@@ -69,6 +70,7 @@ export default {
       return handleChat(request, env, url);
     }
     if (url.pathname === '/api/ervaring') return handleErvaring(request, env, url);
+    if (url.pathname === '/api/ervaringen') return handleErvaringenLijst(request, env);
     if (url.pathname === '/beheer' || url.pathname.startsWith('/beheer/')) return handleBeheer(request, env, url);
     if (url.pathname.startsWith('/api/')) return json({ error: 'not_found' }, 404);
     return env.ASSETS.fetch(request);

@@ -1,0 +1,141 @@
+---
+import Base from '../layouts/Base.astro';
+import { SHOP_URL, PROEF_URL } from '../lib/nudges';
+// De ervaringen worden in de browser opgehaald via /api/ervaringen: alleen goedgekeurde
+// ervaringen met toestemming om te plaatsen. Ze worden goedgekeurd op /beheer.
+---
+<Base title="Ervaringen van gebruikers – Darmmanagement" description="Lees hoe anderen Darmmanagement en Darmmanagement PRO gebruiken, en deel je eigen ervaring.">
+  <section class="e-hero">
+    <div class="wrap">
+      <p class="kicker">Ervaringen</p>
+      <h1>Ervaringen van gebruikers</h1>
+      <p class="lead">Hoe gebruiken anderen Darmmanagement en hoe past het in hun dag? Hier lees je hun ervaringen, in hun eigen woorden.</p>
+      <div class="cta">
+        <a class="btn" href="/?ervaring">Deel je ervaring</a>
+        <a class="more" href="/veelgestelde-vragen">Veelgestelde vragen</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap list-wrap">
+    <div id="summary" class="summary" hidden></div>
+    <div id="list" class="list" aria-live="polite">
+      <p class="muted">Ervaringen laden…</p>
+    </div>
+    <p class="disclaimer">
+      Ervaringen zijn persoonlijk en kunnen per persoon verschillen. We plaatsen alleen ervaringen waarvoor de schrijver
+      toestemming heeft gegeven. We lezen elke ervaring voordat die online komt, maar we controleren niet of de schrijver
+      het product bij ons heeft gekocht. Darmmanagement is een voedingssupplement en geen medicijn; heb je klachten,
+      bespreek ze dan met je huisarts.
+    </p>
+  </section>
+
+  <section class="wrap bottom">
+    <div class="bottom-box">
+      <h2>Zelf proberen?</h2>
+      <p>Vraag een gratis probeerverpakking van Darmmanagement PRO aan (50 gram, 10 porties) of bestel direct.</p>
+      <div class="cta">
+        <a class="btn" href={PROEF_URL} rel="noopener">Gratis probeerverpakking</a>
+        <a class="chip" href={SHOP_URL} rel="noopener">Bestel op darmmanagement.nl</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  type E = {
+    naam: string | null; product: string; vorm: string | null; duur: string;
+    aanbevolen: boolean; tevredenheid: number | null; verhaal: string | null; maand: string;
+  };
+  const list = document.getElementById('list')!;
+  const summary = document.getElementById('summary')!;
+  const MAANDEN = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
+
+  const el = (tag: string, cls?: string, text?: string) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text) e.textContent = text;
+    return e;
+  };
+
+  const stars = (n: number) => {
+    const s = el('span', 'stars');
+    s.textContent = '★'.repeat(n) + '☆'.repeat(5 - n);
+    s.setAttribute('aria-label', `${n} van de 5 sterren`);
+    return s;
+  };
+
+  function render(items: E[]) {
+    list.replaceChildren();
+    if (!items.length) {
+      const empty = el('div', 'empty');
+      empty.append(el('p', '', 'Er staan nog geen ervaringen op deze pagina. Gebruik je Darmmanagement al? Deel dan als eerste je ervaring!'));
+      const a = el('a', 'btn', 'Deel je ervaring') as HTMLAnchorElement;
+      a.href = '/?ervaring';
+      empty.append(a);
+      list.append(empty);
+      return;
+    }
+    const rated = items.filter((i) => i.tevredenheid);
+    const parts = [`${items.length} ${items.length === 1 ? 'ervaring' : 'ervaringen'}`];
+    if (rated.length) {
+      const avg = rated.reduce((s, i) => s + (i.tevredenheid ?? 0), 0) / rated.length;
+      parts.push(`gemiddeld ${avg.toFixed(1).replace('.', ',')} van de 5 sterren`);
+    }
+    const rec = items.filter((i) => i.aanbevolen).length;
+    if (rec) parts.push(`${rec} ${rec === 1 ? 'persoon raadde' : 'mensen raadden'} het aan iemand aan`);
+    summary.textContent = parts.join(' · ');
+    summary.hidden = false;
+
+    for (const i of items) {
+      const card = el('article', 'card');
+      const head = el('div', 'head');
+      head.append(el('strong', '', i.naam ?? 'Anoniem'));
+      if (i.tevredenheid) head.append(stars(i.tevredenheid));
+      card.append(head);
+      if (i.verhaal) card.append(el('p', 'story', i.verhaal));
+      const tags = el('ul', 'tags');
+      for (const t of [i.product, i.vorm ? `in ${i.vorm.toLowerCase()}` : '', `gebruikt: ${i.duur.toLowerCase()}`, i.aanbevolen ? 'raadde het aan' : '']) {
+        if (t) tags.append(el('li', '', t));
+      }
+      card.append(tags);
+      const [y, m] = i.maand.split('-').map(Number);
+      if (y && m) card.append(el('p', 'date', `${MAANDEN[m - 1]} ${y}`));
+      list.append(card);
+    }
+  }
+
+  fetch('/api/ervaringen')
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((d: { ervaringen: E[] }) => render(d.ervaringen ?? []))
+    .catch(() => {
+      list.replaceChildren(el('p', 'muted', 'De ervaringen konden niet worden geladen. Probeer het later opnieuw.'));
+    });
+</script>
+
+<style is:global>
+  .e-hero { padding: 56px 0 18px; }
+  .e-hero .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
+  .e-hero h1 { font-size: clamp(2rem, 4.4vw, 3rem); color: var(--green); }
+  .e-hero .lead { font-size: 1.15rem; max-width: 720px; }
+  .e-hero .cta, .bottom .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+  .e-hero .more { font-weight: 600; }
+  .list-wrap { padding-bottom: 24px; }
+  .list-wrap .summary { font-weight: 600; color: var(--green); margin: 10px 0 6px; }
+  .list-wrap .list { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); margin-top: 12px; }
+  .list-wrap .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .list-wrap .head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .list-wrap .stars { color: #c9a227; letter-spacing: .08em; white-space: nowrap; }
+  .list-wrap .story { margin: 0; white-space: pre-line; }
+  .list-wrap .tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .list-wrap .tags li { background: var(--sage-soft); border-radius: 999px; padding: .2em .7em; font-size: .82rem; }
+  .list-wrap .date { margin: 0; font-size: .82rem; color: var(--muted); }
+  .list-wrap .empty { grid-column: 1 / -1; background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); padding: 24px; }
+  .list-wrap .empty p { margin: 0 0 14px; }
+  .list-wrap .muted { color: var(--muted); }
+  .list-wrap .disclaimer { font-size: .85rem; color: var(--muted); max-width: 780px; margin-top: 22px; }
+  .bottom { padding: 16px 22px 72px; }
+  .bottom-box { background: var(--sage-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+  .bottom-box h2 { margin-top: 0; }
+  .bottom .chip { text-decoration: none; }
+</style>
