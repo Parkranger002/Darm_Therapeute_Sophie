@@ -4,11 +4,32 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  /** Afbeelding voor WhatsApp, Facebook en LinkedIn (1200 × 630). */
+  image?: string;
+  /** Pagina niet laten opnemen in Google (bijv. de 404-pagina). */
+  noindex?: boolean;
+  /** Extra gestructureerde gegevens (schema.org) voor deze pagina. */
+  schema?: Record<string, unknown>;
 }
 const {
-  title = 'Darmmanagement – praat met onze AI-begeleider',
-  description = 'Vragen over je stoelgang, buikklachten of Darmmanagement? Onze AI-begeleider denkt rustig met je mee.',
+  title = 'Vragen over stoelgang en vezels? AI-begeleider | Darmmanagement',
+  description = 'Vragen over je stoelgang, buikklachten, vezels of Darmmanagement? Onze AI-begeleider denkt rustig met je mee en verwijst door waar nodig.',
+  image = '/images/og-darmmanagement.jpg',
+  noindex = false,
+  schema,
 } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const imageUrl = new URL(image, Astro.site).href;
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Darmmanagement',
+  url: new URL('/', Astro.site).href,
+  email: 'detoxhelpdesk@gmail.com',
+  parentOrganization: { '@type': 'Organization', name: 'Powerdetox', url: 'https://www.powerdetox.nl/' },
+  sameAs: ['https://darmmanagement.nl/', 'https://www.powerdetox.nl/'],
+};
 ---
 <!doctype html>
 <html lang="nl">
@@ -17,7 +38,22 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <meta name="theme-color" content="#1f4d3a" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:site_name" content="Darmmanagement" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
   </head>
   <body>
     <header class="site-header">

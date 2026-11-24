@@ -15,6 +15,17 @@ const kruiden = [
   { naam: 'Hysopkruid', latijn: 'Hyssopus officinalis', pct: '1,5%', let: '' },
 ];
 
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'Darmmanagement PRO',
+  description: 'Voedingssupplement in poedervorm met 70% psylliumvezel, negen kruiden en acht stammen levende bacteriën. Vezelrijk: 3,6 g vezels per portie van 5 g.',
+  brand: { '@type': 'Brand', name: 'Darmmanagement' },
+  image: new URL('/images/darmmanagement-potten.webp', Astro.site).href,
+  url: new URL('/product/', Astro.site).href,
+  category: 'Voedingssupplement',
+};
+
 const stammen = [
   ['Bifidobacterium lactis', 'W51'],
   ['Bifidobacterium lactis', 'W52'],
@@ -26,7 +37,7 @@ const stammen = [
   ['Lactococcus lactis', 'W58'],
 ];
 ---
-<Base title="Darmmanagement PRO – Darmmanagement" description="Darmmanagement PRO: 70% psylliumvezel, negen kruiden en acht stammen levende bacteriën in één dagelijks poeder. Lees wat erin zit en hoe je het gebruikt.">
+<Base title="Darmmanagement PRO: vezelsupplement met psyllium en kruiden" description="Vezelrijk supplement met 70% psylliumvezel, negen kruiden en levende bacteriën. Bekijk wat erin zit, hoe je het gebruikt en waar je het bestelt." image="/images/og-product.jpg" schema={productSchema}>
   <section class="p-hero">
     <div class="wrap p-hero-grid">
       <div>
