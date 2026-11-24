@@ -75,10 +75,28 @@
     log.scrollTo({ top: log.scrollHeight, behavior: reduceMotion ? 'auto' : 'smooth' });
   }
 
+  // Maakt https-links en links naar eigen pagina's klikbaar, zonder HTML te gebruiken.
+  function appendLinked(el: HTMLElement, text: string) {
+    const re = /(https:\/\/[^\s<>"')]+[^\s<>"').,;:!?])|((?<![\w/])\/(?:vezelcheck|product|over-ons|contact|privacy|medische-informatie)\b)/g;
+    let last = 0;
+    for (const m of text.matchAll(re)) {
+      const url = m[0];
+      if (m.index! > last) el.append(text.slice(last, m.index));
+      const a = document.createElement('a');
+      a.href = url;
+      a.textContent = url;
+      if (url.startsWith('https://')) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+      el.append(a);
+      last = m.index! + url.length;
+    }
+    if (last < text.length) el.append(text.slice(last));
+  }
+
   function bubble(text: string, who: 'bot' | 'user', safety = false, sources: Source[] = []) {
     const el = document.createElement('div');
     el.className = `msg ${who}${safety ? ' safety' : ''}`;
-    el.textContent = text; // altijd als tekst, nooit als HTML
+    if (who === 'bot') appendLinked(el, text);
+    else el.textContent = text; // altijd als tekst, nooit als HTML
     if (sources.length) {
       const list = document.createElement('div');
       list.className = 'sources';
@@ -664,6 +682,7 @@
   .msg.user .sources { color: #fff; }
   .msg .sources a { color: var(--green); }
 
+  .msg a { color: inherit; text-decoration: underline; overflow-wrap: anywhere; }
   .nudge {
     align-self: stretch; background: var(--sage-soft, #eef4ef); border: 1px solid var(--line);
     border-left: 4px solid var(--green); border-radius: 14px; padding: .8em 1em;
