@@ -3,6 +3,7 @@ import type { APIRoute } from 'astro';
 // Alle openbare pagina's, met hoe belangrijk ze zijn voor de vindbaarheid.
 const PAGES: [path: string, priority: string][] = [
   ['/', '1.0'],
+  ['/start-een-gesprek/', '0.9'],
   ['/product/', '0.9'],
   ['/vezelcheck/', '0.9'],
   ['/veelgestelde-vragen/', '0.8'],

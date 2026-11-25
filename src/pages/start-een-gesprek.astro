@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import Chat from '../components/Chat.astro';
+// Landingspagina van de banner. Het chatvenster opent vanzelf; de uitleg staat eronder voor wie het sluit.
+---
+<Base
+  title="Start een gesprek met onze AI-begeleider | Darmmanagement"
+  description="Vragen over je stoelgang, buikklachten, vezels of Darmmanagement? Start direct een gesprek met onze AI-begeleider. Gratis, zonder account."
+  hideBanner
+>
+  <section class="sg-hero">
+    <div class="wrap sg-grid">
+      <div>
+        <p class="kicker">Start een gesprek</p>
+        <h1>Stel je vraag aan onze AI-begeleider</h1>
+        <p class="lead">
+          Heb je vragen over je stoelgang, buikklachten, vezels of Darmmanagement? De begeleider denkt direct met je
+          mee, dag en nacht. Gratis en zonder account.
+        </p>
+        <button class="btn" type="button" data-open-chat>Start het gesprek <span aria-hidden="true">→</span></button>
+        <p class="notice">
+          Je chat met een AI, niet met Sophie, een therapeut of een arts. Deel geen informatie die je niet wilt delen.
+        </p>
+        <div class="chips">
+          <span class="chips-label">Of kies een onderwerp:</span>
+          <button class="chip" type="button" data-open-chat="stoelgang">Mijn stoelgang</button>
+          <button class="chip" type="button" data-open-chat="buik">Buikklachten</button>
+          <button class="chip" type="button" data-open-chat="product">Darmmanagement</button>
+        </div>
+      </div>
+      <figure class="sg-photo">
+        <img src="/images/sophie-kast.webp" width="500" height="750" alt="Sophie in een witte jas met het Darmmanagement-logo, voor een kast met potten Darmmanagement" fetchpriority="high" />
+        <figcaption>Sophie, therapeute bij Powerdetox, controleert de informatie waar de begeleider uit put.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap sg-info">
+    <div class="card">
+      <h2>Wat de begeleider doet</h2>
+      <ul>
+        <li>Geeft uitleg over stoelgang, vezels en de spijsvertering</li>
+        <li>Vertelt wat er in Darmmanagement zit en hoe je het gebruikt</li>
+        <li>Zegt wanneer het verstandig is om naar de huisarts te gaan</li>
+        <li>Verwijst naar betrouwbare bronnen, zoals Thuisarts.nl</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Wat de begeleider niet doet</h2>
+      <ul>
+        <li>Een diagnose stellen of een behandeling voorschrijven</li>
+        <li>De plaats innemen van je huisarts of apotheker</li>
+        <li>Je gesprek bewaren: we slaan gesprekken niet op (<a href="/privacy">privacy</a>)</li>
+      </ul>
+      <p class="small">Heb je bloed bij je ontlasting, hevige buikpijn, koorts of moet je steeds overgeven? Bel dan je huisarts of de huisartsenpost. Bij levensgevaar: 112.</p>
+    </div>
+  </section>
+
+  <Chat />
+</Base>
+
+<script>
+  // Opent het chatvenster meteen, als de bezoeker via de banner of een link komt.
+  window.addEventListener('load', () => {
+    setTimeout(() => document.querySelector<HTMLElement>('.sg-hero [data-open-chat]')?.click(), 250);
+  });
+</script>
+
+<style>
+  .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
+  .sg-hero { padding: 48px 0 24px; }
+  .sg-grid { display: grid; gap: 28px; align-items: center; }
+  @media (min-width: 820px) { .sg-grid { grid-template-columns: 1.4fr .6fr; } }
+  .sg-hero h1 { font-size: clamp(2rem, 4.4vw, 3rem); color: var(--green); }
+  .lead { font-size: 1.15rem; max-width: 640px; }
+  .notice { font-size: .9rem; color: var(--muted); margin: 14px 0 0; max-width: 560px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 18px; }
+  .chips-label { font-size: .9rem; color: var(--muted); margin-right: 4px; }
+  .sg-photo { margin: 0; justify-self: center; max-width: 300px; width: 100%; }
+  .sg-photo img { display: block; width: 100%; height: 380px; object-fit: cover; object-position: 50% 15%; border-radius: var(--radius); box-shadow: 0 10px 28px rgba(20, 35, 28, .12); }
+  .sg-photo figcaption { font-size: .85rem; color: var(--muted); margin-top: 8px; text-align: center; }
+  @media (max-width: 819px) { .sg-photo { max-width: 260px; } .sg-photo img { height: 300px; } }
+  .sg-info { display: grid; gap: 16px; padding-bottom: 64px; }
+  @media (min-width: 820px) { .sg-info { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; }
+  .card h2 { font-size: 1.35rem; margin-top: 0; }
+  .card ul { margin: 0; padding-left: 1.1em; }
+  .card li { margin: .3em 0; }
+  .small { font-size: .88rem; color: var(--muted); margin: 14px 0 0; }
+</style>

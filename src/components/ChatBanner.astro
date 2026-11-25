@@ -1,0 +1,55 @@
+---
+// Banner "Start een gesprek" onderaan elke pagina (behalve /start-een-gesprek zelf).
+// De hele banner is één link; over de groene knop ligt een zichtbare focus- en hover-markering.
+// Op mobiel een eigen uitsnede, zodat Sophie en de tekst groot genoeg blijven.
+---
+<section class="chat-banner" aria-label="Start een gesprek met onze AI-begeleider">
+  <a class="cb-link" href="/start-een-gesprek">
+    <picture>
+      <source media="(max-width: 640px)" srcset="/images/banner-gesprek-mobiel.webp" width="1020" height="675" />
+      <img
+        src="/images/banner-gesprek.webp"
+        width="1200"
+        height="675"
+        loading="lazy"
+        alt="Darmmanagement: klik hier om direct te chatten met onze online therapeut (een AI-begeleider). Start een gesprek."
+      />
+    </picture>
+    <span class="cb-hotspot" aria-hidden="true"></span>
+  </a>
+  <p class="cb-note">Je chat met een AI-begeleider, niet met Sophie of een andere echte therapeut.</p>
+</section>
+
+<style>
+  .chat-banner {
+    width: 100%;
+    background: linear-gradient(90deg, #eef4e6 0%, #f6f8f1 45%, #dfeccf 100%);
+    border-top: 1px solid var(--line);
+    padding: 0 0 10px;
+  }
+  .cb-link {
+    position: relative;
+    display: block;
+    max-width: 1200px;
+    margin: 0 auto;
+    line-height: 0;
+    border-radius: 0;
+  }
+  .cb-link img { width: 100%; height: auto; display: block; }
+  /* De groene knop in de afbeelding: 12,9%–54,6% breed, 68,6%–80,7% hoog. */
+  .cb-hotspot {
+    position: absolute;
+    left: 12.9%; width: 41.7%;
+    top: 68.6%; height: 12.1%;
+    border-radius: 999px;
+    transition: box-shadow .2s ease, background-color .2s ease;
+  }
+  .cb-link:hover .cb-hotspot { background-color: rgba(255, 255, 255, .12); box-shadow: 0 6px 18px rgba(31, 77, 58, .35); }
+  .cb-link:focus-visible { outline: none; }
+  .cb-link:focus-visible .cb-hotspot { box-shadow: 0 0 0 4px #1f4d3a, 0 0 0 7px #fff; }
+  .cb-note { max-width: 1200px; margin: 6px auto 0; padding: 0 16px; font-size: .85rem; color: var(--muted); text-align: center; line-height: 1.4; }
+  @media (max-width: 640px) {
+    /* Mobiele uitsnede: 40–1060 px van het origineel. */
+    .cb-hotspot { left: 11.3%; width: 49%; }
+  }
+</style>

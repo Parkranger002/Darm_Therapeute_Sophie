@@ -1,4 +1,5 @@
 ---
+import ChatBanner from '../components/ChatBanner.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
   noindex?: boolean;
   /** Extra gestructureerde gegevens (schema.org) voor deze pagina. */
   schema?: Record<string, unknown>;
+  /** De banner "Start een gesprek" onderaan weglaten. */
+  hideBanner?: boolean;
 }
 const {
   title = 'Vragen over stoelgang en vezels? AI-begeleider | Darmmanagement',
@@ -17,6 +20,7 @@ const {
   image = '/images/og-darmmanagement.jpg',
   noindex = false,
   schema,
+  hideBanner = false,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -71,8 +75,10 @@ const organization = {
     <main>
       <slot />
     </main>
+    {!hideBanner && <ChatBanner />}
     <footer class="site-footer">
       <div class="wrap foot">
+        <a href="/start-een-gesprek">Start een gesprek</a>
         <a href="/veelgestelde-vragen">Veelgestelde vragen</a>
         <a href="/ervaringen">Ervaringen</a>
         <a href="/privacy">Privacy en gegevens</a>

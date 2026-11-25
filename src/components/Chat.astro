@@ -77,7 +77,7 @@
 
   // Maakt https-links en links naar eigen pagina's klikbaar, zonder HTML te gebruiken.
   function appendLinked(el: HTMLElement, text: string) {
-    const re = /(https:\/\/[^\s<>"')]+[^\s<>"').,;:!?])|((?<![\w/])\/(?:vezelcheck|product|over-ons|contact|privacy|medische-informatie|veelgestelde-vragen|ervaringen)\b)/g;
+    const re = /(https:\/\/[^\s<>"')]+[^\s<>"').,;:!?])|((?<![\w/])\/(?:vezelcheck|product|over-ons|contact|privacy|medische-informatie|veelgestelde-vragen|ervaringen|start-een-gesprek)\b)/g;
     let last = 0;
     for (const m of text.matchAll(re)) {
       const url = m[0];
