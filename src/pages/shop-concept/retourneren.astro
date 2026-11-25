@@ -1,0 +1,58 @@
+---
+import Base from '../../layouts/Base.astro';
+import ShopVoet from '../../components/ShopVoet.astro';
+import '../../styles/shop.css';
+// CONCEPT retourregeling en informatie over de bedenktijd, met het wettelijke modelformulier.
+const B = '/shop-concept';
+---
+<Base title="Retourneren en bedenktijd – Darmmanagement" description="Zo maak je je koop ongedaan en stuur je een product terug." noindex hideBanner>
+  <div class="concept-bar">Concept: nog juridisch laten controleren.</div>
+  <article class="wrap legal">
+    <h1>Retourneren en bedenktijd</h1>
+    <p class="lead">Heb je spijt van je aankoop? Je hebt 14 dagen bedenktijd. Dat is je wettelijke recht.</p>
+
+    <h2>De bedenktijd</h2>
+    <p>Je kunt je koop binnen 14 dagen zonder opgaaf van reden ongedaan maken. De 14 dagen beginnen op de dag na ontvangst van je bestelling. Komt je bestelling in meerdere pakketten, dan telt de dag na ontvangst van het laatste pakket.</p>
+
+    <h2>Zo maak je je koop ongedaan</h2>
+    <p>Kies zelf de manier die jou het beste uitkomt:</p>
+    <ol>
+      <li><strong>Online, met de knop:</strong> <a class="herroep-knop inline" href={`${B}/koop-ongedaan-maken/`}>Koop ongedaan maken</a> Vul je bestelnummer en e-mailadres in, kies wat je terugstuurt en bevestig. Je krijgt direct een bevestiging met datum en tijd.</li>
+      <li><strong>Per e-mail:</strong> stuur een duidelijke melding naar <a href="mailto:detoxhelpdesk@gmail.com">detoxhelpdesk@gmail.com</a>, met je naam en bestelnummer.</li>
+      <li><strong>Met het modelformulier</strong> hieronder, per e-mail of per post.</li>
+    </ol>
+
+    <h2>Terugsturen</h2>
+    <ul>
+      <li>Stuur de producten binnen 14 dagen na je melding terug naar:<br><strong>Darmmanagement (Powerdetox), Veestraat 2a, 6049 HA Herten</strong></li>
+      <li>De kosten voor het terugsturen zijn voor jou. Bewaar het verzendbewijs.</li>
+      <li>Darmmanagement wordt verzegeld geleverd <mark class="invul">[controleren]</mark>. Producten waarvan je de verzegeling hebt verbroken, kun je om redenen van gezondheidsbescherming en hygiëne niet terugsturen. Ongeopende producten wel.</li>
+    </ul>
+
+    <h2>Terugbetalen</h2>
+    <ul>
+      <li>We betalen binnen 14 dagen na je melding terug, via dezelfde betaalmethode als waarmee je hebt betaald.</li>
+      <li>Herroep je de hele bestelling, dan krijg je ook de standaard verzendkosten terug. Stuur je een deel terug, dan betalen we alleen die producten terug.</li>
+      <li>We mogen wachten met terugbetalen tot we de producten terug hebben, of tot je aantoont dat je ze hebt teruggestuurd.</li>
+    </ul>
+
+    <h2>Beschadigd of verkeerd geleverd?</h2>
+    <p>Dat is geen bedenktijd, maar een fout van onze kant. Mail ons met je bestelnummer en eventueel een foto. We zorgen voor vervanging of terugbetaling, en de kosten zijn voor ons.</p>
+
+    <h2 id="modelformulier">Modelformulier voor herroeping</h2>
+    <p class="meta">Vul dit formulier alleen in als je de overeenkomst wilt herroepen. Kopieer de tekst in een e-mail, of print hem.</p>
+    <div class="formulier">
+      <p>Aan: Darmmanagement (<mark class="invul">[juridische naam]</mark>), Veestraat 2a, 6049 HA Herten, detoxhelpdesk@gmail.com</p>
+      <p>Ik/Wij* deel/delen* u hierbij mede, dat ik/wij* onze overeenkomst betreffende de verkoop van de volgende producten herroep/herroepen*:</p>
+      <p class="lijn">Producten: ……………………………………………</p>
+      <p class="lijn">Bestelnummer: ……………………</p>
+      <p class="lijn">Besteld op* / Ontvangen op*: ……………………</p>
+      <p class="lijn">Naam/Namen consument(en): ……………………</p>
+      <p class="lijn">Adres consument(en): ……………………………………</p>
+      <p class="lijn">Handtekening van consument(en) (alleen wanneer dit formulier op papier wordt ingediend): ……………</p>
+      <p class="lijn">Datum: ……………………</p>
+      <p class="meta">* Doorhalen wat niet van toepassing is.</p>
+    </div>
+  </article>
+  <ShopVoet />
+</Base>

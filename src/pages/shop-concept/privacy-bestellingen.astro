@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import ShopVoet from '../../components/ShopVoet.astro';
+import '../../styles/shop.css';
+// CONCEPT: aanvulling op de privacyverklaring voor de eigen webshop.
+// Gaat de webshop live, dan vervangt deze tekst het blok "Bestellingen" op /privacy.
+const B = '/shop-concept';
+---
+<Base title="Privacy bij bestellingen – Darmmanagement" description="Welke gegevens we gebruiken als je bij ons bestelt." noindex hideBanner>
+  <div class="concept-bar">Concept: aanvulling op de privacyverklaring. Na livegang komt deze tekst in de privacyverklaring.</div>
+  <article class="wrap legal">
+    <h1>Privacy bij bestellingen</h1>
+    <p class="lead">Als je in onze webshop bestelt, gebruiken we je gegevens om je bestelling te verwerken, te bezorgen en onze administratie bij te houden. Hieronder lees je precies welke gegevens, waarom, met wie we ze delen en hoelang we ze bewaren.</p>
+
+    <h2>Welke gegevens?</h2>
+    <ul>
+      <li><strong>Je contact- en adresgegevens:</strong> naam, e-mailadres, bezorgadres en, als je dat invult, je telefoonnummer en een opmerking.</li>
+      <li><strong>Je bestelling:</strong> welke producten, aantallen, bedragen, bestelnummer en datum.</li>
+      <li><strong>Betaalgegevens:</strong> alleen de status van je betaling en een kenmerk van Mollie. Je rekeningnummer of kaartgegevens vul je in bij Mollie; die krijgen wij niet te zien, behalve wat Mollie ons toont om een betaling te controleren of terug te betalen.</li>
+      <li><strong>Verzending:</strong> het nummer van je zending en de trackingcode.</li>
+      <li><strong>Als je je koop ongedaan maakt:</strong> welke producten je terugstuurt, en datum en tijd van je melding.</li>
+    </ul>
+
+    <h2>Waarom?</h2>
+    <p>We hebben deze gegevens nodig om de koopovereenkomst met jou uit te voeren: je bestelling verwerken, bezorgen, je vragen beantwoorden en, als dat nodig is, je koop ongedaan maken of terugbetalen. Daarnaast zijn we wettelijk verplicht onze administratie te bewaren.</p>
+
+    <h2>Met wie delen we ze?</h2>
+    <ul>
+      <li><strong>Mollie</strong> verwerkt je betaling. Mollie ontvangt het bedrag en de omschrijving van je bestelling, en de betaalgegevens die je bij Mollie invult.</li>
+      <li><strong>MyParcel en PostNL</strong> krijgen je naam, bezorgadres, en je e-mailadres en telefoonnummer voor de bezorging en de trackinginformatie.</li>
+      <li><strong>Cloudflare</strong> is onze hostingpartij. Je bestelling staat in een beveiligde database bij Cloudflare.</li>
+    </ul>
+    <p>We verkopen je gegevens niet en gebruiken ze niet voor reclame, tenzij je daar zelf toestemming voor geeft.</p>
+
+    <h2>Hoelang bewaren we ze?</h2>
+    <p>We moeten onze administratie, waaronder bestellingen en betalingen, 7 jaar bewaren (fiscale bewaarplicht). Daarna verwijderen we je gegevens. Gegevens die niet in de administratie hoeven, zoals een opmerking bij je bestelling, verwijderen we eerder op verzoek.</p>
+
+    <h2>Je winkelmand</h2>
+    <p>Je winkelmand wordt in je eigen browser bewaard (welke producten en hoeveel), zodat je hem niet kwijtraakt als je even weggaat. Dat is geen trackingcookie en wordt niet naar ons gestuurd voordat je bestelt.</p>
+
+    <h2>Je rechten</h2>
+    <p>Je kunt je gegevens inzien, laten verbeteren of laten verwijderen, voor zover we ze niet wettelijk moeten bewaren. Lees meer over je rechten en hoe je een klacht indient in onze <a href="/privacy">privacyverklaring</a>, of mail naar <a href="mailto:detoxhelpdesk@gmail.com">detoxhelpdesk@gmail.com</a>.</p>
+  </article>
+  <ShopVoet />
+</Base>

@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ShopVoet from '../../components/ShopVoet.astro';
 import '../../styles/shop.css';
 // CONCEPT: bedankpagina. Haalt de status op met het geheime token uit de link.
 ---
@@ -10,6 +11,7 @@ import '../../styles/shop.css';
       <p class="leeg">Je bestelling wordt opgehaald…</p>
     </div>
   </section>
+  <ShopVoet />
 </Base>
 
 <script>
@@ -33,7 +35,8 @@ import '../../styles/shop.css';
         <p>Je betaling is gelukt. Bestelnummer <strong>${esc(b.nr)}</strong>. We sturen je bestelling met PostNL naar je toe.</p>
         ${b.track_url ? `<p>Volg je pakket: <a href="${esc(b.track_url)}" target="_blank" rel="noopener">${esc(b.barcode ?? 'trackinglink')}</a></p>` : '<p>Zodra je pakket onderweg is, krijg je de trackingcode per e-mail.</p>'}
         ${overzicht}
-        <p class="klein">In het pakket zit een boekje met uitleg over het gebruik. Vragen? <a href="/start-een-gesprek">Chat met de begeleider</a>.</p>`;
+        <p class="klein">In het pakket zit een boekje met uitleg over het gebruik. Vragen? <a href="/start-een-gesprek">Chat met de begeleider</a>.</p>
+        <p class="klein">Spijt? Je hebt 14 dagen bedenktijd na ontvangst: <a href="/shop-concept/koop-ongedaan-maken/">koop ongedaan maken</a>.</p>`;
     } else if (b.status === 'open' && pogingen++ < 10) {
       vak.innerHTML = '<h1>We wachten op de bevestiging van je betaling…</h1><p>Dit duurt meestal een paar seconden.</p>';
       setTimeout(haal, 2500);
@@ -50,5 +53,4 @@ import '../../styles/shop.css';
   .bedankt { max-width: 640px; }
   .bedankt h1 { color: var(--green); margin: 0 0 10px; }
   .bedankt .mand { margin: 18px 0; }
-  .vink { width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: #fff; font-size: 1.8rem; display: grid; place-items: center; margin: 0 0 10px; }
 </style>

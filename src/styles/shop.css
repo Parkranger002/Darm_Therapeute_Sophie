@@ -41,3 +41,39 @@
   .mobiel-bar[hidden] { display: none; }
   .mb-knop { font-weight: 700; white-space: nowrap; }
   @media (min-width: 980px) { .mobiel-bar { display: none !important; } }
+
+  /* Verplichte shoplinks en herroepingsknop */
+  .shop-voet { border-top: 1px solid var(--line); background: var(--surface); padding: 18px 0; }
+  .shop-voet .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+  .shop-voet nav { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  .shop-voet nav a { color: var(--ink); font-size: .92rem; }
+  .herroep-knop { display: inline-flex; align-items: center; min-height: 44px; padding: .45em 1.1em; border-radius: 999px; border: 2px solid #8a3420; color: #8a3420; font-weight: 700; text-decoration: none; background: #fff; }
+  .herroep-knop:hover { background: #fbeee9; }
+  .herroep-knop.inline { min-height: 0; padding: .1em .8em; margin: 0 .3em; }
+
+  /* Herroepen */
+  .smal { max-width: 680px; }
+  .afreken fieldset.enkel { grid-template-columns: 1fr; }
+  .kies { flex-direction: row !important; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); margin: 0 !important; }
+  .kies select { width: auto !important; min-width: 150px; }
+  .info { margin-top: 28px; background: var(--sage-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 20px; }
+  .info h2 { font-size: 1.15rem; margin: 0 0 8px; }
+  .info li { margin-bottom: 6px; }
+
+  /* Juridische teksten */
+  .legal { max-width: 760px; padding-top: 36px; padding-bottom: 48px; }
+  .legal h1 { color: var(--green); margin: 0 0 6px; }
+  .legal h2 { font-size: 1.2rem; color: var(--green); margin: 28px 0 8px; }
+  .legal li { margin-bottom: 6px; }
+  .legal .meta { color: var(--muted); font-size: .9rem; }
+  .legal .gegevens { list-style: none; padding: 0; }
+  mark.invul { background: #fff1a8; padding: 0 .25em; border-radius: 4px; color: #5a4600; }
+  .formulier { background: #fff; border: 1px dashed #b9b2a0; border-radius: var(--radius); padding: 16px 20px; }
+  .formulier .lijn { margin: 10px 0; }
+
+  /* Informatie vlak voor de bestelknop */
+  .voor-bestellen { background: var(--sage-soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: .9rem; margin: 0 0 14px; }
+  .voor-bestellen p { margin: 0 0 6px; }
+  .voor-bestellen p:last-child { margin: 0; }
+
+  .vink { width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: #fff; font-size: 1.8rem; display: grid; place-items: center; margin: 0 0 10px; }

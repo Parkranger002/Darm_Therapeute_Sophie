@@ -1,0 +1,84 @@
+---
+import Base from '../../layouts/Base.astro';
+import ShopVoet from '../../components/ShopVoet.astro';
+import '../../styles/shop.css';
+// CONCEPT algemene voorwaarden voor de eigen webshop. Gele vakjes = nog invullen.
+// Laat deze tekst juridisch controleren voordat de webshop live gaat.
+const B = '/shop-concept';
+---
+<Base title="Algemene voorwaarden – Darmmanagement" description="Algemene voorwaarden van de webshop van Darmmanagement." noindex hideBanner>
+  <div class="concept-bar">Concept: nog juridisch laten controleren. Gele vakjes moeten nog worden ingevuld.</div>
+  <article class="wrap legal">
+    <h1>Algemene voorwaarden</h1>
+    <p class="meta">Versie <mark class="invul">[datum]</mark>. Je kunt deze voorwaarden opslaan of printen.</p>
+
+    <h2>1. Wie zijn wij?</h2>
+    <p>Darmmanagement is een handelsnaam van <mark class="invul">[juridische naam, bijv. Powerdetox]</mark>.</p>
+    <ul class="gegevens">
+      <li>Adres: Veestraat 2a, 6049 HA Herten</li>
+      <li>E-mail: <a href="mailto:detoxhelpdesk@gmail.com">detoxhelpdesk@gmail.com</a></li>
+      <li>Telefoon: <mark class="invul">[telefoonnummer, bereikbaar op …]</mark></li>
+      <li>KvK-nummer: <mark class="invul">[KvK-nummer]</mark></li>
+      <li>Btw-identificatienummer: <mark class="invul">[btw-nummer]</mark></li>
+    </ul>
+
+    <h2>2. Wanneer gelden deze voorwaarden?</h2>
+    <p>Deze voorwaarden gelden voor elk aanbod in onze webshop en voor elke bestelling die je daar als consument plaatst. Je krijgt ze te zien voordat je bestelt.</p>
+
+    <h2>3. Aanbod en prijzen</h2>
+    <ul>
+      <li>Alle prijzen zijn in euro en inclusief btw.</li>
+      <li>De verzendkosten zie je in je winkelmand, voordat je bestelt.</li>
+      <li>We beschrijven onze producten zo nauwkeurig mogelijk. Foto's kunnen iets afwijken van het echte product.</li>
+      <li>Een duidelijke vergissing in een prijs of beschrijving, die je redelijkerwijs had moeten opmerken, bindt ons niet.</li>
+    </ul>
+
+    <h2>4. Hoe komt de koop tot stand?</h2>
+    <p>De koop komt tot stand als je op "Bestellen en betalen" klikt en de betaling is gelukt. Je krijgt daarna een bevestiging per e-mail, met je bestelnummer.</p>
+
+    <h2>5. Betalen</h2>
+    <p>Je betaalt vooraf via onze betaalpartner Mollie, met iDEAL, Bancontact, creditcard of een andere methode die je bij het afrekenen ziet. We versturen je bestelling nadat de betaling is gelukt.</p>
+
+    <h2>6. Levering</h2>
+    <ul>
+      <li>We bezorgen in Nederland en België, met PostNL. Je krijgt een trackingcode zodra je pakket onderweg is.</li>
+      <li>We versturen je bestelling meestal binnen <mark class="invul">[2]</mark> werkdagen na betaling, en uiterlijk binnen 30 dagen.</li>
+      <li>Lukt levering binnen 30 dagen niet, dan laten we je dat weten. Je mag de koop dan kosteloos ontbinden; je krijgt je geld binnen 14 dagen terug.</li>
+      <li>Het product is voor ons risico tot het bij jou of een door jou aangewezen persoon is bezorgd.</li>
+    </ul>
+
+    <h2>7. Bedenktijd (herroepingsrecht)</h2>
+    <p>Je hebt het wettelijke recht om je koop binnen 14 dagen zonder opgaaf van reden ongedaan te maken. De bedenktijd begint op de dag na ontvangst van je bestelling. Komt je bestelling in meerdere pakketten, dan telt de dag na ontvangst van het laatste pakket.</p>
+    <p>Je maakt je koop ongedaan met de knop <a href={`${B}/koop-ongedaan-maken/`}>Koop ongedaan maken</a> op onze website, per e-mail, of met het modelformulier op de pagina <a href={`${B}/retourneren/`}>Retourneren en bedenktijd</a>. Je hoeft geen account te hebben.</p>
+    <ul>
+      <li>Stuur de producten binnen 14 dagen na je melding terug naar ons adres. De kosten voor het terugsturen zijn voor jou.</li>
+      <li>We betalen binnen 14 dagen na je melding terug, via dezelfde betaalmethode. Herroep je de hele bestelling, dan betalen we ook de standaard verzendkosten terug.</li>
+      <li>We mogen wachten met terugbetalen tot we de producten terug hebben, of tot je aantoont dat je ze hebt teruggestuurd.</li>
+      <li>Ga zorgvuldig om met het product. Ben je verder gegaan dan nodig is om het te beoordelen, dan mogen we de waardevermindering in rekening brengen.</li>
+    </ul>
+
+    <h2>8. Verzegelde producten</h2>
+    <p>Darmmanagement is een voedingssupplement. Het wordt verzegeld geleverd <mark class="invul">[controleer: sealfolie onder de deksel van de pot; dichtgesealde sachets]</mark>. Om redenen van gezondheidsbescherming en hygiëne kun je een product waarvan je de verzegeling hebt verbroken niet meer terugsturen: voor dat product vervalt de bedenktijd. Producten die nog verzegeld zijn, kun je wel terugsturen.</p>
+
+    <h2>9. Garantie en gebreken</h2>
+    <p>Je hebt recht op een product dat werkt zoals je mag verwachten (wettelijke garantie). Is er iets mis met je bestelling, bijvoorbeeld een beschadigde pot of een verkeerd product? Neem dan contact met ons op. We zorgen voor vervanging of terugbetaling. De kosten daarvan zijn voor ons. Je wettelijke rechten blijven altijd gelden.</p>
+
+    <h2>10. Gebruik en gezondheid</h2>
+    <ul>
+      <li>Lees voor gebruik het etiket en volg de gebruiksaanwijzing en waarschuwingen.</li>
+      <li>Een voedingssupplement is geen vervanging van een gevarieerde voeding en een gezonde leefstijl, en geen vervanging van medisch advies.</li>
+      <li>Gebruik je medicijnen, ben je zwanger of geef je borstvoeding, of heb je klachten? Overleg dan eerst met je arts of apotheker.</li>
+      <li>De AI-begeleider op onze website geeft algemene informatie. Hij is geen arts of therapeut en stelt geen diagnose.</li>
+    </ul>
+
+    <h2>11. Klachten</h2>
+    <p>Heb je een klacht? Laat het ons zo snel mogelijk weten via <a href="mailto:detoxhelpdesk@gmail.com">detoxhelpdesk@gmail.com</a>, met je bestelnummer en een korte omschrijving. We bevestigen je klacht en reageren binnen 14 dagen. Komen we er samen niet uit, dan kun je je wenden tot de bevoegde rechter. Woon je in België, dan kun je ook terecht bij het Europees Consumentencentrum.</p>
+
+    <h2>12. Privacy</h2>
+    <p>Hoe we met je gegevens omgaan, lees je in onze <a href={`${B}/privacy-bestellingen/`}>privacyinformatie bij bestellingen</a> en de algemene <a href="/privacy">privacyverklaring</a>.</p>
+
+    <h2>13. Toepasselijk recht</h2>
+    <p>Op deze voorwaarden en je bestelling is Nederlands recht van toepassing. Woon je in een ander EU-land, dan houd je de bescherming die de dwingende regels van jouw land je geven.</p>
+  </article>
+  <ShopVoet />
+</Base>

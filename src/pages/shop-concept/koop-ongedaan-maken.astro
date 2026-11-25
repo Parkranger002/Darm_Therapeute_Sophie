@@ -1,0 +1,102 @@
+---
+import Base from '../../layouts/Base.astro';
+import ShopVoet from '../../components/ShopVoet.astro';
+import '../../styles/shop.css';
+// Herroepingsfunctie (art. 6:230oa BW, verplicht sinds juni 2026): zonder account, alleen de
+// gegevens die nodig zijn om de bestelling te vinden, bevestiging met datum en tijd.
+---
+<Base title="Koop ongedaan maken – Darmmanagement" description="Maak je online aankoop ongedaan binnen de bedenktijd." noindex hideBanner>
+  <div class="concept-bar">Concept: eigen webshop. Alleen zichtbaar met het beheerwachtwoord.</div>
+  <section class="shop">
+    <div class="wrap smal">
+      <h1>Koop ongedaan maken</h1>
+      <p class="lead">Je hebt 14 dagen bedenktijd na ontvangst van je bestelling. Binnen die tijd kun je je koop hier ongedaan maken, zonder een reden te geven en zonder account.</p>
+
+      <form id="stap1" class="afreken" novalidate>
+        <fieldset>
+          <legend>Stap 1: zoek je bestelling</legend>
+          <label>Bestelnummer<input name="nr" required maxlength="20" placeholder="bijv. DM10001" autocomplete="off"><small>Staat in je bevestiging.</small></label>
+          <label>E-mailadres van de bestelling<input name="email" type="email" required maxlength="120" autocomplete="email"></label>
+        </fieldset>
+        <p class="fout" id="fout1" role="alert" hidden></p>
+        <button class="btn" type="submit">Bestelling zoeken</button>
+      </form>
+
+      <form id="stap2" class="afreken" hidden>
+        <fieldset class="enkel">
+          <legend>Stap 2: wat wil je terugsturen?</legend>
+          <p class="klein" id="eerder" hidden></p>
+          <div id="keuze"></div>
+        </fieldset>
+        <p class="fout" id="fout2" role="alert" hidden></p>
+        <button class="btn" type="submit" id="bevestig">Bevestig: koop ongedaan maken</button>
+        <p class="klein">Na bevestigen is je herroeping direct vastgelegd. Je krijgt hieronder een bevestiging met datum en tijd.</p>
+      </form>
+
+      <div id="klaar" class="bedankt" hidden></div>
+
+      <div class="info">
+        <h2>Hoe gaat het daarna verder?</h2>
+        <ul>
+          <li>Stuur de producten binnen 14 dagen terug naar: Darmmanagement (Powerdetox), Veestraat 2a, 6049 HA Herten. De kosten voor het terugsturen zijn voor jou.</li>
+          <li>Darmmanagement wordt verzegeld geleverd. Producten waarvan de verzegeling is verbroken, kun je niet terugsturen.</li>
+          <li>Je krijgt je geld binnen 14 dagen na je herroeping terug, via dezelfde betaalmethode. Stuur je de hele bestelling terug, dan krijg je ook de standaard verzendkosten terug. We mogen wachten met terugbetalen tot we de producten terug hebben, of tot je laat zien dat je ze hebt verstuurd.</li>
+          <li>Liever per e-mail? Dat mag ook: <a href="mailto:detoxhelpdesk@gmail.com">detoxhelpdesk@gmail.com</a>. Meer uitleg en het modelformulier staan op <a href="/shop-concept/retourneren/">Retourneren en bedenktijd</a>.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  <ShopVoet />
+</Base>
+
+<script>
+  import { SHOP } from '../../lib/winkelmand';
+  const $ = (id: string) => document.getElementById(id)!;
+  const esc = (s: string) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  const f1 = $('stap1') as HTMLFormElement;
+  const f2 = $('stap2') as HTMLFormElement;
+  let gegevens = { nr: '', email: '' };
+
+  async function post(pad: string, body: unknown) {
+    const r = await fetch(`${SHOP}/api/herroep/${pad}`, { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    return { r, d: await r.json().catch(() => ({})) };
+  }
+  const melding = (r: Response) => r.status === 429 ? 'Te veel pogingen achter elkaar. Probeer het over een minuut opnieuw.' : r.status === 404
+    ? 'We vinden geen betaalde bestelling met dit bestelnummer en e-mailadres. Controleer beide, of mail ons.'
+    : 'Er ging iets mis. Probeer het opnieuw of mail ons.';
+
+  f1.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fout = $('fout1'); fout.hidden = true;
+    gegevens = { nr: f1.nr.value, email: f1.email.value };
+    const { r, d } = await post('zoek', gegevens);
+    if (!r.ok) { fout.textContent = melding(r); fout.hidden = false; return; }
+    const over = d.regels.filter((x: { aantal: number }) => x.aantal > 0);
+    if (d.eerder?.length) { $('eerder').textContent = `Je hebt eerder al iets uit deze bestelling herroepen (${d.eerder.join(', ')}).`; $('eerder').hidden = false; }
+    if (!over.length) { fout.textContent = 'Voor deze bestelling is alles al herroepen.'; fout.hidden = false; return; }
+    $('keuze').innerHTML = over.map((x: { sku: string; naam: string; vorm: string; aantal: number }) => `<label class="kies">
+      <span><strong>${esc(x.naam)}</strong><br><span class="klein">${esc(x.vorm)}</span></span>
+      <select name="${esc(x.sku)}" aria-label="Aantal ${esc(x.naam)} ${esc(x.vorm)}">${Array.from({ length: x.aantal + 1 }, (_, i) => `<option value="${i}" ${i === x.aantal ? 'selected' : ''}>${i === 0 ? 'Houden' : i + ' terugsturen'}</option>`).join('')}</select></label>`).join('');
+    f1.hidden = true; f2.hidden = false;
+    $('stap2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  f2.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fout = $('fout2'); fout.hidden = true;
+    const items = [...f2.querySelectorAll('select')].map((s) => ({ sku: s.name, aantal: Number(s.value) })).filter((i) => i.aantal > 0);
+    if (!items.length) { fout.textContent = 'Kies minstens één product om terug te sturen.'; fout.hidden = false; return; }
+    const knop = $('bevestig') as HTMLButtonElement; knop.disabled = true;
+    const { r, d } = await post('bevestig', { ...gegevens, items });
+    knop.disabled = false;
+    if (!r.ok) { fout.textContent = melding(r); fout.hidden = false; return; }
+    f2.hidden = true;
+    const k = $('klaar');
+    k.innerHTML = `<p class="vink" aria-hidden="true">✓</p><h2>Je koop is ongedaan gemaakt</h2>
+      <p>Bestelling <strong>${esc(d.nr)}</strong> · vastgelegd op <strong>${esc(d.moment)}</strong>.</p>
+      <p>${d.geheel ? 'Je hebt de hele bestelling herroepen.' : 'Je hebt een deel van de bestelling herroepen:'}</p>
+      <ul>${d.regels.map((x: { aantal: number; naam: string; vorm: string }) => `<li>${x.aantal}× ${esc(x.naam)}, ${esc(x.vorm)}</li>`).join('')}</ul>
+      <p class="klein">Bewaar deze bevestiging, bijvoorbeeld met een schermafbeelding.</p>`;
+    k.hidden = false;
+  });
+</script>

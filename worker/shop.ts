@@ -135,6 +135,19 @@ export async function handleShopApi(request: Request, env: ShopEnv, url: URL): P
     });
   }
 
+  if (pad === '/api/herroep/zoek' || pad === '/api/herroep/bevestig') {
+    if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+    if (!sameOrigin(request, url)) return json({ error: 'forbidden' }, 403);
+    if (env.CHAT_LIMITER) {
+      const ip = request.headers.get('cf-connecting-ip') ?? 'onbekend';
+      const { success } = await env.CHAT_LIMITER.limit({ key: `herroep:${ip}` });
+      if (!success) return json({ error: 'rate_limited' }, 429);
+    }
+    let body: Record<string, unknown>;
+    try { body = (await request.json()) as Record<string, unknown>; } catch { return json({ error: 'bad_json' }, 400); }
+    return herroep(pad.endsWith('/bevestig'), body, env);
+  }
+
   if (pad === '/testbetaling') return testbetaling(request, env, url);
   return json({ error: 'not_found' }, 404);
 }
@@ -239,6 +252,48 @@ async function syncMollie(env: ShopEnv, mollieId: string) {
     .bind(st, nieuw, st === 'paid' ? new Date().toISOString().slice(0, 19).replace('T', ' ') : null, b.id).run();
 }
 
+/** Moment in Nederlandse tijd, voor de klant. */
+export const nlTijd = (utc: string) =>
+  new Date(utc.replace(' ', 'T') + 'Z').toLocaleString('nl-NL', { timeZone: 'Europe/Amsterdam', dateStyle: 'long', timeStyle: 'short' });
+
+/**
+ * Herroepingsfunctie ("Koop ongedaan maken"): stap 1 zoekt de bestelling met bestelnummer + e-mail,
+ * stap 2 legt de herroeping vast met datum en tijd. Geen account nodig.
+ * We laten herroepen toe tot 60 dagen na bestellen; de wettelijke termijn (14 dagen na ontvangst)
+ * beoordeel je in het beheer.
+ */
+async function herroep(bevestig: boolean, body: Record<string, unknown>, env: ShopEnv): Promise<Response> {
+  const nr = clean(body.nr, 20).toUpperCase().replace(/\s+/g, '');
+  const email = clean(body.email, 120).toLowerCase();
+  const b = await env.DB!.prepare(
+    "SELECT * FROM bestellingen WHERE nr = ? AND lower(email) = ? AND status IN ('betaald','verzonden') AND created_at >= datetime('now','-60 days')",
+  ).bind(nr, email).first<Bestelling>();
+  if (!b) return json({ error: 'not_found' }, 404);
+  const regels = JSON.parse(b.regels) as Regel[];
+  const { results: eerder } = await env.DB!.prepare('SELECT created_at, regels FROM herroepingen WHERE bestelling_id = ? ORDER BY id').bind(b.id).all<{ created_at: string; regels: string }>();
+  // Wat is al herroepen? Dat kan niet nog eens.
+  const al: Record<string, number> = {};
+  for (const h of eerder) for (const r of JSON.parse(h.regels) as Regel[]) al[r.sku] = (al[r.sku] ?? 0) + r.aantal;
+  const over = regels.map((r) => ({ sku: r.sku, naam: r.naam, vorm: r.vorm, aantal: Math.max(0, r.aantal - (al[r.sku] ?? 0)) }));
+
+  if (!bevestig) {
+    return json({ nr: b.nr, regels: over, eerder: eerder.map((h) => nlTijd(h.created_at)) });
+  }
+  const items = Array.isArray(body.items) ? body.items.slice(0, 20) : [];
+  const gekozen: { sku: string; naam: string; vorm: string; aantal: number }[] = [];
+  for (const it of items as { sku?: unknown; aantal?: unknown }[]) {
+    const r = over.find((x) => x.sku === it?.sku);
+    const n = Math.floor(Number(it?.aantal));
+    if (r && n >= 1 && n <= r.aantal) gekozen.push({ ...r, aantal: n });
+  }
+  if (!gekozen.length) return json({ error: 'niets_gekozen' }, 400);
+  const geheel = over.every((r) => (gekozen.find((g) => g.sku === r.sku)?.aantal ?? 0) === r.aantal) ? 1 : 0;
+  const res = await env.DB!.prepare('INSERT INTO herroepingen (bestelling_id, regels, geheel) VALUES (?, ?, ?)')
+    .bind(b.id, JSON.stringify(gekozen), geheel).run();
+  const h = await env.DB!.prepare('SELECT created_at FROM herroepingen WHERE id = ?').bind(res.meta?.last_row_id).first<{ created_at: string }>();
+  return json({ nr: b.nr, moment: nlTijd(h!.created_at), regels: gekozen, geheel: !!geheel });
+}
+
 /** Alleen zonder Mollie-sleutel: een nagebootste betaalpagina om de flow te testen. */
 async function testbetaling(request: Request, env: ShopEnv, url: URL): Promise<Response> {
   if (env.MOLLIE_API_KEY) return new Response('Niet beschikbaar', { status: 404 });
@@ -319,20 +374,23 @@ export async function handleShopBeheer(request: Request, env: ShopEnv, url: URL)
 async function bestellingenLijst(env: ShopEnv, url: URL) {
   const filter = url.searchParams.get('status') ?? 'te-verzenden';
   const { results } = await env.DB!.prepare('SELECT * FROM bestellingen ORDER BY id DESC LIMIT 500').all<Bestelling>();
+  const { results: hr } = await env.DB!.prepare("SELECT DISTINCT bestelling_id FROM herroepingen WHERE status = 'ontvangen'").all<{ bestelling_id: number }>();
+  const herroepen = new Set(hr.map((h) => h.bestelling_id));
   const tabs: [string, string, (b: Bestelling) => boolean][] = [
+    ['herroepen', 'Koop ongedaan gemaakt', (b) => herroepen.has(b.id)],
     ['te-verzenden', 'Te verzenden', (b) => b.status === 'betaald'],
     ['verzonden', 'Verzonden', (b) => b.status === 'verzonden'],
     ['open', 'Wacht op betaling', (b) => b.status === 'open'],
     ['alle', 'Alle', () => true],
   ];
-  const actief = tabs.find((t) => t[0] === filter) ?? tabs[0];
+  const actief = tabs.find((t) => t[0] === filter) ?? tabs[1];
   const lijst = results.filter(actief[2]);
   const nav = `<p class="tabs">${tabs.map(([k, l, f]) => `<a href="?status=${k}" class="${k === actief[0] ? 'on' : ''}">${l} (${results.filter(f).length})</a>`).join('')}</p>`;
   const rijen = lijst.map((b) => {
     const regels = (JSON.parse(b.regels) as Regel[]).map((r) => `${r.aantal}× ${esc(r.naam.replace('Darmmanagement ', ''))} ${esc(r.vorm.replace(/ \(.*\)/, ''))}`).join('<br>');
     return `<tr><td><a href="/beheer/bestellingen/${b.id}"><strong>${esc(b.nr)}</strong></a><br><span class="meta">${esc(b.created_at.slice(0, 16))}</span></td>
 <td>${esc(b.naam)}<br><span class="meta">${esc(b.postcode)} ${esc(b.plaats)}</span></td><td>${regels}</td><td>${euro(b.totaal_cent)}</td>
-<td><span class="pill ${esc(b.status)}">${esc(b.status)}</span>${b.testbetaling ? ' <span class="pill test">test</span>' : ''}${b.barcode ? `<br><span class="meta">${esc(b.barcode)}</span>` : ''}</td></tr>`;
+<td><span class="pill ${esc(b.status)}">${esc(b.status)}</span>${b.testbetaling ? ' <span class="pill test">test</span>' : ''}${herroepen.has(b.id) ? ' <span class="pill mislukt">herroepen</span>' : ''}${b.barcode ? `<br><span class="meta">${esc(b.barcode)}</span>` : ''}</td></tr>`;
   }).join('');
   return adminPage(`<h2>Bestellingen</h2>${nav}
 ${lijst.length ? `<table><tr><th>Bestelling</th><th>Klant</th><th>Producten</th><th>Totaal</th><th>Status</th></tr>${rijen}</table>` : '<p>Geen bestellingen in deze lijst.</p>'}`);
@@ -409,6 +467,11 @@ async function bestellingDetail(request: Request, env: ShopEnv, url: URL, id: nu
       await env.DB!.prepare('UPDATE bestellingen SET status = ? WHERE id = ?').bind(s, id).run();
       return terug(`Status gewijzigd naar ${s}.`);
     }
+    if (actie === '/herroep-af') {
+      const hid = Number(form.get('hid'));
+      await env.DB!.prepare("UPDATE herroepingen SET status = 'afgehandeld', afgehandeld_at = datetime('now') WHERE id = ? AND bestelling_id = ?").bind(hid, id).run();
+      return terug('Herroeping gemarkeerd als afgehandeld.');
+    }
     if (actie === '/notitie') {
       await env.DB!.prepare('UPDATE bestellingen SET notitie = ? WHERE id = ?').bind(clean(form.get('notitie'), 1000) || null, id).run();
       return terug('Notitie opgeslagen.');
@@ -418,6 +481,12 @@ async function bestellingDetail(request: Request, env: ShopEnv, url: URL, id: nu
 
   const regels = JSON.parse(b.regels) as Regel[];
   const msg = url.searchParams.get('m');
+  const { results: hlijst } = await env.DB!.prepare('SELECT * FROM herroepingen WHERE bestelling_id = ? ORDER BY id').bind(id).all<{ id: number; created_at: string; regels: string; geheel: number; status: string; afgehandeld_at: string | null }>();
+  const herroepSectie = hlijst.length ? `<section class="card" style="border-left:5px solid #b04a2f"><h3>Koop ongedaan gemaakt door de klant</h3>
+${hlijst.map((h) => `<p><strong>${esc(nlTijd(h.created_at))}</strong> · ${h.geheel ? 'hele bestelling' : 'deel van de bestelling'} · <span class="pill ${h.status === 'afgehandeld' ? 'betaald' : 'mislukt'}">${esc(h.status)}</span><br>
+${(JSON.parse(h.regels) as Regel[]).map((r) => `${r.aantal}× ${esc(r.naam)} – ${esc(r.vorm)}`).join('<br>')}</p>
+${h.status === 'ontvangen' ? `<form method="post" action="/beheer/bestellingen/${id}/herroep-af" class="block"><input type="hidden" name="hid" value="${h.id}"><button class="prim">Afgehandeld (terugbetaald)</button></form>` : `<p class="meta">Afgehandeld: ${esc(h.afgehandeld_at)} UTC</p>`}`).join('')}
+<p class="meta">Wettelijk: terugbetalen binnen 14 dagen na de herroeping, inclusief de standaard verzendkosten bij herroeping van de hele bestelling. Je mag wachten tot het product terug is of de klant aantoont dat het is teruggestuurd. Terugbetalen doe je in het Mollie-dashboard.</p></section>` : '';
   const adres = `${esc(b.straat)} ${esc(b.huisnummer)}${b.toevoeging ? ' ' + esc(b.toevoeging) : ''}<br>${esc(b.postcode)} ${esc(b.plaats)}<br>${esc(LANDEN[b.land] ?? b.land)}`;
   const mpUit = !env.MYPARCEL_API_KEY;
 
@@ -446,6 +515,7 @@ ${b.opmerking ? `<dt>Opmerking</dt><dd>${esc(b.opmerking)}</dd>` : ''}</dl></sec
 <tr><td></td><td>Verzendkosten</td><td>${euro(b.verzend_cent)}</td></tr><tr><td></td><td><strong>Totaal (incl. btw)</strong></td><td><strong>${euro(b.totaal_cent)}</strong></td></tr></table>
 <p class="meta">Besteld: ${esc(b.created_at)} UTC${b.betaald_at ? ` · betaald: ${esc(b.betaald_at)} UTC` : ''}${b.mollie_id ? ` · Mollie: ${esc(b.mollie_id)}` : ''}</p></section>
 </div>
+${herroepSectie}
 <section class="card"><h3>Verzenden</h3>${verzending}
 <form method="post" action="/beheer/bestellingen/${id}/tracking" class="block">
 <label>Trackingcode: <input name="barcode" value="${esc(b.barcode ?? '')}" placeholder="3SXXXX1234567" size="20"></label>

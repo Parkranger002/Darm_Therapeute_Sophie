@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ShopVoet from '../../components/ShopVoet.astro';
 import '../../styles/shop.css';
 // CONCEPT: afrekenen. Het bedrag wordt op de server berekend; de browser stuurt alleen sku + aantal.
 ---
@@ -31,7 +32,12 @@ import '../../styles/shop.css';
           <label class="vol">Opmerking (optioneel)<textarea name="opmerking" rows="2" maxlength="500"></textarea></label>
         </fieldset>
 
-        <label class="akkoord"><input type="checkbox" name="akkoord" required><span>Ik ga akkoord met de <a href="#" onclick="return false">algemene voorwaarden</a> (nog toe te voegen) en heb de <a href="/privacy" target="_blank">privacyverklaring</a> gelezen.</span></label>
+        <div class="voor-bestellen">
+          <p><strong>Bedenktijd:</strong> je hebt 14 dagen bedenktijd na ontvangst. Je maakt je koop ongedaan met de knop <a href="/shop-concept/koop-ongedaan-maken/" target="_blank">Koop ongedaan maken</a>, per e-mail of met het modelformulier. Terugsturen is op eigen kosten.</p>
+          <p><strong>Verzegeld:</strong> Darmmanagement wordt verzegeld geleverd. Verbreek je de verzegeling, dan vervalt de bedenktijd voor dat product.</p>
+          <p>Meer in <a href="/shop-concept/retourneren/" target="_blank">Retourneren en bedenktijd</a>.</p>
+        </div>
+        <label class="akkoord"><input type="checkbox" name="akkoord" required><span>Ik ga akkoord met de <a href="/shop-concept/algemene-voorwaarden/" target="_blank">algemene voorwaarden</a> en heb de <a href="/shop-concept/privacy-bestellingen/" target="_blank">privacyinformatie bij bestellingen</a> gelezen.</span></label>
         <p class="fout" id="fout" role="alert" hidden></p>
         <button class="btn wide" id="betaal" type="submit">Bestellen en betalen</button>
         <p class="klein">Je betaalt bij Mollie (iDEAL, Bancontact, creditcard). Daarna kom je terug op deze site.</p>
@@ -48,6 +54,7 @@ import '../../styles/shop.css';
       </aside>
     </div>
   </section>
+  <ShopVoet />
 </Base>
 
 <script>

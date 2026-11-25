@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ShopVoet from '../../components/ShopVoet.astro';
 import '../../styles/shop.css';
 // CONCEPT: eigen webshop met Mollie en MyParcel. Alleen bereikbaar met het beheerwachtwoord
 // (zie worker/index.ts en worker/shop.ts). Producten en prijzen komen uit de database.
@@ -38,6 +39,7 @@ import '../../styles/shop.css';
     <span><span id="mb-aantal">0</span> in winkelmand · <strong id="mb-totaal"></strong></span>
     <span class="mb-knop">Afrekenen →</span>
   </a>
+  <ShopVoet />
 </Base>
 
 <script>
