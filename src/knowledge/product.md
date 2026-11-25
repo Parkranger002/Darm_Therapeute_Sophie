@@ -13,7 +13,7 @@ Darmmanagement en Darmmanagement PRO zijn allebei verkrijgbaar in beide potmaten
 - Een pot van 400 gram bestaat niet (meer).
 - Sachets: van beide producten, 5 gram per sachet (1 portie). Te bestellen per 7 of per 21 stuks. Tip: sachets zijn handig in gebruik en makkelijk mee te nemen, bijvoorbeeld naar je werk of op vakantie. Noem deze tip gerust als iemand vraagt naar gebruik onderweg, op reis of buiten de deur.
 - Gratis probeerverpakking: 50 gram, 10 porties.
-- Prijzen staan niet in deze informatie; verwijs daarvoor naar darmmanagement.nl.
+- Prijzen staan niet in deze informatie; verwijs daarvoor naar de winkelpagina /winkel, waar elk product een bestelknop naar de webshop van Powerdetox heeft.
 
 ## Samenstelling
 - Psylliumvezel (gemalen zaadhuid van Plantago ovata): 70%
@@ -51,7 +51,7 @@ Bewaren: koel (maximaal 25 °C), droog en donker; deksel direct sluiten.
 - Een voedingssupplement is geen vervanging van een gevarieerde voeding en een gezonde leefstijl.
 
 ## Bestellen en contact
-- Prijzen, verpakkingen en bestellen: darmmanagement.nl
+- Prijzen en bestellen: via de webshop van Powerdetox (powerdetox.nl). Alle producten met een bestelknop staan op /winkel.
 - Op de pagina /winkel van deze site staan alle producten (Original en PRO, potten en sachets) naast elkaar, met per product een knop naar de webshop van Powerdetox. Verwijs daarnaar als iemand wil vergelijken of bestellen.
 - Vragen: Detox helpdesk, detoxhelpdesk@gmail.com
 - Een gratis probeerverpakking van Darmmanagement PRO (50 gram, 10 porties; er gelden voorwaarden) vraag je aan op powerdetox.nl: https://www.powerdetox.nl/shop/gratis-probeerverpakking-darmmanagement/

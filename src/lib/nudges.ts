@@ -12,7 +12,7 @@
  */
 
 export const HELPDESK = 'detoxhelpdesk@gmail.com';
-export const SHOP_URL = 'https://darmmanagement.nl/';
+export const SHOP_URL = '/winkel';  // overzicht met per product een bestelknop naar powerdetox.nl
 export const PROEF_URL = 'https://www.powerdetox.nl/shop/gratis-probeerverpakking-darmmanagement/';
 
 /** Onderwerpen waarbij de chat geen product aanbiedt. */

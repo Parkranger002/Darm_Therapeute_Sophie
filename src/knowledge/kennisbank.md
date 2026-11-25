@@ -201,7 +201,7 @@ De letter W met een nummer is de code van de specifieke stam. Sinds 2020 hebben 
 | Sachets van 5 g | per 7 of 21 stuks | per 7 of 21 stuks |
 | Gratis probeerverpakking | | 50 g (10 porties), via powerdetox.nl |
 
-Prijzen: zie darmmanagement.nl. De exacte voedingswaarde van Darmmanagement zonder PRO staat op dat etiket; noem die niet als je hem niet weet.
+Prijzen: zie de winkelpagina /winkel (bestellen via powerdetox.nl). De exacte voedingswaarde van Darmmanagement zonder PRO staat op dat etiket; noem die niet als je hem niet weet.
 
 ### 4.2 Dosering
 - Eén portie is één afgestreken maatschepje van 5 gram, of één sachet.
