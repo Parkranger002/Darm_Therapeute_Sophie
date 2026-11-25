@@ -11,7 +11,7 @@ import { SHOP_URL, PROEF_URL } from '../lib/nudges';
       <h1>Ervaringen van gebruikers</h1>
       <p class="lead">Hoe gebruiken anderen Darmmanagement en hoe past het in hun dag? Hier lees je hun ervaringen, in hun eigen woorden.</p>
       <div class="cta">
-        <a class="btn" href="/?ervaring">Deel je ervaring</a>
+        <a class="btn" href="/start-een-gesprek?ervaring">Deel je ervaring</a>
         <a class="more" href="/veelgestelde-vragen">Veelgestelde vragen</a>
       </div>
     </div>
@@ -71,7 +71,7 @@ import { SHOP_URL, PROEF_URL } from '../lib/nudges';
       const empty = el('div', 'empty');
       empty.append(el('p', '', 'Er staan nog geen ervaringen op deze pagina. Gebruik je Darmmanagement al? Deel dan als eerste je ervaring!'));
       const a = el('a', 'btn', 'Deel je ervaring') as HTMLAnchorElement;
-      a.href = '/?ervaring';
+      a.href = '/start-een-gesprek?ervaring';
       empty.append(a);
       list.append(empty);
       return;

@@ -24,6 +24,16 @@ const {
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const here = Astro.url.pathname.replace(/\/$/, '') || '/';
+const MENU: [href: string, label: string][] = [
+  ['/', 'Welkom'],
+  ['/winkel', 'Winkel'],
+  ['/vezelcheck', 'Vezelcheck'],
+  ['/product', 'Product'],
+  ['/ervaringen', 'Ervaringen'],
+  ['/veelgestelde-vragen', 'Vragen'],
+  ['/over-ons', 'Over ons'],
+];
 const imageUrl = new URL(image, Astro.site).href;
 const organization = {
   '@context': 'https://schema.org',
@@ -64,12 +74,7 @@ const organization = {
       <div class="wrap bar">
         <a href="/" class="logo">DARM MANAGEMENT</a>
         <nav>
-          <a href="/winkel">Winkel</a>
-          <a href="/product">Product</a>
-          <a href="/ervaringen">Ervaringen</a>
-          <a href="/veelgestelde-vragen">Vragen</a>
-          <a href="/vezelcheck">Vezelcheck</a>
-          <a href="/over-ons">Over ons</a>
+          {MENU.map(([href, label]) => <a href={href} aria-current={here === href ? 'page' : undefined}>{label}</a>)}
         </nav>
       </div>
     </header>
@@ -103,6 +108,7 @@ const organization = {
     nav { gap: 6px 16px; flex-wrap: wrap; }
   }
   nav a:hover { color: var(--green); text-decoration: underline; }
+  nav a[aria-current='page'] { color: var(--green); font-weight: 600; }
   .site-footer { border-top: 1px solid var(--line); padding: 28px 0 40px; }
   .foot { display: flex; flex-wrap: wrap; gap: 8px 26px; font-size: .92rem; }
   .foot a { color: var(--muted); }
