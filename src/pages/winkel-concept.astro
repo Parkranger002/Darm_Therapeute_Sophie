@@ -1,0 +1,283 @@
+---
+import Base from '../layouts/Base.astro';
+import { PROEF_URL } from '../lib/nudges';
+
+// CONCEPT: winkelpagina, nog niet goedgekeurd. Alleen bereikbaar met het beheerwachtwoord
+// (zie worker/index.ts), niet in het menu, niet in de sitemap en niet in Google.
+// Na goedkeuring: hernoemen naar /winkel, beveiliging en noindex weghalen, link in het menu.
+//
+// Productinformatie uit src/knowledge/product.md (etiket Darmmanagement PRO, nov. 2026).
+// Geen gezondheidsclaims en niet het woord "probiotica" (Keuringsraad).
+
+const SHOP = 'https://www.powerdetox.nl/shop/';
+const URL_ORIGINAL = 'https://www.powerdetox.nl/shop/darmmanagement/';
+const URL_PRO = 'https://www.powerdetox.nl/shop/darmmanagement-pro-2/';
+
+const KRUIDEN = 'brandnetelblad, paardenbloemwortel, alfalfablad, rozenbottel, chlorella, gerstgras, fenegriekzaad, gemberwortel, hysopkruid';
+
+type Product = {
+  id: string;
+  lijn: 'original' | 'pro';
+  vorm: 'pot' | 'sachet';
+  naam: string;
+  sub: string;
+  img: string;
+  w: number;
+  h: number;
+  feiten: string[];
+  tekst: string;
+  url: string;
+  achter: { inhoud: string; ingredienten: string; voeding: string };
+};
+
+const original = {
+  ingredienten: `Psylliumvezel (gemalen zaadhuid van Plantago ovata), ${KRUIDEN}. Drager: maïszetmeel, maltodextrine.`,
+  voeding: 'Zie het etiket op de verpakking.',
+};
+const pro = {
+  ingredienten: `Psylliumvezel (gemalen zaadhuid van Plantago ovata) 70%, brandnetelblad 6%, paardenbloemwortel 5%, alfalfablad 4,5%, rozenbottel 4%, chlorella 3,5%, gerstgras 3%, fenegriekzaad 2%, gemberwortel 1,5%, hysopkruid 1,5%. Bacteriestammen: B. lactis W51 en W52, L. acidophilus W22, L. paracasei W20, L. plantarum W21, L. salivarius W24, Lc. lactis W19 en W58. Drager: maïszetmeel, maltodextrine.`,
+  voeding: 'Per portie (5 g): 3,6 g voedingsvezel, 12 kcal, 2,5 miljard levende bacteriën (2,5 × 10⁹ kve).',
+};
+
+const products: Product[] = [
+  {
+    id: 'original-150', lijn: 'original', vorm: 'pot', naam: 'Darmmanagement Original', sub: 'Pot 150 gram',
+    img: '/images/winkel/pot-150.webp', w: 222, h: 261,
+    feiten: ['30 porties', '± 30 dagen bij 1 portie per dag', 'Met maatschepje'],
+    tekst: 'Vezelrijk poeder van psylliumvezel en negen kruiden, zoals brandnetel, paardenbloemwortel en gember. Roer het door water, sap of een smoothie.',
+    url: URL_ORIGINAL, achter: { inhoud: '150 g = 30 porties van 5 g', ...original },
+  },
+  {
+    id: 'original-250', lijn: 'original', vorm: 'pot', naam: 'Darmmanagement Original', sub: 'Pot 250 gram',
+    img: '/images/winkel/pot-250.webp', w: 262, h: 342,
+    feiten: ['50 porties', '± 50 dagen bij 1 portie per dag', 'Met maatschepje'],
+    tekst: 'De grote pot: psylliumvezel en negen kruiden voor dagelijks gebruik. Roer het door water, sap of een smoothie.',
+    url: URL_ORIGINAL, achter: { inhoud: '250 g = 50 porties van 5 g', ...original },
+  },
+  {
+    id: 'original-sachets', lijn: 'original', vorm: 'sachet', naam: 'Darmmanagement Original', sub: 'Sachets, per 7 of 21',
+    img: '/images/winkel/sachet-original.webp', w: 240, h: 331,
+    feiten: ['5 g per sachet = 1 portie', 'Doos van 7 of 21 stuks', 'Handig onderweg'],
+    tekst: 'Precies één portie per zakje, zonder afmeten. Handig voor op je werk, onderweg of op vakantie.',
+    url: SHOP, achter: { inhoud: 'Sachets van 5 g, per 7 of 21 stuks', ...original },
+  },
+  {
+    id: 'pro-150', lijn: 'pro', vorm: 'pot', naam: 'Darmmanagement PRO', sub: 'Pot 150 gram',
+    img: '/images/winkel/pot-150.webp', w: 222, h: 261,
+    feiten: ['30 porties', '3,6 g vezels per portie', 'Met levende bacteriën'],
+    tekst: 'Psylliumvezel en negen kruiden, aangevuld met acht stammen levende bacteriën: samen 2,5 miljard per portie.',
+    url: URL_PRO, achter: { inhoud: '150 g = 30 porties van 5 g', ...pro },
+  },
+  {
+    id: 'pro-250', lijn: 'pro', vorm: 'pot', naam: 'Darmmanagement PRO', sub: 'Pot 250 gram',
+    img: '/images/winkel/pot-250.webp', w: 262, h: 342,
+    feiten: ['50 porties', '3,6 g vezels per portie', 'Met levende bacteriën'],
+    tekst: 'De grote pot PRO: psylliumvezel, negen kruiden en acht stammen levende bacteriën in één dagelijks poeder.',
+    url: URL_PRO, achter: { inhoud: '250 g = 50 porties van 5 g', ...pro },
+  },
+  {
+    id: 'pro-sachets', lijn: 'pro', vorm: 'sachet', naam: 'Darmmanagement PRO', sub: 'Sachets, per 7 of 21',
+    img: '/images/winkel/sachet-pro.webp', w: 209, h: 297,
+    feiten: ['5 g per sachet = 1 portie', 'Doos van 7 of 21 stuks', 'Met levende bacteriën'],
+    tekst: 'PRO in handige zakjes van één portie. Ideaal om mee te nemen naar je werk of op reis.',
+    url: SHOP, achter: { inhoud: 'Sachets van 5 g, per 7 of 21 stuks', ...pro },
+  },
+];
+---
+<Base
+  title="Winkel (concept) – Darmmanagement"
+  description="Darmmanagement Original en PRO: potten van 150 en 250 gram en sachets. Bestel via de webshop van Powerdetox."
+  noindex
+>
+  <div class="concept-bar">Concept: deze pagina is nog niet openbaar en alleen zichtbaar met het beheerwachtwoord.</div>
+
+  <section class="w-hero">
+    <div class="wrap w-hero-grid">
+      <div>
+        <p class="kicker">Winkel</p>
+        <h1>Darmmanagement Original en PRO</h1>
+        <p class="lead">Een vezelrijk poeder van psylliumvezel en negen kruiden, in de pot of in handige sachets. Kies Original, of PRO met daarnaast acht stammen levende bacteriën.</p>
+        <ul class="trust">
+          <li>3,6 g vezels per portie (PRO)</li>
+          <li>Glutenvrij en vegan (volgens het etiket)</li>
+          <li>Bestellen via powerdetox.nl</li>
+        </ul>
+      </div>
+      <div class="hero-shelf" aria-hidden="true">
+        <img src="/images/winkel/pot-150.webp" width="222" height="261" alt="" class="s1" />
+        <img src="/images/winkel/pot-250.webp" width="262" height="342" alt="" class="s2" />
+        <img src="/images/winkel/sachet-original.webp" width="240" height="331" alt="" class="s3" />
+        <img src="/images/winkel/sachet-pro.webp" width="209" height="297" alt="" class="s4" />
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap compare" aria-label="Verschil tussen Original en PRO">
+    <div class="cmp original">
+      <span class="pill">Original</span>
+      <h2>Vezels en kruiden</h2>
+      <p>Psylliumvezel (70%) met negen kruiden: brandnetel, paardenbloemwortel, alfalfa, rozenbottel, chlorella, gerstgras, fenegriek, gember en hysop.</p>
+    </div>
+    <div class="cmp pro">
+      <span class="pill">PRO</span>
+      <h2>Vezels, kruiden en levende bacteriën</h2>
+      <p>Dezelfde vezel en kruiden, plus acht stammen levende bacteriën: samen 2,5 miljard per portie van 5 gram.</p>
+    </div>
+  </section>
+
+  <section class="wrap shop">
+    <div class="filters" role="group" aria-label="Producten filteren">
+      <button type="button" class="filter" data-filter="alle" aria-pressed="true">Alle producten</button>
+      <button type="button" class="filter" data-filter="original" aria-pressed="false">Original</button>
+      <button type="button" class="filter" data-filter="pro" aria-pressed="false">PRO</button>
+      <button type="button" class="filter" data-filter="sachet" aria-pressed="false">Sachets</button>
+    </div>
+
+    <div class="grid">
+      {products.map((p) => (
+        <article class={`card ${p.lijn}`} data-lijn={p.lijn} data-vorm={p.vorm}>
+          <div class="flip">
+            <div class="face front">
+              <span class={`badge ${p.lijn}`}>{p.lijn === 'pro' ? 'PRO' : 'Original'}</span>
+              <div class="photo"><img src={p.img} width={p.w} height={p.h} loading="lazy" alt={`${p.naam}, ${p.sub.toLowerCase()}`} /></div>
+            </div>
+            <div class={`face back ${p.lijn}`} aria-hidden="true">
+              <p class="label-brand">Darmmanagement<sup>®</sup> <b>{p.lijn === 'pro' ? 'PRO' : 'Original'}</b></p>
+              <p class="label-sub">Voedingssupplement · {p.achter.inhoud}</p>
+              <dl>
+                <dt>Ingrediënten</dt><dd>{p.achter.ingredienten}</dd>
+                <dt>Voedingswaarde</dt><dd>{p.achter.voeding}</dd>
+                <dt>Gebruik</dt><dd>Begin met 1 portie (5 g) per dag, opbouwen tot max. 15 g. Door minstens 200 ml water, sap of smoothie roeren, meteen opdrinken en daarna nog een glas water. Niet vlak voor het slapengaan; 1 uur afstand tot medicijnen.</dd>
+                <dt>Let op</dt><dd>Overleg met arts of apotheker bij medicijngebruik (vooral bloedverdunners: bevat vitamine K uit alfalfa en chlorella), zwangerschap, borstvoeding of bij kinderen. Fenegriek: mogelijke kruisreactie bij pinda-allergie. Niet meer dan 15 g per dag.</dd>
+                <dt>Bewaren</dt><dd>Koel (max. 25 °C), droog en donker. Buiten bereik van jonge kinderen.</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="body">
+            <h3>{p.naam}</h3>
+            <p class="sub">{p.sub}</p>
+            <ul class="facts">{p.feiten.map((f) => <li>{f}</li>)}</ul>
+            <p class="desc">{p.tekst}</p>
+            <div class="actions">
+              <a class="btn order" href={p.url} target="_blank" rel="noopener">Bestel nu</a>
+              <button type="button" class="turn" aria-pressed="false">Bekijk achterkant</button>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="note">Prijzen en voorraad zie je in de webshop van Powerdetox. Een voedingssupplement vervangt geen gevarieerde voeding en gezonde leefstijl.</p>
+  </section>
+
+  <section class="wrap trial">
+    <div class="trial-box">
+      <img src="/images/winkel/sachet-pro.webp" width="209" height="297" alt="" loading="lazy" />
+      <div>
+        <h2>Eerst proberen?</h2>
+        <p>Vraag een gratis probeerverpakking van Darmmanagement PRO aan: 50 gram, goed voor 10 porties. Er gelden voorwaarden.</p>
+        <div class="cta">
+          <a class="btn" href={PROEF_URL} target="_blank" rel="noopener">Gratis probeerverpakking</a>
+          <a class="more" href="/start-een-gesprek">Eerst een vraag stellen?</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Filteren op Original, PRO of sachets.
+  const cards = [...document.querySelectorAll<HTMLElement>('.shop .card')];
+  document.querySelectorAll<HTMLButtonElement>('.filter').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      const f = btn.dataset.filter;
+      for (const c of cards) c.hidden = !(f === 'alle' || c.dataset.lijn === f || c.dataset.vorm === f);
+    }),
+  );
+  // Omdraaien naar de achterkant (etiket).
+  document.querySelectorAll<HTMLButtonElement>('.turn').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.card')!;
+      const on = card.classList.toggle('flipped');
+      btn.setAttribute('aria-pressed', String(on));
+      btn.textContent = on ? 'Bekijk voorkant' : 'Bekijk achterkant';
+      card.querySelector('.front')!.setAttribute('aria-hidden', String(on));
+      card.querySelector('.back')!.setAttribute('aria-hidden', String(!on));
+    }),
+  );
+</script>
+
+<style>
+  .concept-bar { background: #fff4cc; color: #6b5300; text-align: center; font-size: .9rem; padding: 8px 16px; border-bottom: 1px solid #ecd98a; }
+  .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
+  .w-hero { padding: 44px 0 12px; background: radial-gradient(ellipse at 80% 60%, #e3eed6 0%, transparent 60%); }
+  .w-hero-grid { display: grid; gap: 24px; align-items: center; }
+  @media (min-width: 900px) { .w-hero-grid { grid-template-columns: 1fr 1fr; } }
+  .w-hero h1 { font-size: clamp(2rem, 4.4vw, 3rem); color: var(--green); }
+  .lead { font-size: 1.12rem; max-width: 560px; }
+  .trust { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .trust li { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: .3em .85em; font-size: .9rem; }
+  .trust li::before { content: '✓ '; color: var(--green); font-weight: 700; }
+  .hero-shelf { position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 0; padding: 10px 0 18px; min-height: 260px; }
+  .hero-shelf::after { content: ''; position: absolute; left: 6%; right: 6%; bottom: 10px; height: 18px; border-radius: 50%; background: radial-gradient(ellipse, rgba(31, 77, 58, .22), transparent 70%); z-index: 0; }
+  .hero-shelf img { position: relative; z-index: 1; height: auto; filter: drop-shadow(0 8px 14px rgba(20, 35, 28, .18)); }
+  .hero-shelf .s1 { width: 22%; margin-right: -2%; }
+  .hero-shelf .s2 { width: 27%; z-index: 2; }
+  .hero-shelf .s3 { width: 24%; margin-left: -1%; }
+  .hero-shelf .s4 { width: 21%; margin-left: -3%; }
+
+  .compare { display: grid; gap: 16px; padding-top: 18px; padding-bottom: 8px; }
+  @media (min-width: 760px) { .compare { grid-template-columns: 1fr 1fr; } }
+  .cmp { border-radius: var(--radius); padding: 20px 22px; border: 1px solid var(--line); background: var(--surface); }
+  .cmp.original { border-top: 5px solid #6cb33f; }
+  .cmp.pro { border-top: 5px solid #3a9ad9; }
+  .cmp h2 { font-size: 1.3rem; margin: .5em 0 .3em; }
+  .cmp p { margin: 0; color: var(--muted); }
+  .pill { display: inline-block; font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: .2em .7em; border-radius: 999px; color: #fff; }
+  .original .pill, .badge.original { background: #5aa232; }
+  .pro .pill, .badge.pro { background: #2f87c6; }
+
+  .shop { padding-top: 24px; padding-bottom: 24px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .filter { font: inherit; font-size: .92rem; cursor: pointer; padding: .45em 1em; border-radius: 999px; border: 1.5px solid var(--green); background: var(--surface); color: var(--green); }
+  .filter[aria-pressed="true"] { background: var(--green); color: #fff; }
+  .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 16px rgba(20, 35, 28, .05); }
+  .card[hidden] { display: none; }
+  .flip { position: relative; height: 330px; perspective: 1200px; }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; transition: transform .6s ease; }
+  .front { background: linear-gradient(180deg, #f3f7ee 0%, #fbfbf7 100%); display: flex; align-items: center; justify-content: center; }
+  .card.pro .front { background: linear-gradient(180deg, #edf5fb 0%, #fbfbf7 100%); }
+  .photo img { max-height: 250px; width: auto; max-width: 220px; height: auto; filter: drop-shadow(0 10px 14px rgba(20, 35, 28, .18)); }
+  .badge { position: absolute; top: 12px; left: 12px; color: #fff; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: .25em .7em; border-radius: 999px; z-index: 1; }
+  .back { transform: rotateY(180deg); background: #fff; padding: 14px 16px; overflow-y: auto; font-size: .78rem; line-height: 1.35; border-bottom: 6px solid #6cb33f; }
+  .back.pro { border-bottom-color: #3a9ad9; }
+  .card.flipped .front { transform: rotateY(-180deg); }
+  .card.flipped .back { transform: rotateY(0); }
+  @media (prefers-reduced-motion: reduce) { .face { transition: none; } }
+  .label-brand { margin: 0; font-weight: 700; color: #1f4d8f; font-size: .95rem; }
+  .label-brand b { color: #5aa232; }
+  .back.pro .label-brand b { color: #2f87c6; }
+  .label-sub { margin: 2px 0 8px; color: var(--muted); }
+  .back dl { margin: 0; }
+  .back dt { font-weight: 700; margin-top: 6px; }
+  .back dd { margin: 0; }
+  .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .body h3 { margin: 0; font-size: 1.2rem; }
+  .sub { margin: 0; color: var(--muted); font-weight: 600; }
+  .facts { list-style: none; padding: 0; margin: 4px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .facts li { background: var(--sage-soft); border-radius: 999px; padding: .2em .65em; font-size: .8rem; }
+  .desc { margin: 2px 0 6px; font-size: .95rem; }
+  .actions { margin-top: auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .order { text-decoration: none; }
+  .turn { font: inherit; font-size: .88rem; background: none; border: 0; color: var(--green); text-decoration: underline; cursor: pointer; padding: 4px 0; }
+  .note { font-size: .88rem; color: var(--muted); margin-top: 18px; }
+
+  .trial { padding-bottom: 64px; }
+  .trial-box { display: grid; gap: 20px; align-items: center; background: linear-gradient(120deg, #eaf4fb 0%, #f1f7ea 100%); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 26px; }
+  @media (min-width: 700px) { .trial-box { grid-template-columns: 140px 1fr; } }
+  .trial-box img { width: 120px; height: auto; justify-self: center; transform: rotate(-6deg); filter: drop-shadow(0 8px 12px rgba(20, 35, 28, .18)); }
+  .trial-box h2 { margin: 0 0 .3em; }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+  .more { font-weight: 600; }
+</style>

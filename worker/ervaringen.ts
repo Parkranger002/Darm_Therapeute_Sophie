@@ -113,7 +113,7 @@ function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-function authorized(request: Request, env: ErvaringEnv): boolean {
+export function authorized(request: Request, env: ErvaringEnv): boolean {
   if (!env.ADMIN_PASSWORD) return false;
   const h = request.headers.get('authorization') ?? '';
   if (!h.startsWith('Basic ')) return false;

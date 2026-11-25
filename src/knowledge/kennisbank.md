@@ -197,7 +197,7 @@ De letter W met een nummer is de code van de specifieke stam. Sinds 2020 hebben 
 | Psylliumvezel en negen kruiden | ja | ja |
 | Acht stammen levende bacteriën (2,5 miljard per portie) | nee | ja |
 | Vezels per portie van 5 g | staat op het etiket van Darmmanagement; noem geen getal als je het niet weet | 3,6 g |
-| Potten | 250 g (50 porties) en 400 g (80 porties) | 250 g (50 porties) en 400 g (80 porties) |
+| Potten | 150 g (30 porties) en 250 g (50 porties) | 150 g (30 porties) en 250 g (50 porties) |
 | Sachets van 5 g | per 7 of 21 stuks | per 7 of 21 stuks |
 | Gratis probeerverpakking | | 50 g (10 porties), via powerdetox.nl |
 

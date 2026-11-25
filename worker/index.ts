@@ -14,7 +14,7 @@ import product from '../src/knowledge/product.md';
 import aandoeningen from '../src/knowledge/aandoeningen.md';
 import kennisbank from '../src/knowledge/kennisbank.md';
 import { checkAlarm, filterOutput, ALARM_REPLIES } from '../src/lib/safety';
-import { handleErvaring, handleErvaringenLijst, handleBeheer, type ErvaringEnv } from './ervaringen';
+import { handleErvaring, handleErvaringenLijst, handleBeheer, authorized, type ErvaringEnv } from './ervaringen';
 
 interface RateLimiter {
   limit(opts: { key: string }): Promise<{ success: boolean }>;
@@ -75,6 +75,20 @@ export default {
     if (url.pathname === '/api/ervaring') return handleErvaring(request, env, url);
     if (url.pathname === '/api/ervaringen') return handleErvaringenLijst(request, env);
     if (url.pathname === '/beheer' || url.pathname.startsWith('/beheer/')) return handleBeheer(request, env, url);
+    // Conceptpagina's: alleen zichtbaar met het beheerwachtwoord, nooit in Google.
+    if (url.pathname === '/winkel-concept' || url.pathname.startsWith('/winkel-concept/')) {
+      if (!authorized(request, env)) {
+        return new Response('Inloggen vereist', {
+          status: 401,
+          headers: { 'www-authenticate': 'Basic realm="Darmmanagement beheer", charset="UTF-8"', 'cache-control': 'no-store' },
+        });
+      }
+      const res = await env.ASSETS.fetch(request);
+      const out = new Response(res.body, res);
+      out.headers.set('x-robots-tag', 'noindex, nofollow');
+      out.headers.set('cache-control', 'private, no-store');
+      return out;
+    }
     if (url.pathname.startsWith('/api/')) return json({ error: 'not_found' }, 404);
     return env.ASSETS.fetch(request);
   },
