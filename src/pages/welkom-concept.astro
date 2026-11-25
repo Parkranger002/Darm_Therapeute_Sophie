@@ -1,0 +1,136 @@
+---
+import Base from '../layouts/Base.astro';
+
+// CONCEPT: welkomstpagina, nog niet goedgekeurd. Alleen bereikbaar met het beheerwachtwoord
+// (zie worker/index.ts), niet in het menu, niet in de sitemap en niet in Google.
+// Geen gezondheidsclaims en niet het woord "probiotica" (Keuringsraad).
+---
+<Base
+  title="Welkom – Darmmanagement"
+  description="Welkom bij Darmmanagement van Powerdetox. Praat met de AI-begeleider, doe de vezelcheck of bekijk Darmmanagement Original en PRO."
+  noindex
+>
+  <div class="concept-bar">Concept: deze pagina is nog niet openbaar en alleen zichtbaar met het beheerwachtwoord.</div>
+
+  <section class="w-hero">
+    <div class="wrap w-grid">
+      <div>
+        <p class="kicker">Welkom</p>
+        <h1>Fijn dat je er bent.</h1>
+        <p class="lead">
+          Op deze site vind je rustige, duidelijke informatie over je spijsvertering en over Darmmanagement,
+          het vezelpoeder van Powerdetox. Je kunt hier zelf op zoek gaan, of je vraag stellen aan onze AI-begeleider.
+        </p>
+        <div class="cta">
+          <a class="btn" href="/start-een-gesprek">Start een gesprek <span aria-hidden="true">→</span></a>
+          <a class="btn-ghost" href="/winkel">Bekijk de producten</a>
+        </div>
+        <p class="notice">De begeleider is een AI, geen arts of therapeut.</p>
+      </div>
+      <img class="hero-img" src="/images/sophie-met-zakje-breed.webp" width="1400" height="788" alt="Sophie, therapeute bij Powerdetox, met een sachet Darmmanagement" fetchpriority="high" />
+    </div>
+  </section>
+
+  <section class="doen">
+    <div class="wrap">
+      <h2>Wat kun je hier doen?</h2>
+      <div class="cards">
+        <a class="card" href="/start-een-gesprek">
+          <span class="ico" aria-hidden="true">💬</span>
+          <strong>Praten met de AI-begeleider</strong>
+          <p>Stel je vraag over je stoelgang, je buik of Darmmanagement, in je eigen woorden en op je eigen moment.</p>
+        </a>
+        <a class="card" href="/vezelcheck">
+          <span class="ico" aria-hidden="true">🥦</span>
+          <strong>De vezelcheck doen</strong>
+          <p>Zes korte vragen, en je krijgt een schatting van hoeveel vezels je op een dag binnenkrijgt.</p>
+        </a>
+        <a class="card" href="/winkel">
+          <span class="ico" aria-hidden="true">🛒</span>
+          <strong>De producten bekijken</strong>
+          <p>Darmmanagement Original en PRO, in potten van 150 en 250 gram en in sachets. Bestellen gaat via powerdetox.nl.</p>
+        </a>
+        <a class="card" href="/veelgestelde-vragen">
+          <span class="ico" aria-hidden="true">❓</span>
+          <strong>Antwoorden lezen</strong>
+          <p>De meest gestelde vragen over gebruik, ingrediënten en bestellen, overzichtelijk bij elkaar.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="producten">
+    <div class="wrap">
+      <h2>Twee varianten, één basis</h2>
+      <p class="sub">Beide bevatten psylliumvezel en negen kruiden. PRO bevat daarnaast acht stammen levende bacteriën.</p>
+      <a href="/winkel" class="banner-link">
+        <img src="/images/winkel/banner-producten.webp" srcset="/images/winkel/banner-producten-900.webp 900w, /images/winkel/banner-producten.webp 1800w" sizes="(min-width: 1200px) 1140px, 100vw" width="1800" height="675" loading="lazy" alt="Sophie wijst naar Darmmanagement Original en PRO: potten van 150 en 250 gram en sachets" />
+      </a>
+      <div class="duo">
+        <a class="pill-link original" href="/winkel">Darmmanagement Original <span aria-hidden="true">→</span></a>
+        <a class="pill-link pro" href="/winkel">Darmmanagement PRO <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wie">
+    <div class="wrap wie-grid">
+      <div>
+        <h2>Wie zijn wij?</h2>
+        <p>Darmmanagement is een product van Powerdetox. Wij kijken niet alleen naar een klacht, maar naar je hele leefstijl: wat je eet, hoe je slaapt, hoeveel je beweegt en hoeveel spanning je ervaart.</p>
+        <p>Je houdt zelf de regie. Goede informatie helpt je om keuzes te maken die bij jou passen, of dat nu een aanpassing in je voeding is, een product, of een afspraak met je huisarts.</p>
+        <a class="more" href="/over-ons">Meer over ons <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="niet">
+        <h3>Goed om te weten</h3>
+        <ul>
+          <li>De begeleider is een AI. Hij stelt geen diagnose.</li>
+          <li>Darmmanagement vervangt geen medisch advies of behandeling.</li>
+          <li>Heb je een darmaandoening, gebruik je medicijnen of heb je langdurige klachten? Overleg dan eerst met je arts.</li>
+        </ul>
+        <a class="more" href="/medische-informatie">Medische informatie <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .concept-bar { background: #fff4cc; color: #6b5300; text-align: center; font-size: .9rem; padding: 8px 16px; border-bottom: 1px solid #ecd98a; }
+  .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
+  .w-hero { padding: 56px 0 48px; }
+  .w-grid { display: grid; gap: 36px; align-items: center; }
+  @media (min-width: 900px) { .w-grid { grid-template-columns: 1fr 1.15fr; } }
+  .w-hero h1 { font-size: clamp(2.1rem, 5vw, 3.2rem); color: var(--green); margin: 0 0 16px; }
+  .lead { font-size: 1.15rem; max-width: 40ch; margin: 0 0 26px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn-ghost { display: inline-flex; align-items: center; padding: .8em 1.3em; border-radius: 999px; border: 2px solid var(--green); color: var(--green); font-weight: 600; text-decoration: none; }
+  .btn-ghost:hover { background: var(--sage-soft); }
+  .notice { margin-top: 18px; color: var(--muted); font-size: .95rem; }
+  .hero-img { width: 100%; height: auto; border-radius: 22px; box-shadow: 0 18px 40px rgba(20, 35, 28, .15); }
+
+  .doen { background: var(--sage-soft); border-block: 1px solid var(--line); padding: 48px 0; }
+  .doen h2, .producten h2, .wie h2 { font-size: 1.7rem; margin: 0 0 18px; }
+  .cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .card { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; color: inherit; text-decoration: none; transition: transform .15s, box-shadow .15s; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(20, 35, 28, .1); }
+  .card strong { color: var(--green); font-size: 1.08rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .ico { font-size: 1.6rem; }
+
+  .producten { padding: 52px 0; }
+  .sub { color: var(--muted); margin: -8px 0 20px; }
+  .banner-link img { display: block; width: 100%; height: auto; border-radius: 18px; box-shadow: 0 10px 30px rgba(20, 35, 28, .12); }
+  .duo { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+  .pill-link { padding: .7em 1.2em; border-radius: 999px; font-weight: 600; text-decoration: none; color: #fff; }
+  .pill-link.original { background: #3e8c26; }
+  .pill-link.pro { background: #1f5fa8; }
+
+  .wie { padding: 8px 0 60px; }
+  .wie-grid { display: grid; gap: 28px; }
+  @media (min-width: 900px) { .wie-grid { grid-template-columns: 1.2fr 1fr; } }
+  .niet { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .niet h3 { margin: 0 0 10px; }
+  .niet ul { margin: 0 0 12px; padding-left: 1.2em; }
+  .niet li { margin-bottom: 6px; }
+  .more { color: var(--green); font-weight: 600; }
+</style>
