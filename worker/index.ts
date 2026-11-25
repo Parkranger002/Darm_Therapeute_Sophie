@@ -12,6 +12,7 @@
 import instructies from '../src/knowledge/instructies.md';
 import product from '../src/knowledge/product.md';
 import aandoeningen from '../src/knowledge/aandoeningen.md';
+import kennisbank from '../src/knowledge/kennisbank.md';
 import { checkAlarm, filterOutput, ALARM_REPLIES } from '../src/lib/safety';
 import { handleErvaring, handleErvaringenLijst, handleBeheer, type ErvaringEnv } from './ervaringen';
 
@@ -48,7 +49,9 @@ const SYSTEM_KNOWLEDGE = [
   instructies,
   '# Productinformatie',
   product,
-  '# Kennisbank',
+  '# Kennisbank: spijsvertering, ingrediënten, levende bacteriën, gebruik en vragen',
+  kennisbank,
+  '# Kennisbank: aandoeningen van de dikke darm',
   aandoeningen,
 ].join('\n\n');
 
