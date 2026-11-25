@@ -1,0 +1,138 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/shop.css';
+// CONCEPT: afrekenen. Het bedrag wordt op de server berekend; de browser stuurt alleen sku + aantal.
+---
+<Base title="Afrekenen (concept) – Darmmanagement" description="Afrekenen" noindex hideBanner>
+  <div class="concept-bar">Concept: eigen webshop. Alleen zichtbaar met het beheerwachtwoord.</div>
+  <section class="shop">
+    <div class="wrap shop-grid">
+      <form id="form" class="afreken" novalidate>
+        <p><a href="/shop-concept/">← Terug naar de winkel</a></p>
+        <h1>Afrekenen</h1>
+
+        <fieldset>
+          <legend>Je gegevens</legend>
+          <label class="vol">Naam<input name="naam" autocomplete="name" required maxlength="80"></label>
+          <label>E-mailadres<input name="email" type="email" autocomplete="email" required maxlength="120"><small>Voor de bevestiging en de trackingcode.</small></label>
+          <label>Telefoon (optioneel)<input name="telefoon" type="tel" autocomplete="tel" maxlength="30"><small>Alleen voor de bezorger.</small></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Bezorgadres</legend>
+          <label>Land<select name="land" autocomplete="country"><option value="NL">Nederland</option><option value="BE">België</option></select></label>
+          <label>Postcode<input name="postcode" autocomplete="postal-code" required maxlength="10" placeholder="1234 AB"></label>
+          <div class="nr">
+            <label>Huisnummer<input name="huisnummer" inputmode="numeric" required maxlength="5"></label>
+            <label>Toevoeging<input name="toevoeging" maxlength="10"></label>
+          </div>
+          <label>Straat<input name="straat" autocomplete="address-line1" required maxlength="100"></label>
+          <label>Plaats<input name="plaats" autocomplete="address-level2" required maxlength="60"></label>
+          <label class="vol">Opmerking (optioneel)<textarea name="opmerking" rows="2" maxlength="500"></textarea></label>
+        </fieldset>
+
+        <label class="akkoord"><input type="checkbox" name="akkoord" required><span>Ik ga akkoord met de <a href="#" onclick="return false">algemene voorwaarden</a> (nog toe te voegen) en heb de <a href="/privacy" target="_blank">privacyverklaring</a> gelezen.</span></label>
+        <p class="fout" id="fout" role="alert" hidden></p>
+        <button class="btn wide" id="betaal" type="submit">Bestellen en betalen</button>
+        <p class="klein">Je betaalt bij Mollie (iDEAL, Bancontact, creditcard). Daarna kom je terug op deze site.</p>
+      </form>
+
+      <aside class="mand" aria-label="Overzicht">
+        <h2>Je bestelling</h2>
+        <div id="mand-regels"><p class="leeg">Laden…</p></div>
+        <dl class="som" id="som" hidden>
+          <dt>Subtotaal</dt><dd id="sub"></dd>
+          <dt>Verzendkosten</dt><dd id="vk"></dd>
+          <dt class="tot">Totaal (incl. btw)</dt><dd class="tot" id="tot"></dd>
+        </dl>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { catalogus, lees, totalen, euro, SHOP, type Catalogus } from '../../lib/winkelmand';
+  const $ = (id: string) => document.getElementById(id)!;
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  const form = $('form') as HTMLFormElement;
+  let cat: Catalogus | null = null;
+
+  const VELD: Record<string, string> = {
+    naam: 'je naam', email: 'een geldig e-mailadres', straat: 'de straat', huisnummer: 'het huisnummer (alleen cijfers)',
+    postcode: 'een geldige postcode', plaats: 'de plaats', land: 'het land', akkoord: 'akkoord met de voorwaarden', winkelmand: 'minstens één product',
+  };
+
+  function teken() {
+    if (!cat) return;
+    const t = totalen(lees(), cat);
+    $('mand-regels').innerHTML = t.regels.length
+      ? t.regels.map((r) => `<div class="regel"><div><strong>${r.aantal}× ${esc(r.p.naam.replace('Darmmanagement ', ''))}</strong><br><span class="klein">${esc(r.p.vorm)}</span></div><div></div><div class="bedrag">${euro(r.aantal * r.p.prijs_cent)}</div></div>`).join('')
+      : '<p class="leeg">Je winkelmand is leeg. <a href="/shop-concept/">Kies eerst een product.</a></p>';
+    ($('som') as HTMLElement).hidden = !t.regels.length;
+    $('sub').textContent = euro(t.subtotaal);
+    $('vk').textContent = t.verzend ? euro(t.verzend) : 'gratis';
+    $('tot').textContent = euro(t.totaal);
+    ($('betaal') as HTMLButtonElement).disabled = !t.regels.length;
+  }
+  catalogus().then((c) => { cat = c; teken(); }).catch(() => ($('mand-regels').innerHTML = '<p>Kon de producten niet laden.</p>'));
+
+  // Postcode netjes schrijven (1234AB → 1234 AB)
+  form.postcode.addEventListener('blur', () => {
+    const v = form.postcode.value.toUpperCase().replace(/\s+/g, '');
+    if (/^\d{4}[A-Z]{2}$/.test(v)) form.postcode.value = v.slice(0, 4) + ' ' + v.slice(4);
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fout = $('fout');
+    fout.hidden = true;
+    form.querySelectorAll('.bad').forEach((el) => el.classList.remove('bad'));
+    const d = new FormData(form);
+    const klant = Object.fromEntries(['naam', 'email', 'telefoon', 'straat', 'huisnummer', 'toevoeging', 'postcode', 'plaats', 'land', 'opmerking'].map((k) => [k, String(d.get(k) ?? '')]));
+    const knop = $('betaal') as HTMLButtonElement;
+    knop.disabled = true;
+    knop.textContent = 'Even geduld…';
+    try {
+      const r = await fetch(`${SHOP}/api/bestel`, {
+        method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ items: lees(), klant, akkoord: d.get('akkoord') === 'on' }),
+      });
+      const res = await r.json().catch(() => ({}));
+      if (r.ok && res.redirect) { location.href = res.redirect; return; }
+      if (res.velden?.length) {
+        res.velden.forEach((v: string) => form.querySelector(`[name="${v}"]`)?.classList.add('bad'));
+        fout.textContent = 'Controleer: ' + res.velden.map((v: string) => VELD[v] ?? v).join(', ') + '.';
+      } else if (r.status === 429) {
+        fout.textContent = 'Te veel pogingen achter elkaar. Probeer het over een minuut opnieuw.';
+      } else {
+        fout.textContent = 'Het betalen kon niet worden gestart. Probeer het opnieuw of neem contact met ons op.';
+      }
+      fout.hidden = false;
+    } catch {
+      fout.textContent = 'Geen verbinding. Probeer het opnieuw.';
+      fout.hidden = false;
+    }
+    knop.disabled = false;
+    knop.textContent = 'Bestellen en betalen';
+  });
+</script>
+
+<style is:global>
+  .afreken h1 { margin: 6px 0 14px; color: var(--green); }
+  .afreken fieldset { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 14px 16px 6px; margin: 0 0 16px; display: grid; gap: 0 14px; grid-template-columns: 1fr 1fr; }
+  .afreken, .afreken fieldset { min-width: 0; }
+  .afreken input, .afreken select, .afreken textarea { width: 100%; min-width: 0; box-sizing: border-box; }
+  .afreken .akkoord input { width: 22px; height: 22px; min-height: 22px; flex: 0 0 auto; accent-color: var(--green); margin-top: 1px; }
+  @media (max-width: 979px) { .shop-grid > .mand { order: -1; } }
+  .afreken legend { font-weight: 700; color: var(--green); padding: 0 6px; }
+  .afreken label { display: flex; flex-direction: column; gap: 4px; font-size: .92rem; font-weight: 600; margin-bottom: 12px; }
+  .afreken label.vol { grid-column: 1 / -1; }
+  .afreken .nr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .afreken input, .afreken select, .afreken textarea { font: inherit; font-weight: 400; padding: .6em .7em; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; min-height: 44px; }
+  .afreken input:focus, .afreken select:focus, .afreken textarea:focus { outline: 3px solid #b9d3c2; border-color: var(--green); }
+  .afreken .bad { border-color: #b04a2f !important; background: #fff6f3; }
+  .afreken small { font-weight: 400; color: var(--muted); font-size: .8rem; }
+  .afreken .akkoord { flex-direction: row; align-items: flex-start; gap: 10px; font-weight: 400; }
+  .fout { background: #f6e0da; color: #8a3420; padding: .6em .8em; border-radius: 10px; }
+  @media (max-width: 640px) { .afreken fieldset { grid-template-columns: 1fr; } }
+</style>

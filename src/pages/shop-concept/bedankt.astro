@@ -1,0 +1,54 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/shop.css';
+// CONCEPT: bedankpagina. Haalt de status op met het geheime token uit de link.
+---
+<Base title="Bestelling (concept) – Darmmanagement" description="Je bestelling" noindex hideBanner>
+  <div class="concept-bar">Concept: eigen webshop. Alleen zichtbaar met het beheerwachtwoord.</div>
+  <section class="shop">
+    <div class="wrap bedankt" id="vak">
+      <p class="leeg">Je bestelling wordt opgehaald…</p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { euro, leeg, SHOP } from '../../lib/winkelmand';
+  const vak = document.getElementById('vak')!;
+  const q = new URLSearchParams(location.search);
+  const esc = (s: string) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  let pogingen = 0;
+
+  async function haal() {
+    const r = await fetch(`${SHOP}/api/status?o=${encodeURIComponent(q.get('o') ?? '')}&t=${encodeURIComponent(q.get('t') ?? '')}`, { credentials: 'same-origin' });
+    if (!r.ok) { vak.innerHTML = '<h1>Bestelling niet gevonden</h1><p>Controleer de link in je e-mail, of neem contact met ons op.</p>'; return; }
+    const b = await r.json();
+    const regels = b.regels.map((x: { aantal: number; naam: string; vorm: string; prijs_cent: number }) =>
+      `<div class="regel"><div><strong>${x.aantal}× ${esc(x.naam)}</strong><br><span class="klein">${esc(x.vorm)}</span></div><div></div><div class="bedrag">${euro(x.aantal * x.prijs_cent)}</div></div>`).join('');
+    const overzicht = `<div class="mand">${regels}<dl class="som"><dt>Verzendkosten</dt><dd>${b.verzend_cent ? euro(b.verzend_cent) : 'gratis'}</dd><dt class="tot">Totaal</dt><dd class="tot">${euro(b.totaal_cent)}</dd></dl></div>`;
+
+    if (b.status === 'betaald' || b.status === 'verzonden') {
+      leeg();
+      vak.innerHTML = `<p class="vink" aria-hidden="true">✓</p><h1>Bedankt voor je bestelling, ${esc(b.naam.split(' ')[0])}!</h1>
+        <p>Je betaling is gelukt. Bestelnummer <strong>${esc(b.nr)}</strong>. We sturen je bestelling met PostNL naar je toe.</p>
+        ${b.track_url ? `<p>Volg je pakket: <a href="${esc(b.track_url)}" target="_blank" rel="noopener">${esc(b.barcode ?? 'trackinglink')}</a></p>` : '<p>Zodra je pakket onderweg is, krijg je de trackingcode per e-mail.</p>'}
+        ${overzicht}
+        <p class="klein">In het pakket zit een boekje met uitleg over het gebruik. Vragen? <a href="/start-een-gesprek">Chat met de begeleider</a>.</p>`;
+    } else if (b.status === 'open' && pogingen++ < 10) {
+      vak.innerHTML = '<h1>We wachten op de bevestiging van je betaling…</h1><p>Dit duurt meestal een paar seconden.</p>';
+      setTimeout(haal, 2500);
+    } else if (b.status === 'open') {
+      vak.innerHTML = `<h1>Je betaling is nog niet bevestigd</h1><p>Bestelnummer <strong>${esc(b.nr)}</strong>. Heb je betaald? Dan komt de bevestiging later per e-mail. Niet betaald? <a href="/shop-concept/afrekenen/">Probeer het opnieuw</a>.</p>`;
+    } else {
+      vak.innerHTML = `<h1>De betaling is niet gelukt</h1><p>Er is niets afgeschreven. Je winkelmand staat nog klaar.</p><p><a class="btn" href="/shop-concept/afrekenen/">Opnieuw proberen</a></p>`;
+    }
+  }
+  haal().catch(() => (vak.innerHTML = '<h1>Er ging iets mis</h1><p>Ververs de pagina.</p>'));
+</script>
+
+<style is:global>
+  .bedankt { max-width: 640px; }
+  .bedankt h1 { color: var(--green); margin: 0 0 10px; }
+  .bedankt .mand { margin: 18px 0; }
+  .vink { width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: #fff; font-size: 1.8rem; display: grid; place-items: center; margin: 0 0 10px; }
+</style>

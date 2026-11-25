@@ -142,7 +142,7 @@ dl{display:grid;grid-template-columns:max-content 1fr;gap:2px 14px;margin:.4em 0
 .letop{background:#fde9e1;color:#7a2e18;padding:.3em .6em;border-radius:6px;font-size:.88rem;display:inline-block}
 form{display:inline}button{font:inherit;padding:.35em .8em;border-radius:999px;border:1.5px solid #1f4d3a;background:#fff;color:#1f4d3a;cursor:pointer;margin:4px 6px 0 0}
 button.danger{border-color:#b04a2f;color:#b04a2f}.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-</style></head><body><header><h1>Darmmanagement · ervaringen van gebruikers</h1></header><main>${body}</main></body></html>`, {
+</style></head><body><header><h1>Darmmanagement · ervaringen van gebruikers</h1><p style="margin:.3em 0 0"><a href="/beheer/bestellingen" style="color:#dfeee5;margin-right:14px">Bestellingen</a><a href="/beheer/producten" style="color:#dfeee5">Producten en prijzen</a></p></header><main>${body}</main></body></html>`, {
     status,
     headers: {
       'content-type': 'text/html; charset=utf-8',

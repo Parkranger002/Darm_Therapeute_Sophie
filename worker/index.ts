@@ -5,6 +5,8 @@
  * - /api/ervaring → slaat een ingevulde ervaring op (D1-database)
  * - /api/ervaringen → goedgekeurde ervaringen voor de pagina /ervaringen
  * - /beheer    → beveiligde pagina om ervaringen te lezen (wachtwoord)
+ * - /beheer/bestellingen, /beheer/producten → webshop-beheer (wachtwoord), zie worker/shop.ts
+ * - /shop-concept → webshop in conceptfase (wachtwoord); /api/mollie/webhook → betaalstatus van Mollie
  * - al het andere → de statische Astro-site uit ./dist (ASSETS)
  *
  * Chatgesprekken worden niet opgeslagen. Alleen ingevulde ervaringen worden bewaard.
@@ -14,13 +16,14 @@ import product from '../src/knowledge/product.md';
 import aandoeningen from '../src/knowledge/aandoeningen.md';
 import kennisbank from '../src/knowledge/kennisbank.md';
 import { checkAlarm, filterOutput, ALARM_REPLIES } from '../src/lib/safety';
-import { handleErvaring, handleErvaringenLijst, handleBeheer, type ErvaringEnv } from './ervaringen';
+import { handleErvaring, handleErvaringenLijst, handleBeheer, authorized, type ErvaringEnv } from './ervaringen';
+import { handleShopApi, handleShopBeheer, handleMollieWebhook, SHOP_BASE, type ShopEnv } from './shop';
 
 interface RateLimiter {
   limit(opts: { key: string }): Promise<{ success: boolean }>;
 }
 
-interface Env extends ErvaringEnv {
+interface Env extends ErvaringEnv, ShopEnv {
   ASSETS: { fetch(req: Request): Promise<Response> };
   ANTHROPIC_API_KEY?: string;
   MODEL?: string;
@@ -74,7 +77,28 @@ export default {
     }
     if (url.pathname === '/api/ervaring') return handleErvaring(request, env, url);
     if (url.pathname === '/api/ervaringen') return handleErvaringenLijst(request, env);
+    if (url.pathname === '/api/mollie/webhook') return handleMollieWebhook(request, env);
+    if (url.pathname.startsWith('/beheer/bestellingen') || url.pathname === '/beheer/producten') {
+      // Zonder geldige inlog geeft handleBeheer de inlogvraag (met rem op raden).
+      if (!authorized(request, env)) return handleBeheer(request, env, url);
+      return handleShopBeheer(request, env, url);
+    }
     if (url.pathname === '/beheer' || url.pathname.startsWith('/beheer/')) return handleBeheer(request, env, url);
+    // Webshop in conceptfase: alles achter het beheerwachtwoord en nooit in Google.
+    if (url.pathname === SHOP_BASE || url.pathname.startsWith(SHOP_BASE + '/')) {
+      if (!authorized(request, env)) {
+        return new Response('Inloggen vereist', {
+          status: 401,
+          headers: { 'www-authenticate': 'Basic realm="Darmmanagement beheer", charset="UTF-8"', 'cache-control': 'no-store' },
+        });
+      }
+      const sub = url.pathname.slice(SHOP_BASE.length);
+      const res = sub.startsWith('/api/') || sub === '/testbetaling' ? await handleShopApi(request, env, url) : await env.ASSETS.fetch(request);
+      const out = new Response(res.body, res);
+      out.headers.set('x-robots-tag', 'noindex, nofollow');
+      out.headers.set('cache-control', 'private, no-store');
+      return out;
+    }
     // Oude conceptadres van de welkomstpagina: die is nu de startpagina.
     if (url.pathname === '/welkom-concept' || url.pathname.startsWith('/welkom-concept/')) {
       return Response.redirect(new URL('/', url).toString(), 301);

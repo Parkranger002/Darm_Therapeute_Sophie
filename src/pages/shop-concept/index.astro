@@ -1,0 +1,124 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/shop.css';
+// CONCEPT: eigen webshop met Mollie en MyParcel. Alleen bereikbaar met het beheerwachtwoord
+// (zie worker/index.ts en worker/shop.ts). Producten en prijzen komen uit de database.
+---
+<Base title="Webshop (concept) – Darmmanagement" description="Concept van de eigen webshop." noindex hideBanner>
+  <div class="concept-bar">Concept: eigen webshop. Alleen zichtbaar met het beheerwachtwoord. <span id="modus"></span></div>
+
+  <section class="shop">
+    <div class="wrap shop-grid">
+      <div>
+        <h1>Bestel Darmmanagement</h1>
+        <p class="lead">Kies je variant en verpakking. Je betaalt veilig via iDEAL of een andere betaalmethode van Mollie, en we versturen met PostNL.</p>
+        <div class="filters" role="group" aria-label="Filter">
+          <button class="f on" data-f="alle">Alles</button>
+          <button class="f" data-f="original">Original</button>
+          <button class="f" data-f="pro">PRO</button>
+        </div>
+        <div id="producten" class="producten" aria-live="polite"><p class="laden">Producten laden…</p></div>
+      </div>
+
+      <aside class="mand" aria-label="Winkelmand">
+        <h2>Winkelmand</h2>
+        <div id="mand-regels"><p class="leeg">Je winkelmand is nog leeg.</p></div>
+        <dl class="som" id="som" hidden>
+          <dt>Subtotaal</dt><dd id="sub"></dd>
+          <dt>Verzendkosten</dt><dd id="vk"></dd>
+          <dt class="tot">Totaal (incl. btw)</dt><dd class="tot" id="tot"></dd>
+        </dl>
+        <a href="/shop-concept/afrekenen/" class="btn wide" id="naar-afrekenen" aria-disabled="true">Afrekenen</a>
+        <p class="klein">Verzending met PostNL, met trackingcode. Vragen? <a href="/start-een-gesprek">Chat met de begeleider</a>.</p>
+      </aside>
+    </div>
+  </section>
+
+  <a href="/shop-concept/afrekenen/" class="mobiel-bar" id="mobiel-bar" hidden>
+    <span><span id="mb-aantal">0</span> in winkelmand · <strong id="mb-totaal"></strong></span>
+    <span class="mb-knop">Afrekenen →</span>
+  </a>
+</Base>
+
+<script>
+  import { catalogus, lees, voegToe, zet, totalen, euro, type Catalogus } from '../../lib/winkelmand';
+
+  const lijn = {
+    original: { label: 'ORIGINAL', tekst: 'Psylliumvezel met negen kruiden.' },
+    pro: { label: 'PRO', tekst: 'Psylliumvezel met negen kruiden, plus acht stammen levende bacteriën.' },
+  } as const;
+  let cat: Catalogus | null = null;
+  let filter = 'alle';
+  const $ = (id: string) => document.getElementById(id)!;
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+  function tekenProducten() {
+    if (!cat) return;
+    const lijst = cat.producten.filter((p) => filter === 'alle' || p.lijn === filter);
+    $('producten').innerHTML = lijst.map((p) => {
+      const l = lijn[p.lijn as keyof typeof lijn];
+      const prijs = p.prijs_cent === null ? '<span class="prijs volgt">Prijs volgt</span>' : `<span class="prijs">${euro(p.prijs_cent)}</span>`;
+      return `<article class="kaart ${p.lijn}">
+        <div class="foto"><img src="${esc(p.afbeelding ?? '')}" alt="" loading="lazy" width="300" height="360"></div>
+        <span class="badge">${l?.label ?? ''}</span>
+        <h3>${esc(p.naam)}</h3>
+        <p class="vorm">${esc(p.vorm)}</p>
+        <p class="omschr">${l?.tekst ?? ''}</p>
+        <div class="koop">${prijs}
+          <button class="btn klein-btn" data-sku="${esc(p.sku)}" ${p.prijs_cent === null ? 'disabled' : ''}>In winkelmand</button>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  function tekenMand() {
+    if (!cat) return;
+    const t = totalen(lees(), cat);
+    $('mand-regels').innerHTML = t.regels.length
+      ? t.regels.map((r) => `<div class="regel">
+          <div><strong>${esc(r.p.naam.replace('Darmmanagement ', ''))}</strong><br><span class="klein">${esc(r.p.vorm)}</span></div>
+          <div class="aantal"><button aria-label="Eén minder" data-min="${esc(r.sku)}">−</button><span>${r.aantal}</span><button aria-label="Eén meer" data-plus="${esc(r.sku)}">+</button></div>
+          <div class="bedrag">${euro(r.aantal * r.p.prijs_cent)}</div></div>`).join('')
+      : '<p class="leeg">Je winkelmand is nog leeg.</p>';
+    ($('som') as HTMLElement).hidden = !t.regels.length;
+    $('sub').textContent = euro(t.subtotaal);
+    $('vk').textContent = t.verzend ? euro(t.verzend) : 'gratis';
+    $('tot').textContent = euro(t.totaal);
+    const knop = $('naar-afrekenen');
+    knop.setAttribute('aria-disabled', String(!t.regels.length));
+    ($('mobiel-bar') as HTMLElement).hidden = !t.regels.length;
+    $('mb-aantal').textContent = String(t.aantal);
+    $('mb-totaal').textContent = euro(t.totaal);
+  }
+
+  document.addEventListener('click', (e) => {
+    const el = (e.target as HTMLElement).closest('button, a') as HTMLElement | null;
+    if (!el) return;
+    if (el.dataset.sku) {
+      voegToe(el.dataset.sku);
+      el.textContent = 'Toegevoegd ✓';
+      setTimeout(() => (el.textContent = 'In winkelmand'), 1400);
+    }
+    const items = lees();
+    if (el.dataset.plus) zet(el.dataset.plus, (items.find((i) => i.sku === el.dataset.plus)?.aantal ?? 0) + 1);
+    if (el.dataset.min) zet(el.dataset.min, (items.find((i) => i.sku === el.dataset.min)?.aantal ?? 0) - 1);
+    if (el.dataset.f) {
+      filter = el.dataset.f;
+      document.querySelectorAll('.f').forEach((b) => b.classList.toggle('on', b === el));
+      tekenProducten();
+    }
+    if (el.id === 'naar-afrekenen' && el.getAttribute('aria-disabled') === 'true') e.preventDefault();
+  });
+  addEventListener('winkelmand', tekenMand);
+  addEventListener('storage', tekenMand);
+
+  catalogus().then((c) => {
+    cat = c;
+    $('modus').textContent = c.testmodus ? 'Betalen staat in testmodus: er wordt niets afgeschreven.' : '';
+    tekenProducten();
+    tekenMand();
+  }).catch(() => {
+    $('producten').innerHTML = '<p>De producten konden niet worden geladen. Probeer het later opnieuw.</p>';
+  });
+</script>
+
