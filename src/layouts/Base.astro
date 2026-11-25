@@ -40,6 +40,7 @@ const organization = {
   '@type': 'Organization',
   name: 'Darmmanagement',
   url: new URL('/', Astro.site).href,
+  logo: new URL('/icon-512.png', Astro.site).href,
   email: 'detoxhelpdesk@gmail.com',
   parentOrganization: { '@type': 'Organization', name: 'Powerdetox', url: 'https://www.powerdetox.nl/' },
   sameAs: ['https://darmmanagement.nl/', 'https://www.powerdetox.nl/'],
@@ -53,7 +54,9 @@ const organization = {
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap.xml" />
     <meta name="theme-color" content="#1f4d3a" />
     <meta property="og:type" content="website" />
@@ -72,7 +75,10 @@ const organization = {
   <body>
     <header class="site-header">
       <div class="wrap bar">
-        <a href="/" class="logo">DARM MANAGEMENT</a>
+        <a href="/" class="logo" aria-label="Darmmanagement, naar de startpagina">
+          <img src="/logo-mark.svg" width="38" height="31" alt="" />
+          <span>Darmmanagement<sup>®</sup></span>
+        </a>
         <nav>
           {MENU.map(([href, label]) => <a href={href} aria-current={here === href ? 'page' : undefined}>{label}</a>)}
         </nav>
@@ -99,7 +105,9 @@ const organization = {
 <style>
   .site-header { border-bottom: 1px solid var(--line); background: var(--bg); }
   .bar { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .logo { font-weight: 700; letter-spacing: .12em; font-size: .9rem; color: var(--green); text-decoration: none; }
+  .logo { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: #1b3f6e; font-weight: 800; font-size: 1.28rem; letter-spacing: -.02em; line-height: 1; }
+  .logo img { display: block; height: 31px; width: auto; }
+  .logo sup { font-size: .5em; font-weight: 600; margin-left: 1px; vertical-align: super; line-height: 0; }
   nav { display: flex; gap: 22px; }
   nav a { color: var(--ink); text-decoration: none; font-size: .95rem; white-space: nowrap; }
   .logo { white-space: nowrap; }
