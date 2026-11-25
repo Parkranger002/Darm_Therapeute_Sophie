@@ -5,6 +5,7 @@ const PAGES: [path: string, priority: string][] = [
   ['/', '1.0'],
   ['/start-een-gesprek/', '0.9'],
   ['/product/', '0.9'],
+  ['/winkel/', '0.9'],
   ['/vezelcheck/', '0.9'],
   ['/veelgestelde-vragen/', '0.8'],
   ['/ervaringen/', '0.7'],
