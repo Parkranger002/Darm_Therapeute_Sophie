@@ -17,7 +17,8 @@ const tips = [
 ---
 <Base title="Vezelcheck: hoeveel vezels eet jij per dag? | Darmmanagement" description="Eet jij genoeg vezels? Doe de gratis vezelcheck: zes vragen, direct je uitslag en tips van het Voedingscentrum om meer vezels te eten.">
   <section class="v-hero">
-    <div class="wrap">
+    <div class="wrap v-hero-grid">
+      <div>
       <p class="kicker">Vezelcheck</p>
       <h1>Eet jij genoeg vezels?</h1>
       <p class="lead">
@@ -25,6 +26,11 @@ const tips = [
         nodig, mannen minstens 30 gram. Beantwoord zes korte vragen en zie ongeveer hoeveel jij eet.
       </p>
       <p class="src">Bron: <a href={VC} rel="noopener">Voedingscentrum, Vezels</a></p>
+      </div>
+      <figure class="v-photo">
+        <img src="/images/sophie-kast.webp" width="500" height="750" alt="Sophie in een witte jas met het Darmmanagement-logo, voor een kast met potten Darmmanagement" fetchpriority="high" />
+        <figcaption>Sophie, therapeute bij Powerdetox</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -195,7 +201,13 @@ const tips = [
 
 <style is:global>
   .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
-  .v-hero { padding: 56px 0 24px; }
+  .v-hero { padding: 48px 0 24px; }
+  .v-hero-grid { display: grid; gap: 28px; align-items: center; }
+  @media (min-width: 820px) { .v-hero-grid { grid-template-columns: 1.4fr .6fr; } }
+  .v-photo { margin: 0; justify-self: center; max-width: 300px; width: 100%; }
+  .v-photo img { display: block; width: 100%; height: 360px; object-fit: cover; object-position: 50% 15%; border-radius: var(--radius); box-shadow: 0 10px 28px rgba(20, 35, 28, .12); }
+  .v-photo figcaption { font-size: .85rem; color: var(--muted); margin-top: 8px; text-align: center; }
+  @media (max-width: 819px) { .v-photo { max-width: 260px; } .v-photo img { height: 300px; } }
   .v-hero h1 { font-size: clamp(2rem, 4.4vw, 3rem); color: var(--green); }
   .lead { font-size: 1.15rem; max-width: 720px; margin: 0 0 8px; }
   .src { font-size: .88rem; color: var(--muted); margin: 0; }
