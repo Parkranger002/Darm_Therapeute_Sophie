@@ -42,42 +42,42 @@ const pro = {
 const products: Product[] = [
   {
     id: 'original-150', lijn: 'original', vorm: 'pot', naam: 'Darmmanagement Original', sub: 'Pot 150 gram',
-    img: '/images/winkel/pot-150.webp', w: 222, h: 261,
+    img: '/images/winkel/pot-original-150.webp', w: 351, h: 420,
     feiten: ['30 porties', '± 30 dagen bij 1 portie per dag', 'Met maatschepje'],
     tekst: 'Vezelrijk poeder van psylliumvezel en negen kruiden, zoals brandnetel, paardenbloemwortel en gember. Roer het door water, sap of een smoothie.',
     url: URL_ORIGINAL, achter: { inhoud: '150 g = 30 porties van 5 g', ...original },
   },
   {
     id: 'original-250', lijn: 'original', vorm: 'pot', naam: 'Darmmanagement Original', sub: 'Pot 250 gram',
-    img: '/images/winkel/pot-250.webp', w: 262, h: 342,
+    img: '/images/winkel/pot-original-250.webp', w: 329, h: 420,
     feiten: ['50 porties', '± 50 dagen bij 1 portie per dag', 'Met maatschepje'],
     tekst: 'De grote pot: psylliumvezel en negen kruiden voor dagelijks gebruik. Roer het door water, sap of een smoothie.',
     url: URL_ORIGINAL, achter: { inhoud: '250 g = 50 porties van 5 g', ...original },
   },
   {
     id: 'original-sachets', lijn: 'original', vorm: 'sachet', naam: 'Darmmanagement Original', sub: 'Sachets, per 7 of 21',
-    img: '/images/winkel/sachet-original.webp', w: 240, h: 331,
+    img: '/images/winkel/sachet-original.webp', w: 302, h: 420,
     feiten: ['5 g per sachet = 1 portie', 'Doos van 7 of 21 stuks', 'Handig onderweg'],
     tekst: 'Precies één portie per zakje, zonder afmeten. Handig voor op je werk, onderweg of op vakantie.',
     url: SHOP, achter: { inhoud: 'Sachets van 5 g, per 7 of 21 stuks', ...original },
   },
   {
     id: 'pro-150', lijn: 'pro', vorm: 'pot', naam: 'Darmmanagement PRO', sub: 'Pot 150 gram',
-    img: '/images/winkel/pot-150.webp', w: 222, h: 261,
+    img: '/images/winkel/pot-pro-150.webp', w: 352, h: 420,
     feiten: ['30 porties', '3,6 g vezels per portie', 'Met levende bacteriën'],
     tekst: 'Psylliumvezel en negen kruiden, aangevuld met acht stammen levende bacteriën: samen 2,5 miljard per portie.',
     url: URL_PRO, achter: { inhoud: '150 g = 30 porties van 5 g', ...pro },
   },
   {
     id: 'pro-250', lijn: 'pro', vorm: 'pot', naam: 'Darmmanagement PRO', sub: 'Pot 250 gram',
-    img: '/images/winkel/pot-250.webp', w: 262, h: 342,
+    img: '/images/winkel/pot-pro-250.webp', w: 329, h: 420,
     feiten: ['50 porties', '3,6 g vezels per portie', 'Met levende bacteriën'],
     tekst: 'De grote pot PRO: psylliumvezel, negen kruiden en acht stammen levende bacteriën in één dagelijks poeder.',
     url: URL_PRO, achter: { inhoud: '250 g = 50 porties van 5 g', ...pro },
   },
   {
     id: 'pro-sachets', lijn: 'pro', vorm: 'sachet', naam: 'Darmmanagement PRO', sub: 'Sachets, per 7 of 21',
-    img: '/images/winkel/sachet-pro.webp', w: 209, h: 297,
+    img: '/images/winkel/sachet-pro.webp', w: 304, h: 420,
     feiten: ['5 g per sachet = 1 portie', 'Doos van 7 of 21 stuks', 'Met levende bacteriën'],
     tekst: 'PRO in handige zakjes van één portie. Ideaal om mee te nemen naar je werk of op reis.',
     url: SHOP, achter: { inhoud: 'Sachets van 5 g, per 7 of 21 stuks', ...pro },
@@ -92,9 +92,9 @@ const products: Product[] = [
   <div class="concept-bar">Concept: deze pagina is nog niet openbaar en alleen zichtbaar met het beheerwachtwoord.</div>
 
   <section class="w-hero">
-    <div class="wrap w-hero-grid">
-      <div>
-        <p class="kicker">Winkel</p>
+    <div class="wrap">
+      <img class="w-banner" src="/images/winkel/banner-producten.webp" srcset="/images/winkel/banner-producten-900.webp 900w, /images/winkel/banner-producten.webp 1800w" sizes="(min-width: 1200px) 1140px, 100vw" width="1800" height="675" alt="Sophie wijst naar Darmmanagement Original en PRO: potten van 150 en 250 gram en sachets" fetchpriority="high" />
+      <div class="w-hero-text">
         <h1>Darmmanagement Original en PRO</h1>
         <p class="lead">Een vezelrijk poeder van psylliumvezel en negen kruiden, in de pot of in handige sachets. Kies Original, of PRO met daarnaast acht stammen levende bacteriën.</p>
         <ul class="trust">
@@ -102,12 +102,6 @@ const products: Product[] = [
           <li>Glutenvrij en vegan (volgens het etiket)</li>
           <li>Bestellen via powerdetox.nl</li>
         </ul>
-      </div>
-      <div class="hero-shelf" aria-hidden="true">
-        <img src="/images/winkel/pot-150.webp" width="222" height="261" alt="" class="s1" />
-        <img src="/images/winkel/pot-250.webp" width="262" height="342" alt="" class="s2" />
-        <img src="/images/winkel/sachet-original.webp" width="240" height="331" alt="" class="s3" />
-        <img src="/images/winkel/sachet-pro.webp" width="209" height="297" alt="" class="s4" />
       </div>
     </div>
   </section>
@@ -171,7 +165,7 @@ const products: Product[] = [
 
   <section class="wrap trial">
     <div class="trial-box">
-      <img src="/images/winkel/sachet-pro.webp" width="209" height="297" alt="" loading="lazy" />
+      <img src="/images/winkel/sachet-pro.webp" width="304" height="420" alt="" loading="lazy" />
       <div>
         <h2>Eerst proberen?</h2>
         <p>Vraag een gratis probeerverpakking van Darmmanagement PRO aan: 50 gram, goed voor 10 porties. Er gelden voorwaarden.</p>
@@ -211,20 +205,12 @@ const products: Product[] = [
   .concept-bar { background: #fff4cc; color: #6b5300; text-align: center; font-size: .9rem; padding: 8px 16px; border-bottom: 1px solid #ecd98a; }
   .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--green); margin: 0 0 10px; }
   .w-hero { padding: 44px 0 12px; background: radial-gradient(ellipse at 80% 60%, #e3eed6 0%, transparent 60%); }
-  .w-hero-grid { display: grid; gap: 24px; align-items: center; }
-  @media (min-width: 900px) { .w-hero-grid { grid-template-columns: 1fr 1fr; } }
+  .w-banner { display: block; width: 100%; height: auto; border-radius: 18px; box-shadow: 0 10px 30px rgba(20, 35, 28, .12); margin-bottom: 22px; }
   .w-hero h1 { font-size: clamp(2rem, 4.4vw, 3rem); color: var(--green); }
   .lead { font-size: 1.12rem; max-width: 560px; }
   .trust { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .trust li { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: .3em .85em; font-size: .9rem; }
   .trust li::before { content: '✓ '; color: var(--green); font-weight: 700; }
-  .hero-shelf { position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 0; padding: 10px 0 18px; min-height: 260px; }
-  .hero-shelf::after { content: ''; position: absolute; left: 6%; right: 6%; bottom: 10px; height: 18px; border-radius: 50%; background: radial-gradient(ellipse, rgba(31, 77, 58, .22), transparent 70%); z-index: 0; }
-  .hero-shelf img { position: relative; z-index: 1; height: auto; filter: drop-shadow(0 8px 14px rgba(20, 35, 28, .18)); }
-  .hero-shelf .s1 { width: 22%; margin-right: -2%; }
-  .hero-shelf .s2 { width: 27%; z-index: 2; }
-  .hero-shelf .s3 { width: 24%; margin-left: -1%; }
-  .hero-shelf .s4 { width: 21%; margin-left: -3%; }
 
   .compare { display: grid; gap: 16px; padding-top: 18px; padding-bottom: 8px; }
   @media (min-width: 760px) { .compare { grid-template-columns: 1fr 1fr; } }
