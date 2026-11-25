@@ -79,11 +79,35 @@ const organization = {
           <img src="/logo-mark.svg" width="38" height="31" alt="" />
           <span>Darmmanagement<sup>®</sup></span>
         </a>
-        <nav>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="hoofdmenu" aria-label="Menu openen">
+          <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="menu-label">Menu</span>
+        </button>
+        <nav id="hoofdmenu" aria-label="Hoofdmenu">
           {MENU.map(([href, label]) => <a href={href} aria-current={here === href ? 'page' : undefined}>{label}</a>)}
         </nav>
       </div>
     </header>
+    <script>
+      // Mobiel menu: openen/sluiten met de knop, Escape of een klik buiten het menu.
+      const btn = document.querySelector<HTMLButtonElement>('.menu-btn');
+      const header = document.querySelector<HTMLElement>('.site-header');
+      if (btn && header) {
+        const zet = (open: boolean) => {
+          header.classList.toggle('menu-open', open);
+          btn.setAttribute('aria-expanded', String(open));
+          btn.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+        };
+        btn.addEventListener('click', () => zet(btn.getAttribute('aria-expanded') !== 'true'));
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && header.classList.contains('menu-open')) { zet(false); btn.focus(); } });
+        document.addEventListener('click', (e) => { if (!header.contains(e.target as Node)) zet(false); });
+        header.querySelectorAll('nav a').forEach((a) => a.addEventListener('click', () => zet(false)));
+        matchMedia('(min-width: 861px)').addEventListener('change', (e) => { if (e.matches) zet(false); });
+        // Schaduw onder de kop zodra er gescrold is.
+        const schaduw = () => header.classList.toggle('scrolled', scrollY > 4);
+        addEventListener('scroll', schaduw, { passive: true }); schaduw();
+      }
+    </script>
     <main>
       <slot />
     </main>
@@ -103,20 +127,42 @@ const organization = {
 </html>
 
 <style>
-  .site-header { border-bottom: 1px solid var(--line); background: var(--bg); }
-  .bar { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .logo { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: #1b3f6e; font-weight: 800; font-size: 1.28rem; letter-spacing: -.02em; line-height: 1; }
+  .site-header { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--line); background: rgba(247, 244, 236, .96); backdrop-filter: saturate(1.4) blur(8px); -webkit-backdrop-filter: saturate(1.4) blur(8px); transition: box-shadow .2s; }
+  .site-header.scrolled { box-shadow: 0 4px 18px rgba(20, 35, 28, .08); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+  .logo { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: #1b3f6e; font-weight: 800; font-size: 1.28rem; letter-spacing: -.02em; line-height: 1; white-space: nowrap; }
   .logo img { display: block; height: 31px; width: auto; }
   .logo sup { font-size: .5em; font-weight: 600; margin-left: 1px; vertical-align: super; line-height: 0; }
   nav { display: flex; gap: 22px; }
   nav a { color: var(--ink); text-decoration: none; font-size: .95rem; white-space: nowrap; }
-  .logo { white-space: nowrap; }
-  @media (max-width: 480px) {
-    .bar { flex-wrap: wrap; height: auto; padding-top: 12px; padding-bottom: 10px; row-gap: 6px; }
-    nav { gap: 6px 16px; flex-wrap: wrap; }
-  }
   nav a:hover { color: var(--green); text-decoration: underline; }
   nav a[aria-current='page'] { color: var(--green); font-weight: 600; }
+  .menu-btn { display: none; align-items: center; gap: 8px; background: none; border: 1.5px solid var(--line); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: .95rem; font-weight: 600; color: var(--green); cursor: pointer; min-height: 44px; }
+  .menu-btn:focus-visible { outline: 3px solid #8fb39d; outline-offset: 2px; }
+  .burger { position: relative; width: 20px; height: 14px; display: inline-block; }
+  .burger i { position: absolute; left: 0; width: 100%; height: 2px; border-radius: 2px; background: currentColor; transition: transform .2s, opacity .2s, top .2s; }
+  .burger i:nth-child(1) { top: 0; } .burger i:nth-child(2) { top: 6px; } .burger i:nth-child(3) { top: 12px; }
+  .menu-open .burger i:nth-child(1) { top: 6px; transform: rotate(45deg); }
+  .menu-open .burger i:nth-child(2) { opacity: 0; }
+  .menu-open .burger i:nth-child(3) { top: 6px; transform: rotate(-45deg); }
+
+  @media (max-width: 860px) {
+    .bar { height: 58px; }
+    .logo { font-size: 1.12rem; }
+    .logo img { height: 27px; }
+    .menu-btn { display: inline-flex; }
+    nav { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; gap: 0; background: var(--bg); border-bottom: 1px solid var(--line); box-shadow: 0 14px 28px rgba(20, 35, 28, .12); padding: 6px 0 12px; max-height: calc(100dvh - 58px); overflow-y: auto; }
+    .menu-open nav { display: flex; }
+    nav a { padding: 13px 24px; font-size: 1.05rem; border-bottom: 1px solid var(--line); }
+    nav a:last-child { border-bottom: 0; }
+    nav a:hover { text-decoration: none; background: var(--sage-soft); }
+    nav a[aria-current='page'] { box-shadow: inset 4px 0 0 var(--green); background: var(--sage-soft); }
+  }
+  @media (max-width: 360px) {
+    .menu-label { display: none; }
+    .logo { font-size: 1.02rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .burger i, .site-header { transition: none; } }
   .site-footer { border-top: 1px solid var(--line); padding: 28px 0 40px; }
   .foot { display: flex; flex-wrap: wrap; gap: 8px 26px; font-size: .92rem; }
   .foot a { color: var(--muted); }
