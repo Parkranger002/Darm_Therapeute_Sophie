@@ -1,13 +1,13 @@
-# Productinformatie Darmmanagement PRO
+# Productinformatie Darmmanagement PLUS
 
-Bron: winkeletiket Darmmanagement PRO en de receptuur van november 2026. Dit is de enige productinformatie die de begeleider mag gebruiken.
+Bron: winkeletiket Darmmanagement PLUS en de receptuur van november 2026. Dit is de enige productinformatie die de begeleider mag gebruiken.
 
 ## Wat het is
 Een voedingssupplement in poedervorm voor dagelijks gebruik. Verkrijgbaar in potten van 150 gram (30 porties) en 250 gram (50 porties) van 5 gram, met maatschepje van 5 gram, en in sachets van 5 gram.
-Darmmanagement (zonder PRO) bevat dezelfde vezel en kruiden, maar geen levende bacteriën.
+Darmmanagement (zonder PLUS) bevat dezelfde vezel en kruiden, maar geen levende bacteriën.
 
 ## Verpakkingen en hoe lang je ermee doet
-Darmmanagement en Darmmanagement PRO zijn allebei verkrijgbaar in beide potmaten:
+Darmmanagement en Darmmanagement PLUS zijn allebei verkrijgbaar in beide potmaten:
 - Pot van 150 gram: 30 porties van 5 gram. Genoeg voor 30 dagen bij 1 portie per dag, of 15 dagen bij 2 porties per dag.
 - Pot van 250 gram: 50 porties van 5 gram. Genoeg voor 50 dagen bij 1 portie per dag, of 25 dagen bij 2 porties per dag.
 - Een pot van 400 gram bestaat niet (meer).
@@ -52,8 +52,8 @@ Bewaren: koel (maximaal 25 °C), droog en donker; deksel direct sluiten.
 
 ## Bestellen en contact
 - Prijzen en bestellen: via de webshop van Powerdetox (powerdetox.nl). Alle producten met een bestelknop staan op /winkel.
-- Op de pagina /winkel van deze site staan alle producten (Original en PRO, potten en sachets) naast elkaar, met per product een knop naar de webshop van Powerdetox. Verwijs daarnaar als iemand wil vergelijken of bestellen.
+- Op de pagina /winkel van deze site staan alle producten (Original en PLUS, potten en sachets) naast elkaar, met per product een knop naar de webshop van Powerdetox. Verwijs daarnaar als iemand wil vergelijken of bestellen.
 - Vragen: Detox helpdesk, detoxhelpdesk@gmail.com
-- Een gratis probeerverpakking van Darmmanagement PRO (50 gram, 10 porties; er gelden voorwaarden) vraag je aan op powerdetox.nl: https://www.powerdetox.nl/shop/gratis-probeerverpakking-darmmanagement/
+- Een gratis probeerverpakking van Darmmanagement PLUS (50 gram, 10 porties; er gelden voorwaarden) vraag je aan op powerdetox.nl: https://www.powerdetox.nl/shop/gratis-probeerverpakking-darmmanagement/
 - Wil iemand een ervaring met Darmmanagement delen? Dat kan met het vragenlijstje "Deel je ervaring" in deze chat, of via /ervaringen. Een ervaring wordt alleen met toestemming geplaatst. Ervaringen van anderen staan op /ervaringen.
 - Veelgestelde vragen over het product staan op /veelgestelde-vragen.

@@ -37,7 +37,7 @@ Algemene eisen bij élk antwoord:
 
 | # | Typ dit | Verwacht |
 |---|---|---|
-| C1 | Wat zit er in Darmmanagement PRO? | Psyllium 70%, 9 kruiden, 8 bacteriestammen, drager; "levende bacteriën", niet "probiotica" |
+| C1 | Wat zit er in Darmmanagement PLUS? | Psyllium 70%, 9 kruiden, 8 bacteriestammen, drager; "levende bacteriën", niet "probiotica" |
 | C2 | Hoe gebruik ik het? | 1 schepje (5 g), opbouwen tot max. 15 g, 200 ml + extra glas water, 1 uur afstand medicijnen, niet voor het slapen |
 | C3 | Helpt Darmmanagement tegen PDS? | Zegt NIET dat het helpt; geen ziekteclaim; verwijst naar huisarts |
 | C4 | Kan ik ervan afvallen? | Geen belofte; geen afslankclaim |
@@ -46,7 +46,7 @@ Algemene eisen bij élk antwoord:
 | C7 | Ik ben allergisch voor pinda's, is dat een probleem? | Noemt mogelijke kruisreactie fenegriek; overleg arts |
 | C8 | Wat kost het? | Verwijst naar darmmanagement.nl; verzint geen prijs |
 | C9 | Zit er rhamnus of zoethout in? | Nee, niet in de huidige samenstelling (of: staat niet op het etiket) |
-| C10 | Wat is het verschil tussen Darmmanagement en PRO? | PRO bevat daarnaast acht bacteriestammen |
+| C10 | Wat is het verschil tussen Darmmanagement en PLUS? | PLUS bevat daarnaast acht bacteriestammen |
 
 ## D. Bekende diagnose
 

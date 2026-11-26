@@ -4,7 +4,7 @@ import { PROEF_URL } from '../lib/nudges';
 
 // Winkelpagina, goedgekeurd op 25 november 2026. Bestellen gaat via powerdetox.nl.
 //
-// Productinformatie uit src/knowledge/product.md (etiket Darmmanagement PRO, nov. 2026).
+// Productinformatie uit src/knowledge/product.md (etiket Darmmanagement PLUS, nov. 2026).
 // Geen gezondheidsclaims en niet het woord "probiotica" (Keuringsraad).
 
 const SHOP = 'https://www.powerdetox.nl/shop/';
@@ -60,40 +60,40 @@ const products: Product[] = [
     url: SHOP, achter: { inhoud: 'Sachets van 5 g, per 7 of 21 stuks', ...original },
   },
   {
-    id: 'pro-150', lijn: 'pro', vorm: 'pot', naam: 'Darmmanagement PRO', sub: 'Pot 150 gram',
+    id: 'pro-150', lijn: 'pro', vorm: 'pot', naam: 'Darmmanagement PLUS', sub: 'Pot 150 gram',
     img: '/images/winkel/pot-pro-150.webp', w: 352, h: 420,
     feiten: ['30 porties', '3,6 g vezels per portie', 'Met levende bacteriën'],
     tekst: 'Psylliumvezel en negen kruiden, aangevuld met acht stammen levende bacteriën: samen 2,5 miljard per portie.',
     url: URL_PRO, achter: { inhoud: '150 g = 30 porties van 5 g', ...pro },
   },
   {
-    id: 'pro-250', lijn: 'pro', vorm: 'pot', naam: 'Darmmanagement PRO', sub: 'Pot 250 gram',
+    id: 'pro-250', lijn: 'pro', vorm: 'pot', naam: 'Darmmanagement PLUS', sub: 'Pot 250 gram',
     img: '/images/winkel/pot-pro-250.webp', w: 329, h: 420,
     feiten: ['50 porties', '3,6 g vezels per portie', 'Met levende bacteriën'],
-    tekst: 'De grote pot PRO: psylliumvezel, negen kruiden en acht stammen levende bacteriën in één dagelijks poeder.',
+    tekst: 'De grote pot PLUS: psylliumvezel, negen kruiden en acht stammen levende bacteriën in één dagelijks poeder.',
     url: URL_PRO, achter: { inhoud: '250 g = 50 porties van 5 g', ...pro },
   },
   {
-    id: 'pro-sachets', lijn: 'pro', vorm: 'sachet', naam: 'Darmmanagement PRO', sub: 'Sachets, per 7 of 21',
+    id: 'pro-sachets', lijn: 'pro', vorm: 'sachet', naam: 'Darmmanagement PLUS', sub: 'Sachets, per 7 of 21',
     img: '/images/winkel/sachet-pro.webp', w: 304, h: 420,
     feiten: ['5 g per sachet = 1 portie', 'Doos van 7 of 21 stuks', 'Met levende bacteriën'],
-    tekst: 'PRO in handige zakjes van één portie. Ideaal om mee te nemen naar je werk of op reis.',
+    tekst: 'PLUS in handige zakjes van één portie. Ideaal om mee te nemen naar je werk of op reis.',
     url: SHOP, achter: { inhoud: 'Sachets van 5 g, per 7 of 21 stuks', ...pro },
   },
 ];
 ---
 <Base
-  title="Winkel – Darmmanagement Original en PRO"
-  description="Darmmanagement Original en PRO: potten van 150 en 250 gram en sachets. Bestel via de webshop van Powerdetox."
+  title="Winkel – Darmmanagement Original en PLUS"
+  description="Darmmanagement Original en PLUS: potten van 150 en 250 gram en sachets. Bestel via de webshop van Powerdetox."
 >
   <section class="w-hero">
     <div class="wrap">
-      <img class="w-banner" src="/images/winkel/banner-producten.webp" srcset="/images/winkel/banner-producten-900.webp 900w, /images/winkel/banner-producten.webp 1800w" sizes="(min-width: 1200px) 1140px, 100vw" width="1800" height="675" alt="Sophie wijst naar Darmmanagement Original en PRO: potten van 150 en 250 gram en sachets" fetchpriority="high" />
+      <img class="w-banner" src="/images/winkel/banner-producten.webp" srcset="/images/winkel/banner-producten-900.webp 900w, /images/winkel/banner-producten.webp 1800w" sizes="(min-width: 1200px) 1140px, 100vw" width="1800" height="675" alt="Sophie wijst naar Darmmanagement Original en PLUS: potten van 150 en 250 gram en sachets" fetchpriority="high" />
       <div class="w-hero-text">
-        <h1>Darmmanagement Original en PRO</h1>
-        <p class="lead">Een vezelrijk poeder van psylliumvezel en negen kruiden, in de pot of in handige sachets. Kies Original, of PRO met daarnaast acht stammen levende bacteriën.</p>
+        <h1>Darmmanagement Original en PLUS</h1>
+        <p class="lead">Een vezelrijk poeder van psylliumvezel en negen kruiden, in de pot of in handige sachets. Kies Original, of PLUS met daarnaast acht stammen levende bacteriën.</p>
         <ul class="trust">
-          <li>3,6 g vezels per portie (PRO)</li>
+          <li>3,6 g vezels per portie (PLUS)</li>
           <li>Glutenvrij en vegan (volgens het etiket)</li>
           <li>Bestellen via powerdetox.nl</li>
         </ul>
@@ -101,14 +101,14 @@ const products: Product[] = [
     </div>
   </section>
 
-  <section class="wrap compare" aria-label="Verschil tussen Original en PRO">
+  <section class="wrap compare" aria-label="Verschil tussen Original en PLUS">
     <div class="cmp original">
       <span class="pill">Original</span>
       <h2>Vezels en kruiden</h2>
       <p>Psylliumvezel (70%) met negen kruiden: brandnetel, paardenbloemwortel, alfalfa, rozenbottel, chlorella, gerstgras, fenegriek, gember en hysop.</p>
     </div>
     <div class="cmp pro">
-      <span class="pill">PRO</span>
+      <span class="pill">PLUS</span>
       <h2>Vezels, kruiden en levende bacteriën</h2>
       <p>Dezelfde vezel en kruiden, plus acht stammen levende bacteriën: samen 2,5 miljard per portie van 5 gram.</p>
     </div>
@@ -118,7 +118,7 @@ const products: Product[] = [
     <div class="filters" role="group" aria-label="Producten filteren">
       <button type="button" class="filter" data-filter="alle" aria-pressed="true">Alle producten</button>
       <button type="button" class="filter" data-filter="original" aria-pressed="false">Original</button>
-      <button type="button" class="filter" data-filter="pro" aria-pressed="false">PRO</button>
+      <button type="button" class="filter" data-filter="pro" aria-pressed="false">PLUS</button>
       <button type="button" class="filter" data-filter="sachet" aria-pressed="false">Sachets</button>
     </div>
 
@@ -127,11 +127,11 @@ const products: Product[] = [
         <article class={`card ${p.lijn}`} data-lijn={p.lijn} data-vorm={p.vorm}>
           <div class="flip">
             <div class="face front">
-              <span class={`badge ${p.lijn}`}>{p.lijn === 'pro' ? 'PRO' : 'Original'}</span>
+              <span class={`badge ${p.lijn}`}>{p.lijn === 'pro' ? 'PLUS' : 'Original'}</span>
               <div class="photo"><img src={p.img} width={p.w} height={p.h} loading="lazy" alt={`${p.naam}, ${p.sub.toLowerCase()}`} /></div>
             </div>
             <div class={`face back ${p.lijn}`} aria-hidden="true">
-              <p class="label-brand">Darmmanagement<sup>®</sup> <b>{p.lijn === 'pro' ? 'PRO' : 'Original'}</b></p>
+              <p class="label-brand">Darmmanagement<sup>®</sup> <b>{p.lijn === 'pro' ? 'PLUS' : 'Original'}</b></p>
               <p class="label-sub">Voedingssupplement · {p.achter.inhoud}</p>
               <dl>
                 <dt>Ingrediënten</dt><dd>{p.achter.ingredienten}</dd>
@@ -163,7 +163,7 @@ const products: Product[] = [
       <img src="/images/winkel/sachet-pro.webp" width="304" height="420" alt="" loading="lazy" />
       <div>
         <h2>Eerst proberen?</h2>
-        <p>Vraag een gratis probeerverpakking van Darmmanagement PRO aan: 50 gram, goed voor 10 porties. Er gelden voorwaarden.</p>
+        <p>Vraag een gratis probeerverpakking van Darmmanagement PLUS aan: 50 gram, goed voor 10 porties. Er gelden voorwaarden.</p>
         <div class="cta">
           <a class="btn" href={PROEF_URL} target="_blank" rel="noopener">Gratis probeerverpakking</a>
           <a class="more" href="/start-een-gesprek">Eerst een vraag stellen?</a>
@@ -174,7 +174,7 @@ const products: Product[] = [
 </Base>
 
 <script>
-  // Filteren op Original, PRO of sachets.
+  // Filteren op Original, PLUS of sachets.
   const cards = [...document.querySelectorAll<HTMLElement>('.shop .card')];
   document.querySelectorAll<HTMLButtonElement>('.filter').forEach((btn) =>
     btn.addEventListener('click', () => {

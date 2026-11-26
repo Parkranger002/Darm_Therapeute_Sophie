@@ -6,7 +6,7 @@
 export type ChoiceQuestion = { id: string; label: string; options: string[]; required?: boolean };
 
 export const CHOICES: ChoiceQuestion[] = [
-  { id: 'product', label: 'Welk product heb je gebruikt?', options: ['Darmmanagement', 'Darmmanagement PRO', 'Allebei', 'Weet ik niet meer'], required: true },
+  { id: 'product', label: 'Welk product heb je gebruikt?', options: ['Darmmanagement', 'Darmmanagement PLUS', 'Allebei', 'Weet ik niet meer'], required: true },
   { id: 'vorm', label: 'In welke vorm?', options: ['Pot', 'Sachets', 'Allebei'] },
   { id: 'duur', label: 'Hoe lang heb je het gebruikt?', options: ['Minder dan 2 weken', '2 tot 4 weken', '1 tot 3 maanden', 'Langer dan 3 maanden'], required: true },
   { id: 'porties', label: 'Hoeveel porties per dag?', options: ['1 portie', '2 porties', '3 porties', 'Wisselend'] },

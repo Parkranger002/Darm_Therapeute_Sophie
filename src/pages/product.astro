@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 
-// Bron: winkeletiket Darmmanagement PRO en nieuwe receptuur (nov. 2026).
+// Bron: winkeletiket Darmmanagement PLUS en nieuwe receptuur (nov. 2026).
 // Let op: geen werkings- of gezondheidsclaims toevoegen zonder toetsing (Keuringsraad/NVWA).
 const kruiden = [
   { naam: 'Brandnetelblad', latijn: 'Urtica dioica', pct: '6%', let: '' },
@@ -18,7 +18,7 @@ const kruiden = [
 const productSchema = {
   '@context': 'https://schema.org',
   '@type': 'Product',
-  name: 'Darmmanagement PRO',
+  name: 'Darmmanagement PLUS',
   description: 'Voedingssupplement in poedervorm met 70% psylliumvezel, negen kruiden en acht stammen levende bacteriën. Vezelrijk: 3,6 g vezels per portie van 5 g.',
   brand: { '@type': 'Brand', name: 'Darmmanagement' },
   image: new URL('/images/darmmanagement-potten.webp', Astro.site).href,
@@ -26,25 +26,26 @@ const productSchema = {
   category: 'Voedingssupplement',
 };
 
+// Bewust zonder werking per stam: voor levende bacteriën is in de EU geen gezondheidsclaim goedgekeurd.
 const stammen = [
-  ['Bifidobacterium lactis', 'W51'],
-  ['Bifidobacterium lactis', 'W52'],
-  ['Lactobacillus acidophilus', 'W22'],
-  ['Lactobacillus paracasei', 'W20'],
-  ['Lactobacillus plantarum', 'W21'],
-  ['Lactobacillus salivarius', 'W24'],
-  ['Lactococcus lactis', 'W19'],
-  ['Lactococcus lactis', 'W58'],
+  { naam: 'Bifidobacterium lactis', code: 'W51', soort: 'Bifidobacterie', bron: 'de menselijke darm, gefermenteerde zuivel' },
+  { naam: 'Bifidobacterium lactis', code: 'W52', soort: 'Bifidobacterie (andere stam van dezelfde soort)', bron: 'de menselijke darm, gefermenteerde zuivel' },
+  { naam: 'Lactobacillus acidophilus', code: 'W22', soort: 'Melkzuurbacterie', bron: 'yoghurt en gefermenteerde melk' },
+  { naam: 'Lactobacillus paracasei', code: 'W20', soort: 'Melkzuurbacterie', bron: 'kaas, gefermenteerde melk en groente' },
+  { naam: 'Lactobacillus plantarum', code: 'W21', soort: 'Melkzuurbacterie', bron: 'zuurkool, olijven en zuurdesem' },
+  { naam: 'Lactobacillus salivarius', code: 'W24', soort: 'Melkzuurbacterie', bron: 'de mond en de darm' },
+  { naam: 'Lactococcus lactis', code: 'W19', soort: 'Melkzuurbacterie', bron: 'kaas en karnemelk' },
+  { naam: 'Lactococcus lactis', code: 'W58', soort: 'Melkzuurbacterie (andere stam van dezelfde soort)', bron: 'kaas en karnemelk' },
 ];
 ---
-<Base title="Darmmanagement PRO: vezelsupplement met psyllium en kruiden" description="Vezelrijk supplement met 70% psylliumvezel, negen kruiden en levende bacteriën. Bekijk wat erin zit, hoe je het gebruikt en waar je het bestelt." image="/images/og-product.jpg" schema={productSchema}>
+<Base title="Darmmanagement PLUS: vezelsupplement met psyllium en kruiden" description="Vezelrijk supplement met 70% psylliumvezel, negen kruiden en levende bacteriën. Bekijk wat erin zit, hoe je het gebruikt en waar je het bestelt." image="/images/og-product.jpg" schema={productSchema}>
   <section class="p-hero">
     <div class="wrap p-hero-grid">
       <div>
-        <p class="kicker">Darmmanagement PRO</p>
+        <p class="kicker">Darmmanagement PLUS</p>
         <h1>Vezels, kruiden en levende bacteriën in één dagelijks poeder</h1>
         <p class="lead">
-          Darmmanagement PRO bestaat voor 70% uit psylliumvezel, aangevuld met negen kruiden en acht stammen
+          Darmmanagement PLUS bestaat voor 70% uit psylliumvezel, aangevuld met negen kruiden en acht stammen
           levende bacteriën. Hieronder lees je precies wat erin zit, hoe je het gebruikt en wanneer je beter
           eerst met je arts overlegt.
         </p>
@@ -103,16 +104,30 @@ const stammen = [
     </div>
   </section>
 
-  <section class="wrap block two">
-    <div>
-      <h2>De acht bacteriestammen</h2>
-      <p class="sub">De letter W met een nummer is de code van de specifieke stam. Eén portie van 5 gram bevat 2,5 miljard levende bacteriën (2,5 × 10<sup>9</sup> kve).</p>
-      <ul class="strains">
-        {stammen.map(([n, w]) => <li><em>{n}</em> <span class="code">{w}</span></li>)}
-      </ul>
+  <section class="wrap block">
+    <h2>De acht bacteriestammen</h2>
+    <p class="sub">De letter W met een nummer is de code van de specifieke stam. Eén portie van 5 gram bevat samen 2,5 miljard levende bacteriën (2,5 × 10<sup>9</sup> kve).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Stam</th><th>Code</th><th>Wat het is</th><th>Komt ook voor in</th></tr></thead>
+        <tbody>
+          {stammen.map((s) => (
+            <tr>
+              <td><em>{s.naam}</em></td>
+              <td><span class="code">{s.code}</span></td>
+              <td>{s.soort}</td>
+              <td>{s.bron}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
-    <div>
-      <h2>Per portie</h2>
+    <p class="note-small">Levende bacteriën zijn gevoelig voor warmte. Roer het poeder daarom door koud of lauw vocht, niet door hete thee of soep.</p>
+  </section>
+
+  <section class="wrap block">
+    <h2>Per portie</h2>
+    <div class="portie">
       <div class="table-wrap">
         <table class="small">
           <thead><tr><th>Bestanddeel</th><th>5 g</th><th>15 g</th></tr></thead>
@@ -191,14 +206,14 @@ const stammen = [
   </section>
 
   <section class="wrap block">
-    <h2>Darmmanagement of Darmmanagement PRO?</h2>
+    <h2>Darmmanagement of Darmmanagement PLUS?</h2>
     <div class="compare">
       <div class="card">
         <h3>Darmmanagement</h3>
         <p>Psylliumvezel en negen kruiden.</p>
       </div>
       <div class="card pro">
-        <h3>Darmmanagement PRO</h3>
+        <h3>Darmmanagement PLUS</h3>
         <p>Psylliumvezel, negen kruiden én acht stammen levende bacteriën.</p>
       </div>
     </div>
@@ -258,10 +273,9 @@ const stammen = [
   }
   .small td, .small th { padding: 9px 12px; }
   .note-small { font-size: .88rem; color: var(--muted); margin-top: 10px; }
+  .portie { max-width: 620px; }
   .two { display: grid; gap: 32px; }
   @media (min-width: 900px) { .two { grid-template-columns: 1.2fr 1fr; align-items: start; } }
-  .strains { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-  .strains li { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px; display: flex; justify-content: space-between; gap: 12px; }
   .code { font-weight: 700; color: var(--green); font-size: .9rem; }
   .ingredients { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; font-size: .95rem; margin: 0; }
   .use { background: var(--sage-soft); border-block: 1px solid var(--line); padding: 44px 0; margin: 20px 0; }

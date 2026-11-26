@@ -16,7 +16,7 @@ import '../../styles/shop.css';
         <div class="filters" role="group" aria-label="Filter">
           <button class="f on" data-f="alle">Alles</button>
           <button class="f" data-f="original">Original</button>
-          <button class="f" data-f="pro">PRO</button>
+          <button class="f" data-f="pro">PLUS</button>
         </div>
         <div id="producten" class="producten" aria-live="polite"><p class="laden">Producten laden…</p></div>
       </div>
@@ -47,7 +47,7 @@ import '../../styles/shop.css';
 
   const lijn = {
     original: { label: 'ORIGINAL', tekst: 'Psylliumvezel met negen kruiden.' },
-    pro: { label: 'PRO', tekst: 'Psylliumvezel met negen kruiden, plus acht stammen levende bacteriën.' },
+    pro: { label: 'PLUS', tekst: 'Psylliumvezel met negen kruiden, plus acht stammen levende bacteriën.' },
   } as const;
   let cat: Catalogus | null = null;
   let filter = 'alle';

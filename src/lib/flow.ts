@@ -206,7 +206,7 @@ export const nodes: Record<string, Node> = {
       s.safety
         ? ['Omdat je klachten noemde waarvoor een arts de juiste persoon is, geef ik nu geen productinformatie. Bespreek je klachten eerst met je huisarts.']
         : [
-            'Darmmanagement PRO bevat volgens het etiket 70% psylliumvezel, negen kruiden en acht stammen levende bacteriën.',
+            'Darmmanagement PLUS bevat volgens het etiket 70% psylliumvezel, negen kruiden en acht stammen levende bacteriën.',
             'Ik kan je vertellen wat er op het etiket staat en hoe het volgens de officiële instructies wordt gebruikt. Of het voor jou geschikt is, kan afhangen van je gezondheid en eventuele medicijnen. Bespreek dat bij twijfel met een arts of apotheker.',
           ],
     options: (s) =>
@@ -223,7 +223,7 @@ export const nodes: Record<string, Node> = {
 
   ingredienten: {
     say: () => [
-      'Volgens het etiket zit dit in Darmmanagement PRO:',
+      'Volgens het etiket zit dit in Darmmanagement PLUS:',
       '• 70% psylliumvezel (Plantago ovata)\n• 9 kruiden: brandnetelblad, paardenbloemwortel, alfalfablad, rozenbottel, chlorella, gerstgras, fenegriekzaad, gemberwortel en hysopkruid\n• 8 bacteriestammen, samen 2,5 miljard levende bacteriën per portie van 5 gram\n• Drager: maïszetmeel en maltodextrine',
       'Let op: alfalfa en chlorella bevatten van nature vitamine K (belangrijk als je bloedverdunners gebruikt), en fenegriek kan een kruisreactie geven als je allergisch bent voor pinda of peulvruchten. Twijfel je? Overleg dan eerst met je arts of apotheker. Op de productpagina staat alles op een rij.',
     ],
@@ -239,7 +239,7 @@ export const nodes: Record<string, Node> = {
   },
   proef: {
     say: () => [
-      'Leuk dat je interesse hebt. Een gratis probeerverpakking van Darmmanagement PRO (50 gram, 10 porties) vraag je aan op powerdetox.nl: https://www.powerdetox.nl/shop/gratis-probeerverpakking-darmmanagement/',
+      'Leuk dat je interesse hebt. Een gratis probeerverpakking van Darmmanagement PLUS (50 gram, 10 porties) vraag je aan op powerdetox.nl: https://www.powerdetox.nl/shop/gratis-probeerverpakking-darmmanagement/',
     ],
     options: () => productTerug,
   },

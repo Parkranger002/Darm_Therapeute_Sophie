@@ -133,7 +133,7 @@ export function fibreResult(grams: number, target = 30): { lines: string[]; offe
 
 /** Teksten van de productkaart: alleen etiketinformatie, geen claims. */
 export const PRODUCT_CARD = {
-  title: 'Darmmanagement PRO',
+  title: 'Darmmanagement PLUS',
   lines: [
     'Vezelrijk: 3,6 gram vezels per portie van 5 gram',
     '70% psylliumvezel, negen kruiden en acht bacteriestammen (levende bacteriën)',
